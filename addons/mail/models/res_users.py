@@ -12,7 +12,7 @@ class Users(models.Model):
         - make a new user follow itself
         - add a welcome message
         - add suggestion preference
-        - if adding groups to an user, check mail.channels linked to this user
+        - if adding groups to a user, check mail.channels linked to this user
           group, and the user. This is done by overriding the write method.
     """
     _name = 'res.users'
@@ -31,7 +31,40 @@ class Users(models.Model):
         'Notification Management', required=True, default='email',
         help="Policy on how to handle Chatter notifications:\n"
              "- Handle by Emails: notifications are sent to your email address\n"
-             "- Handle in Odoo: notifications appear in your Odoo Inbox")
+             "- Handle in Odoo: notifications appear in your Odoo Inbox"
+             "- Emails: notifications are sent to your email\n"
+             "- Odoo: notifications appear in your Odoo Inbox")
+    is_moderator = fields.Boolean(string="Is moderator", compute="_compute_is_moderator")
+    moderation_counter = fields.Integer(string="Count of messages to moderate", compute="_compute_moderation_counter")
+    moderation_channel_ids = fields.Many2many('mail.channel', 'mail_channel_moderator_rel', string="User moderated channels")
+
+    @api.multi
+    def _compute_is_moderator(self):
+        for user in self:
+            user.is_moderator = bool(self.env['mail.channel'].search_count([
+                    ('moderation', '=', True),
+                    ('moderator_ids', 'in', user.id)
+                ]))
+
+    @api.multi
+    def _compute_moderation_counter(self):
+        self._cr.execute(
+            """
+                SELECT channel_moderator.res_users_id, COUNT(msg.id)
+                FROM "mail_channel_moderator_rel" AS channel_moderator
+                JOIN "mail_message" AS msg
+                ON channel_moderator.mail_channel_id = msg.res_id
+                AND channel_moderator.res_users_id IN %s
+                AND msg.model = 'mail.channel'
+                AND msg.moderation_status = 'pending_moderation'
+                GROUP BY channel_moderator.res_users_id
+            """,
+            [tuple(self.ids)]
+        )
+        result = dict(self._cr.fetchall())
+        for user in self:
+            user.moderation_counter = result.get(user.id, 0)
+
     def __init__(self, pool, cr):
         """ Override of __init__ to add access rights on notification_email_send
             and alias fields. Access rights are disabled by default, but allowed
@@ -53,10 +86,17 @@ class Users(models.Model):
             msg = _("You cannot create a new user from here.\n To create new user please go to configuration panel.")
             raise exceptions.RedirectWarning(msg, action.id, _('Go to the configuration panel'))
 
+        if values.get('groups_id'):
+            # form: {'group_ids': [(3, 10), (3, 3), (4, 10), (4, 3)]} or {'group_ids': [(6, 0, [ids]}
+            user_group_ids = [command[1] for command in values['groups_id'] if command[0] == 4]
+            user_group_ids += [id for command in values['groups_id'] if command[0] == 6 for id in command[2]]
+            self.env['mail.channel'].search([('group_ids', 'in', user_group_ids)])._subscribe_users()
+
         user = super(Users, self).create(values)
 
         # create a welcome message
         user._create_welcome_message()
+
         return user
 
     @api.multi
@@ -172,4 +212,5 @@ class res_groups_mail_channel(models.Model):
             user_ids = [command[1] for command in vals['users'] if command[0] == 4]
             user_ids += [id for command in vals['users'] if command[0] == 6 for id in command[2]]
             self.env['mail.channel'].search([('group_ids', 'in', self._ids)])._subscribe_users()
+
         return write_res

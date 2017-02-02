@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-
 from email.utils import formataddr
 
+from odoo.tests import tagged
 from odoo.addons.test_mail.tests import common
-from odoo.exceptions import AccessError, except_orm
+from odoo.exceptions import AccessError, except_orm, ValidationError, UserError
 from odoo.tools import mute_logger
 
 
@@ -195,3 +195,105 @@ class TestChannelFeatures(common.BaseFunctionalTest, common.MockEmails):
             self.assertIn(
                 email['email_to'][0],
                 [formataddr((self.user_employee.name, self.user_employee.email)), formataddr((self.test_partner.name, self.test_partner.email))])
+
+
+@tagged('moderation')
+class TestChannelModeration(common.Moderation):
+
+    @classmethod
+    def setUpClass(cls):
+        super(TestChannelModeration, cls).setUpClass()
+
+    def test_check_moderator_email(self):
+        self.channel_moderation_1._check_moderator_email()
+        with self.assertRaises(ValidationError):
+            self._drop_email(self.roboute)
+            self.channel_moderation_1.write({'moderator_ids': [(6, 0, [self.ruid])]})
+
+    def test_check_moderator_is_member(self):
+        self.channel_moderation_1._check_moderator_is_member()
+        with self.assertRaises(ValidationError):
+            self.channel_moderation_1.write({'channel_last_seen_partner_ids': [(5, 0, 0)]})
+            self.channel_moderation_1._check_moderator_is_member()
+
+    def test_check_moderation_implies_email_send(self):
+        self.channel_moderation_1._check_moderation_implies_email_send()
+        with self.assertRaises(ValidationError):
+            self.channel_moderation_1.write({'email_send': False})
+
+    def test_check_moderated_channel_has_moderator(self):
+        self.channel_moderation_1._check_moderated_channel_has_moderator()
+        with self.assertRaises(ValidationError):
+            self.channel_moderation_1.write({'moderator_ids': [(5, 0, 0)]})
+
+    def test_is_moderator(self):
+        self.assertTrue(self.channel_moderation_1.sudo(self.clementine).is_moderator, "Clementine should be considered moderator of the channel 'Moderation_1'")
+        self.assertFalse(self.channel_moderation_1.sudo(self.roboute).is_moderator, "Roboute should not be considered moderator of the channel 'Moderation_1'")
+
+    def test_moderation_email_count(self):
+        self.assertEqual(self.channel_moderation_1.moderation_email_count, 0)
+        self._create_moderation_email_ids(self.channel_moderation_1, 1)
+        self.assertEqual(self.channel_moderation_1.moderation_email_count, 1)
+        self._create_moderation_email_ids(self.channel_moderation_1, 2)
+        self.assertEqual(self.channel_moderation_1.moderation_email_count, 3)
+
+    @mute_logger('odoo.addons.mail.models.mail_channel', 'odoo.models.unlink')
+    def test_send_guidelines(self):
+        self.channel_moderation_1.write({'channel_last_seen_partner_ids': [(0, 0, {'partner_id': self.rpid})]})
+        self.channel_moderation_1.sudo(self.clementine).send_guidelines()
+        self.Mail.process_email_queue()
+        self.assertEqual(len(self._mails), 2)
+        with self.assertRaises(UserError):
+            self.channel_moderation_1.sudo(self.roboute).send_guidelines()
+        with self.assertRaises(UserError):
+            self.env['mail.template'].browse([self.env.ref('mail.mail_template_guidelines_notification_email').id]).unlink()
+            self.channel_moderation_1.sudo(self.clementine).send_guidelines()
+
+    def test_update_moderation_email(self):
+        self._create_moderation_email_ids(self.channel_moderation_1, 2)
+        self.channel_moderation_1._update_moderation_email(['email2@test.com', self._create_new_email(), self._create_new_email()], 'ban')
+        self.assertEqual(self.ModerationEmail.search_count([('status', '=', 'ban')]), 3)
+
+    def test_write(self):
+        self._create_new_message(self.cm1id)
+        self._create_new_message(self.cm1id, 'accepted')
+        self._create_new_message(self.cm2id)
+        self.channel_moderation_1.write({'moderation': False})
+        empty_set = self.Message.search([
+            ('moderation_status', '=', 'pending_moderation'),
+            ('model', '=', 'mail.channel'),
+            ('res_id', '=', self.cm1id)
+        ])
+        singleton = self.Message.search([
+            ('moderation_status', '=', 'pending_moderation'),
+            ('model', '=', 'mail.channel'),
+            ('res_id', '=', self.cm2id)
+        ])
+        self.assertEqual(len(empty_set), 0)
+        self.assertEqual(len(singleton), 1)
+
+    @mute_logger('odoo.models.unlink')
+    def test_message_post(self):
+        email1 = self._create_new_email()
+        email2 = self._create_new_email()
+        self._clear_moderation_email()
+
+        self.channel_moderation_1._update_moderation_email([email1], 'ban')
+        self.channel_moderation_1._update_moderation_email([email2], 'allow')
+
+        admin_message = self.channel_moderation_1.message_post(message_type='email', author_id=self.partner_admin.id)
+        clementine_message = self.channel_moderation_1.message_post(message_type='comment', author_id=self.cpid)
+        email1_message = self.channel_moderation_1.message_post(message_type='comment', email_from=formataddr(("MyName", email1)))
+        email2_message = self.channel_moderation_1.message_post(message_type='email', email_from=email2)
+        notification = self.channel_moderation_1.message_post()
+
+        messages = self.Message.search([('model', '=', 'mail.channel'), ('res_id', '=', self.cm1id)])
+        pm_messages = messages.filtered(lambda m: m.moderation_status == 'pending_moderation')
+        a_messages = messages.filtered(lambda m: m.moderation_status == 'accepted')
+
+        self.assertIn(admin_message, pm_messages)
+        self.assertEqual(a_messages, clementine_message | email2_message | notification)
+        # channel_ids must empty when a message is pending_moderation!
+        self.assertFalse(admin_message.channel_ids)
+        # values that lead to a rejection do not create a message. An empty record set is returned by message_post method
+        self.assertFalse(email1_message)

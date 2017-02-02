@@ -46,6 +46,8 @@ var ChatManager =  AbstractService.extend({
         this.emojiUnicodes = {};
         this.needactionCounter = 0;
         this.starredCounter = 0;
+        this.moderationCounter = 0;
+        this.moderationChannelIDs = [];
         this.mentionPartnerSuggestions = [];
         this.cannedResponses = [];
         this.commands = [];
@@ -437,8 +439,8 @@ var ChatManager =  AbstractService.extend({
             var domain = [['model', '=', options.model], ['res_id', '=', options.res_id]];
             return this._rpc({
                     model: 'mail.message',
-                    method: 'message_fetch',
-                    args: [domain],
+                    method: 'document_message_fetch',
+                    args: [options.model, options.res_id],
                     kwargs: {limit: LIMIT},
                 })
                 .then(function (msgs) {
@@ -446,6 +448,14 @@ var ChatManager =  AbstractService.extend({
                 });
         }
         return $.when([]);
+    },
+    /**
+     * Returns the number of messages that the user needs to moderate
+     *
+     * @return {integer}
+     */
+    getModerationCounter: function () {
+        return this.moderationCounter;
     },
     /**
      * Returns the number of messages received from followed channels
@@ -481,6 +491,12 @@ var ChatManager =  AbstractService.extend({
      */
     isAllHistoryLoaded: function (channel, domain) {
         return this._getChannelCache(channel, domain).all_history_loaded;
+    },
+    /**
+     * @return {boolean}
+     */
+    isModerator: function () {
+        return this._isModerator;
     },
     /**
      * @return {$.Promise}
@@ -578,6 +594,21 @@ var ChatManager =  AbstractService.extend({
         return $.when();
     },
     /**
+     * @param  {integer[]} messageIDs
+     * @param  {string} decision
+     * @return {undefined|$.Promise}
+     */
+    moderateMessages: function (messageIDs, decision, kwargs) {
+        if (messageIDs.length && decision) {
+            return this._rpc({
+                model: 'mail.message',
+                method: 'moderate',
+                args: [messageIDs, decision],
+                kwargs: kwargs
+            });
+        }
+    },
+    /**
      * Opens the chat window in discuss.
      *
      * @param  {integer} partnerID
@@ -660,7 +691,21 @@ var ChatManager =  AbstractService.extend({
                         subtype: 'mail.mt_comment',
                         command: data.command,
                     }),
-                });
+                 })
+                .then(function (msgID) {
+                    if (msgID) {
+                        return self._rpc({
+                                model: 'mail.message',
+                                method: 'message_format',
+                                args: [msgID],
+                            })
+                            .then(function (msgs) {
+                                if (msgs[0].moderation_status === 'pending_moderation') {
+                                    self._addMessage(msgs[0]);
+                                }
+                            });
+                    }
+                 });
         }
         if ('model' in options && 'res_id' in options) {
             // post a message in a chatter
@@ -962,6 +1007,15 @@ var ChatManager =  AbstractService.extend({
             }
         } else if (options.domain && options.domain !== []) {
             this._addToCache(msg, options.domain);
+        } else if (data.moderation_status === 'accepted') {
+            msg.channel_ids = data.channel_ids;
+            msg.needsModeration = false;
+            if (msg.isModerator) {
+                this.moderationCounter--;
+                this._removeMessageFromChannel("channel_moderation", msg);
+                this.chatBus.trigger('update_moderation_counter');
+            }
+            this.chatBus.trigger('update_message', msg);
         }
         return msg;
     },
@@ -1036,15 +1090,22 @@ var ChatManager =  AbstractService.extend({
      */
     _fetchFromChannel: function (channel, options) {
         var self = this;
+        var channelID;
         options = options || {};
-        var domain =
-            (channel.id === "channel_inbox") ? [['needaction', '=', true]] :
-            (channel.id === "channel_starred") ? [['starred', '=', true]] :
-                                                [['channel_ids', 'in', channel.id]];
+        var domain;
+        if (channel.id === "channel_inbox") {
+            channelID = {type: "inbox"};
+        } else if (channel.id === "channel_starred") {
+            channelID = {type: "starred"};
+        } else if (channel.id === "channel_moderation") {
+            channelID = {type: "moderation"};
+        } else {
+            channelID = {id: channel.id}; 
+        }    
         var cache = this._getChannelCache(channel, options.domain);
 
         if (options.domain) {
-            domain = domain.concat(options.domain || []);
+            domain = options.domain || [];
         }
         if (options.loadMore) {
             var minMessageID = cache.messages[0].id;
@@ -1054,7 +1115,7 @@ var ChatManager =  AbstractService.extend({
         return this._rpc({
                 model: 'mail.message',
                 method: 'message_fetch',
-                args: [domain],
+                args: [channelID, domain],
                 kwargs: {limit: LIMIT, context: session.user_context},
             })
             .then(function (msgs) {
@@ -1113,6 +1174,18 @@ var ChatManager =  AbstractService.extend({
             });
             self.needactionCounter = result.needaction_inbox_counter || 0;
             self.starredCounter = result.starred_counter || 0;
+            self.moderationCounter = result.moderation_counter;
+            self.moderationChannelIDs = result.moderation_channel_ids;
+            self._isModerator = result.is_moderator;
+
+            //if user is moderator then add moderation channel
+            if (self._isModerator) {
+                self._addChannel({
+                    id: "channel_moderation",
+                    name: _lt("Moderate Messages"),
+                    type: "static"
+                });
+            }
             self.commands = _.map(result.commands, function (command) {
                 return _.extend({ id: command.name }, command);
             });
@@ -1162,17 +1235,19 @@ var ChatManager =  AbstractService.extend({
      * @param  {Object[]} [data.direct_partner]
      * @param  {boolean} [data.group_based_subscription]
      * @param  {integer|string} data.id
+     * @param  {boolean} data.is_moderator
      * @param  {boolean} data.is_minimized
      * @param  {string} [data.last_message_date]
      * @param  {boolean} data.mass_mailing
      * @param  {integer} [data.message_needaction_counter]
      * @param  {integer} [data.message_unread_counter]
+     * @param  {boolean} data.moderation
      * @param  {string} data.name
      * @param  {string} [data.public]
      * @param  {integer} data.seen_message_id
      * @param  {string} [data.state]
      * @param  {string} [data.type]
-     * @param  {string} channel.uuid
+     * @param  {string} data.uuid
      * @param  {Object} options
      * @param  {boolean} [options.autoswitch]
      * @param  {boolean} options.displayNeedactions
@@ -1193,6 +1268,8 @@ var ChatManager =  AbstractService.extend({
             hidden: options.hidden,
             display_needactions: options.displayNeedactions,
             mass_mailing: data.mass_mailing,
+            moderation: data.moderation,
+            isModerator: data.is_moderator,
             group_based_subscription: data.group_based_subscription,
             needaction_counter: data.message_needaction_counter || 0,
             unread_counter: 0,
@@ -1242,6 +1319,7 @@ var ChatManager =  AbstractService.extend({
      * @param  {boolean} data.is_discussion
      * @param  {boolean} data.is_note
      * @param  {string} data.message_type
+     * @param  {string} [data.moderation_status]
      * @param  {string} [data.model]
      * @param  {boolean} data.module_icon src url of the module icon
      * @param  {string} data.record_name
@@ -1261,10 +1339,14 @@ var ChatManager =  AbstractService.extend({
             message_type: data.message_type,
             subtype_description: data.subtype_description,
             is_author: data.author_id && data.author_id[0] === session.partner_id,
+            isModerator: data.model === 'mail.channel' &&
+                _.contains(this.moderationChannelIDs, data.res_id) &&
+                data.moderation_status === 'pending_moderation',
             is_note: data.is_note,
             is_discussion: data.is_discussion,
-            is_system_notification: (data.message_type === 'notification' && data.model === 'mail.channel')
-                || data.info === 'transient_message',
+            is_system_notification: (data.message_type === 'notification' &&
+                data.model === 'mail.channel') ||
+                data.info === 'transient_message',
             attachment_ids: data.attachment_ids || [],
             subject: data.subject,
             email_from: data.email_from,
@@ -1304,6 +1386,7 @@ var ChatManager =  AbstractService.extend({
         Object.defineProperties(msg, {
             is_starred: propertyDescr("channel_starred"),
             is_needaction: propertyDescr("channel_inbox"),
+            needsModerationByUser: propertyDescr("channel_moderation"),
         });
 
         if (_.contains(data.needaction_partner_ids, session.partner_id)) {
@@ -1312,8 +1395,13 @@ var ChatManager =  AbstractService.extend({
         if (_.contains(data.starred_partner_ids, session.partner_id)) {
             msg.is_starred = true;
         }
+        if (data.moderation_status === 'pending_moderation') {
+            msg.needsModeration = true;
+            msg.needsModerationByUser = msg.isModerator;
+            msg.channel_ids.push(msg.res_id);
+        }
         if (msg.model === 'mail.channel') {
-            var realChannels = _.without(msg.channel_ids, 'channel_inbox', 'channel_starred');
+            var realChannels = _.without(msg.channel_ids, 'channel_inbox', 'channel_starred', 'channel_moderation');
             var origin = realChannels.length === 1 ? realChannels[0] : undefined;
             var channel = origin && this.getChannel(origin);
             if (channel) {
@@ -1386,6 +1474,13 @@ var ChatManager =  AbstractService.extend({
      */
     _manageActivityUpdateNotification: function (data) {
         this.chatBus.trigger('activity_updated', data);
+    },
+    /**
+     * @private
+     * @param {Object} data
+     */
+    _manageAuthorNotification: function (data) {
+        this._addMessage(data.message);
     },
     /**
      * @private
@@ -1466,6 +1561,28 @@ var ChatManager =  AbstractService.extend({
         }
     },
     /**
+     * @private
+     * @param {Object} data
+     * @param {Object[]} [data.message_ids] 
+     */
+    _manageDeletionNotification: function (data) {
+        var self = this;
+        _.each(data.message_ids, function (msgID) {
+            var message = _.findWhere(self.messages, { id: msgID });
+            if (message) {
+                if (message.isModerator) {
+                    self._removeMessageFromChannel("channel_moderation", message);
+                    self.moderationCounter--;
+                }
+                message.needsModeration = false;
+                message.needsModerationByUser = false;
+                self._removeMessageFromChannel(message.res_id, message);
+                self.chatBus.trigger('update_message', message);
+                }
+            });
+        this.chatBus.trigger('update_moderation_counter');
+    },
+    /**
      * Updates channel_inbox when a message has marked as read. 
      *
      * @private
@@ -1491,13 +1608,23 @@ var ChatManager =  AbstractService.extend({
                     channel.needaction_counter = Math.max(channel.needaction_counter - data.message_ids.length, 0);
                 }
             });
-        } else { // if no channel_ids specified, this is a 'mark all read' in the inbox
+        } else { // iaf no channel_ids specified, this is a 'mark all read' in the inbox
             _.each(this.channels, function (channel) {
                 channel.needaction_counter = 0;
             });
         }
         this.needactionCounter = Math.max(this.needactionCounter - data.message_ids.length, 0);
         this.chatBus.trigger('update_needaction', this.needactionCounter);
+    },
+    /**
+     * @private
+     * @param {Object} data notification data
+     * @param {Object} data.message
+     */
+    _manageModeratorNotification: function (data) {
+        this.moderationCounter++;
+        this._addMessage(data.message, {channel_id: 'channel_moderation'});
+        this.chatBus.trigger('update_moderation_counter');
     },
     /**
      * @private
@@ -1546,6 +1673,12 @@ var ChatManager =  AbstractService.extend({
             this._manageToggleStarNotification(data);
         } else if (data.type === 'mark_as_read') {
             this._manageMarkAsReadNotification(data);
+        } else if (data.type === 'moderator') {
+            this._manageModeratorNotification(data);
+        } else if (data.type === 'author') {
+            this._manageAuthorNotification(data);
+        } else if (data.type === 'deletion') {
+            this._manageDeletionNotification(data);
         } else if (data.info === 'channel_seen') {
             this._manageChannelSeenNotification(data);
         } else if (data.info === 'transient_message') {

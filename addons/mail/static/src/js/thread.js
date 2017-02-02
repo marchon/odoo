@@ -38,6 +38,8 @@ var Thread = Widget.extend({
             var message_id = $(event.currentTarget).data('message-id');
             this.trigger("mark_as_read", message_id);
         },
+        "click .o_thread_message_moderation": "_onMessageModeration",
+        "change .moderation_checkbox": "_onCheckboxChange",
         "click .o_thread_message_star": function (event) {
             var message_id = $(event.currentTarget).data('message-id');
             this.trigger("toggle_star_status", message_id);
@@ -132,7 +134,6 @@ var Thread = Widget.extend({
             }
             prev_msg = msg;
         });
-
         this.$el.html(QWeb.render('mail.ChatThread', {
             messages: msgs,
             options: options,
@@ -300,6 +301,9 @@ var Thread = Widget.extend({
     destroy: function () {
         clearInterval(this.update_timestamps_interval);
     },
+    toggleModerationCheckboxes: function (boolean) {
+        this.$('.moderation_checkbox').prop('checked',boolean);
+    },
 
     //--------------------------------------------------------------------------
     // Private
@@ -372,6 +376,24 @@ var Thread = Widget.extend({
             var attachmentViewer = new DocumentViewer(this, this.attachments, activeAttachmentID);
             attachmentViewer.appendTo($('body'));
         }
+    },
+    /**
+     * @private
+     * @param {MouseEvent} event
+     */
+    _onCheckboxChange: function (event) {
+        this.trigger_up("render_select_unselect_all_button");
+        this.trigger_up("toggle_decision_button");
+    },
+    /**
+     * @private
+     * @param {MouseEvent} event
+     */
+     _onMessageModeration: function (event) {
+        var $button = $(event.currentTarget);
+        var messageID = $button.data('message-id');
+        var decision = $button.data('decision');
+        this.trigger_up("moderation", {messageID: messageID, decision: decision});
     },
 });
 

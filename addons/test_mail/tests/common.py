@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+from json import dumps, loads
 
 from contextlib import contextmanager
 from email.utils import formataddr
 
 from odoo import api
-from odoo.tests import common
+from odoo.tests import common, tagged
 
 
 class BaseFunctionalTest(common.SavepointCase):
@@ -220,3 +221,126 @@ class MockEmails(common.SingleTransactionCase):
         mail = self.format(template, to=to, subject=subject, cc=cc, extra=extra, email_from=email_from, msg_id=msg_id)
         self.env['mail.thread'].with_context(mail_channel_noautofollow=True).message_process(model, mail)
         return self.env[target_model].search([(target_field, '=', subject)])
+
+
+@tagged('moderation')
+class Moderation(MockEmails, BaseFunctionalTest):
+
+    @classmethod
+    def setUpClass(cls):
+        super(Moderation, cls).setUpClass()
+        Channel = cls.env['mail.channel'].with_context(cls._quick_create_ctx)
+        Users = cls.env['res.users'].with_context(cls._quick_create_user_ctx)
+
+        cls.channel_moderation_1 = Channel.create({
+            'name': 'Moderation_1',
+            'email_send': True,
+            'moderation': True
+            })
+        cls.channel_moderation_2 = Channel.create({
+            'name': 'Moderation_2',
+            'email_send': True,
+            'moderation': True
+            })
+        cls.channel_without_moderation = Channel.create({
+            'name': 'Moderation_3',
+            'email_send': True,
+            'moderation': False
+            })
+
+        cls.cm1id = cls.channel_moderation_1.id
+        cls.cm2id = cls.channel_moderation_2.id
+        cls.cwm3id = cls.channel_without_moderation.id
+
+        cls.clementine = Users.create({
+            'name': 'Clementine',
+            'login': 'clementine',
+            'email': 'darling@clementine.com',
+            'groups_id': [(6, 0, [cls.env.ref('base.group_user').id])],
+            'moderation_channel_ids': [(6, 0, [cls.cm1id])]
+            })
+
+        cls.roboute = Users.create({
+            'name': 'Roboute',
+            'login': 'roboute',
+            'email': 'roboute@guilliman.com',
+            'groups_id': [(6, 0, [cls.env.ref('base.group_user').id])],
+            'moderation_channel_ids': [(6, 0, [cls.cm2id])]
+            })
+
+        cls.user_public = Users.create({
+            'name': 'Bert Tartignole',
+            'login': 'bert',
+            'email': 'b.t@example.com',
+            'groups_id': [(6, 0, [cls.env.ref('base.group_public').id])]})
+        cls.user_portal = Users.create({
+            'name': 'Chell Gladys',
+            'login': 'chell',
+            'email': 'chell@gladys.portal',
+            'groups_id': [(6, 0, [cls.env.ref('base.group_portal').id])]})
+
+        cls.cuid = cls.clementine.id
+        cls.ruid = cls.roboute.id
+        cls.cp = cls.clementine.partner_id
+        cls.rp = cls.roboute.partner_id
+        cls.cpid = cls.cp.id
+        cls.rpid = cls.rp.id
+
+        cls.channel_moderation_1.write({'channel_last_seen_partner_ids': [(0, 0, {'partner_id': cls.cpid})]})
+        cls.channel_moderation_2.write({'channel_last_seen_partner_ids': [(0, 0, {'partner_id': cls.rpid})]})
+
+        cls.email_indice = 0
+        cls.msg_indice = 0
+
+        cls.Message = cls.env['mail.message']
+        cls.Mail = cls.env['mail.mail']
+        cls.ModerationEmail = cls.env['mail.moderation.email']
+        cls.Bus = cls.env['bus.bus']
+
+        cls._clear_mail(cls)
+        cls._clear_message(cls)
+        cls._clear_moderation_email(cls)
+
+    def _drop_email(self, partner):
+        partner.email = False
+
+    def _create_new_email(self):
+        self.email_indice += 1
+        return "email{}@test.com".format(str(self.email_indice))
+
+    def _create_new_message(self, channel_id, status='pending_moderation', author=None, body='', message_type="email"):
+        author = author if author else self.env.user.partner_id
+        self.msg_indice += 1
+        message = self.Message.create({
+            'model': 'mail.channel',
+            'res_id': channel_id,
+            'message_type': 'email',
+            'body': 'Message no. {}'.format(str(self.msg_indice)) + body,
+            'moderation_status': status,
+            'author_id': author.id,
+            'email_from': formataddr((author.name, author.email)),
+            'subtype_id': self.env['mail.message.subtype'].search([('name', '=', 'Discussions')]).id
+            })
+        return message
+
+    def _create_moderation_email_ids(self, channel, n, status='allow'):
+        vals = [(0, 0, {'email': self._create_new_email(), 'status': status}) for i in range(n)]
+        channel.write({'moderation_email_ids': vals})
+
+    def _clear_mail(self):
+        self.Mail.search([]).unlink()
+
+    def _clear_message(self):
+        self.Message.search([]).unlink()
+
+    def _clear_bus(self):
+        self.Bus.search([]).unlink()
+
+    def _clear_moderation_email(self):
+        self.ModerationEmail.search([]).unlink()
+
+    def _json_dumps(self, v):
+        return dumps(v, separators=(',', ':'))
+
+    def _json_loads(self, v):
+        return loads(v)

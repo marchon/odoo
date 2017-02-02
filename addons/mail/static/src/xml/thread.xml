@@ -120,6 +120,13 @@
                     You can mark any message as 'starred', and it shows up in this channel.
                 </p>
             </t>
+            <t t-if="options.channel_id==='channel_moderation'">
+                <p class="o_view_nocontent_smiling_face">
+                    You have no message to moderate
+                </p><p>
+                    Pending moderation messages appear here.
+                </p>
+            </t>            
         </div>
     </div>
 
@@ -162,6 +169,7 @@
             </div>
             <div t-att-class="'o_thread_message_core' + (message.is_note ? ' o_mail_note' : '')">
                 <p t-if="message.display_author" class="o_mail_info">
+                    <input t-if="message.needsModeration &amp;&amp; message.isModerator" type="checkbox" class="moderation_checkbox" t-att-data-message-id="message.id"/>
                     <t t-if="message.is_note">
                         Note by
                     </t>
@@ -203,7 +211,7 @@
                         </span>
                     </span>
                     <span t-attf-class="o_thread_icons">
-                        <i t-if="options.display_stars &amp;&amp; !message.is_system_notification"
+                        <i t-if="options.display_stars &amp;&amp; !message.is_system_notification &amp;&amp; !message.needsModeration"
                             t-att-class="'fa fa-lg o_thread_icon o_thread_message_star ' + (message.is_starred ? 'fa-star' : 'fa-star-o')"
                             t-att-data-message-id="message.id" title="Mark as Todo"/>
                        <i t-if="message.record_name &amp;&amp; message.model != 'mail.channel' &amp;&amp; options.display_reply_icon"
@@ -212,6 +220,15 @@
                         <i t-if="message.is_needaction &amp;&amp; options.display_needactions"
                            class="fa fa-check o_thread_icon o_thread_message_needaction"
                            t-att-data-message-id="message.id" title="Mark as Read"/>
+
+                        <t t-if="message.needsModeration &amp;&amp; message.model === 'mail.channel' &amp;&amp;
+                            message.isModerator">
+                            <t t-call="mail.Decision"/>
+                        </t>
+                        <t t-if="message.needsModeration &amp;&amp; message.model === 'mail.channel' &amp;&amp;
+                            message.is_author &amp;&amp; !message.isModerator">
+                            <t t-call="mail.Feedback"/>
+                        </t>
                     </span>
                 </p>
                 <div class="o_thread_message_content">
@@ -235,6 +252,26 @@
             <t t-call="mail.MessagesSeparator"/>
         </t>
     </t>
+
+    <t t-name="mail.Decision">
+        <i class="o_thread_icon ml4 o_thread_message_moderation text-success"
+           t-att-data-message-id="message.id" data-decision="accept" title="Accept"><b>Accept |</b></i>
+        <i class="o_thread_icon ml4 o_thread_message_moderation text-danger"
+           t-att-data-message-id="message.id" data-decision="reject" title="Remove message with explanation"><b>Reject |</b></i>
+        <i class="o_thread_icon ml4 o_thread_message_moderation text-danger"
+           t-att-data-message-id="message.id" data-decision="discard" title="Remove message without explanation"><b>Discard |</b></i>
+        <i class="o_thread_icon ml4 o_thread_message_moderation text-success"
+           t-att-data-message-id="message.id" data-decision="allow" title="Add this email address to white list of people"><b>Allow |</b></i>
+        <i class="o_thread_icon ml4 o_thread_message_moderation text-danger"
+           t-att-data-message-id="message.id" data-decision="ban" title="Ban this email address"><b>Ban</b></i>
+    </t>
+
+    <t t-name="mail.Feedback">
+        <i class="text-danger" title="Your message is pending moderation"><b>Pending moderation</b></i>
+    </t>
+
+
+
 
     <t t-name="mail.MessagesSeparator">
         <div class="o_thread_new_messages_separator">
