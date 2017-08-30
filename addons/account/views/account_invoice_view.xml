@@ -162,7 +162,10 @@
                             <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                                 <div class="o_kanban_record_top">
                                     <div class="o_kanban_record_headings">
-                                        <strong class="o_kanban_record_title"><span><t t-esc="record.partner_id.value"/></span></strong>
+                                        <strong class="o_kanban_record_title">
+                                            <span><t t-esc="record.partner_id.value"/></span>
+                                             <button name="%(portal.mail_share_link_action)d" type="action" class="btn-link"><i class="fa fa-share-alt"></i></button>
+                                        </strong>
                                     </div>
                                     <strong><field name="amount_total_signed" widget="monetary"/></strong>
                                 </div>

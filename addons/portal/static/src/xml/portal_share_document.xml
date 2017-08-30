@@ -1,0 +1,8 @@
+<templates id="template" xml:space="preserve">
+
+    <t t-name="portal.sharing_icon">
+        <li title='Share' class="o_hidden o_home_menu_hidden">
+            <a href="#"><i class="fa fa-share-alt"></i></a>
+        </li>
+    </t>
+</templates>
