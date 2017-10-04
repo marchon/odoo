@@ -1,0 +1,39 @@
+.o_attachment_view {
+    position: relative;
+    text-align: center;
+    max-height: 165px;
+    overflow: hidden;
+    &:hover .o_image_overlay {
+        background-color: rgba(0, 0, 0, 0.5);
+        display: block;
+    }
+    > i {
+        font-size: 12.5em;
+    }
+    > img {
+        height: 100%;
+        width: 100%;
+    }
+    .o_image_overlay {
+        .o-position-absolute(@bottom: 0px);
+        display: none;
+        max-height: 200px;
+        width: 100%;
+        height: 100%;
+        .o_attachment_play {
+            .o-position-absolute(@top: 50%, @left: 50%);
+            transform: translate(-50%, -50%);
+            color: #FFFFFF;
+        }
+        .o_download_content {
+            .o-position-absolute(@left: 10px, @bottom:5px);
+            color: #FFFFFF;
+        }
+        .o_overlay_download {
+            position: inherit;
+            left: 0;
+            height: 100%;
+            width: 100%;
+        }
+    }
+}
