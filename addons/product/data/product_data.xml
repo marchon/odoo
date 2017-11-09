@@ -11,7 +11,11 @@
             <field name="parent_id" ref="product_category_all"/>
             <field name="name">Saleable</field>
         </record>
-        
+        <record id="cat_expense" model="product.category">
+            <field name="parent_id" ref="product_category_all"/>
+            <field name="name">Expenses</field>
+        </record>
+
         <record id="product_uom_categ_unit" model="product.uom.categ">
             <field name="name">Unit</field>
         </record>
@@ -180,6 +184,16 @@ parameter) will see those record just disappear.
             <field name="sequence">1</field>
         </record>
 
+        <!--Product will be activated when sale_timesheet or hr_expense module install-->
+        <record id="product_product_fixed_cost" model="product.product">
+            <field name="name">Expenses</field>
+            <field name="active">False</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">1.0</field>
+            <field name="type">service</field>
+            <field name="default_code">EXP</field>
+            <field name="categ_id" ref="cat_expense"/>
+        </record>
         <!--
         Property
         -->

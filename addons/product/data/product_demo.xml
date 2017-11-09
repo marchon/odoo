@@ -19,6 +19,19 @@
             <field name="name">Physical</field>
         </record>
 
+        <!--Product will be activated when sale_timesheet or hr_expense module install-->
+        <record id="hotel_rent" model="product.product">
+            <field name="name">Hotel Accommodation</field>
+            <field name="active">False</field>
+            <field name="list_price">400.0</field>
+            <field name="standard_price">400.0</field>
+            <field name="type">service</field>
+            <field name="default_code">HA0</field>
+            <field name="uom_id" ref="product_uom_day"/>
+            <field name="uom_po_id" ref="product_uom_day"/>
+            <field name="categ_id" ref="cat_expense"/>
+        </record>
+
         <record id="service_order_01" model="product.product">
             <field name="name">Prepaid Consulting</field>
             <field name="categ_id" ref="product_category_3"/>
