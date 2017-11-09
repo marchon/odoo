@@ -15,6 +15,13 @@ class StockWarehouse(models.Model):
     manu_type_id = fields.Many2one(
         'stock.picking.type', 'Manufacturing Operation Type',
         domain=[('code', '=', 'mrp_operation')])
+    manufacture_steps = fields.Selection([
+                                ('manu_only', 'Produce'),
+                                ('pick_manu', 'Pick the components + Produce')],
+                                'Manufacture', default='manu_only', required=True,
+                                help="Produce : Move the raw materials to the production location directly and start the manufacturing process.\nPick / Produce : Unload the raw materials from the Stock to Input location first, and then transfer it to the Production location.")
+    wh_input_manu_loc_id = fields.Many2one("stock.location", "Manufacturing Input Location")
+    manufacturing_pick_route_id = fields.Many2one('stock.location.route', 'Manufacture Pick Route', ondelete='restrict')
 
     def create_sequences_and_picking_types(self):
         res = super(StockWarehouse, self).create_sequences_and_picking_types()
