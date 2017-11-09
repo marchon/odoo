@@ -13,4 +13,5 @@
         'data/payment_acquirer_data.xml',
     ],
     'installable': True,
+    'auto_install': True,
 }
