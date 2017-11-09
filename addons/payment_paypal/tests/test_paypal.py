@@ -16,6 +16,7 @@ class PaypalCommon(PaymentAcquirerCommon):
         super(PaypalCommon, self).setUp()
 
         self.paypal = self.env.ref('payment.payment_acquirer_paypal')
+        self.paypal.environment = "test"
 
         # some CC
         self.amex = (('378282246310005', '123'), ('371449635398431', '123'))
@@ -59,6 +60,7 @@ class PaypalForm(PaypalCommon):
             'address1': 'Huge Street 2/543',
             'city': 'Sin City',
             'zip': '1000',
+            'rm': '2',
             'country': 'BE',
             'email': 'norbert.buyer@example.com',
             'return': urls.url_join(base_url, PaypalController._return_url),
@@ -122,7 +124,7 @@ class PaypalForm(PaypalCommon):
             'protection_eligibility': u'Ineligible',
             'last_name': u'Poilu',
             'txn_id': u'08D73520KX778924N',
-            'receiver_email': u'dummy',
+            'receiver_email': self.env.user.email,
             'payment_status': u'Pending',
             'payment_gross': u'',
             'tax': u'0.00',
