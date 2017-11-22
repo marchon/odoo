@@ -48,41 +48,88 @@
                         <strong>Work Orders</strong>
                         <table class="table table-condensed">
                             <tr>
-                                <td class="text-center"><strong>Name</strong></td>
-                                <td class="text-center"><strong>WorkCenter</strong></td>
-                                <td class="text-center"><strong>No. Of Minutes</strong></td>
+                                <td><strong>Operation</strong></td>
+                                <td><strong>WorkCenter</strong></td>
+                                <td><strong>No. Of Minutes</strong></td>
                             </tr>
                             <tr t-foreach="o.workorder_ids" t-as="line2">
-                                <td class="text-center"><span t-field="line2.name"/></td>
-                                <td class="text-center"><span t-field="line2.workcenter_id.name"/></td>
-                                <td class="text-center"><span t-field="line2.duration_expected"/></td>
+                                <td><span t-field="line2.name"/></td>
+                                <td><span t-field="line2.workcenter_id.name"/></td>
+                                <td><span t-field="line2.duration_expected"/></td>
                             </tr>
                         </table>
                     </div>
 
-                    <h3 t-if="o.move_raw_ids">Bill Of Material</h3>
-
+                    <h3 t-if="o.move_raw_ids">Products to Consume</h3>
                     <table class="table table-condensed" t-if="o.move_raw_ids">
+                        <t t-set="has_serial_number" t-value="0" groups="stock.group_production_lot"/>
+                        <t t-foreach="o.move_raw_ids" t-as="t">
+                            <t t-foreach="t.move_line_ids" t-as="lt">
+                                <t t-if="lt.lot_id or lt.lot_name">
+                                    <t t-set="has_serial_number" t-value="1"/>
+                                </t>
+                            </t>
+                        </t>
+                        <t t-set="has_location" t-value="0" groups="stock.group_stock_multi_locations"/>
+                        <t t-foreach="o.move_raw_ids" t-as="t">
+                            <t t-foreach="t.move_line_ids" t-as="lt">
+                                <t t-set="has_location" t-value="lt.location_id.id"/>
+                            </t>
+                        </t>
                         <thead>
                             <tr>
                                 <th><strong>Product</strong></th>
-                                <th class="text-right"><strong>Quantity</strong></th>
+                                <th><strong>Quantity</strong></th>
+                                <th>
+                                    <span t-if="has_location"><strong>From</strong></span>
+                                </th>
+                                <th class="text-center">
+                                    <span t-if="has_serial_number"><strong>Lot/Serial Number</strong></span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             <t t-if="o.move_raw_ids">
-                                <tr>
-                                    <td colspan="4"><strong>Products to Consume</strong></td>
-                                </tr>
-                                <tr t-foreach="o.move_raw_ids" t-as="line">
-                                    <td>
-                                        <span t-field="line.product_id"/>
-                                    </td>
-                                    <td class="text-right">
-                                        <span t-field="line.product_uom_qty"/>
-                                        <span t-field="line.product_uom.name" groups="product.group_uom"/>
-                                    </td>
-                                </tr>
+                                <t t-foreach="o.move_raw_ids" t-as="line">
+                                    <t t-foreach="line.move_line_ids" t-as="ml">
+                                        <tr>
+                                            <td>
+                                                <t t-if="product_name != line.product_id.display_name">
+                                                    <span t-field="line.product_id"/>
+                                                </t>
+                                                <t t-set="product_name" t-value="line.product_id.display_name"/>
+                                            </td>
+                                            <td>
+                                                <span t-if="ml.product_qty" t-esc="ml.product_qty"/>
+                                                <span t-if="not ml.product_qty" t-esc="ml.qty_done"/>
+                                                <span t-field="line.product_id.uom_id" groups="product.group_uom"/>
+                                            </td>
+                                            <td>
+                                                <span t-if="has_location" t-field="line.location_id"/>
+                                            </td>
+                                            <td width="20%" class="text-center">
+                                                <t t-if="has_serial_number and (ml.lot_id or ml.lot_name)">
+                                                    <img t-att-src="'/report/barcode/?type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('Code128', ml.lot_id.name, 600, 100)" style="width:100%;height:35px"/><br/>
+                                                    <span t-if="ml.lot_id" t-field="ml.lot_id"/>
+                                                    <span t-if="not ml.lot_id" t-field="ml.lot_name"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <t t-foreach="o.move_raw_ids" t-as="line">
+                                    <tr t-if="not line.move_line_ids">
+                                        <td>
+                                            <span t-field="line.product_id"/>
+                                        </td>
+                                        <td>
+                                            <span t-field="line.product_uom_qty"/>
+                                            <span t-field="line.product_uom.name" groups="product.group_uom"/>
+                                        </td>
+                                        <td colspan="2"> This product cannot be  reserved.
+                                        </td>
+                                    </tr>
+                                </t>
                             </t>
                         </tbody>
                     </table>
