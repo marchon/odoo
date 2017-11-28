@@ -56,10 +56,23 @@ class ResConfigSettings(models.TransientModel):
     tax_exigibility = fields.Boolean(string='Cash Basis', related='company_id.tax_exigibility')
     tax_cash_basis_journal_id = fields.Many2one('account.journal', related='company_id.tax_cash_basis_journal_id', string="Tax Cash Basis Journal")
     account_hide_setup_bar = fields.Boolean(string='Hide Setup Bar', related='company_id.account_setup_bar_closed',help="Tick if you wish to hide the setup bar on the dashboard")
+    vendor_bill_alias_prefix = fields.Char('Default Alias Name for Vendor Bills')
+    account_use_mailgateway = fields.Boolean(string='Email your Vendor Bills')
+
+    @api.model
+    def get_values(self):
+        res = super(ResConfigSettings, self).get_values()
+        res.update(
+            vendor_bill_alias_prefix=self.env.ref('account.mail_alias_vendor_bills').alias_name,
+            account_use_mailgateway=self.env['ir.config_parameter'].sudo().get_param('account.account_use_mailgateway'),
+        )
+        return res
 
     @api.multi
     def set_values(self):
         super(ResConfigSettings, self).set_values()
+        self.env.ref('account.mail_alias_vendor_bills').write({'alias_name': self.vendor_bill_alias_prefix})
+        self.env['ir.config_parameter'].sudo().set_param('account.account_use_mailgateway', self.account_use_mailgateway)
         if self.group_multi_currency:
             self.env.ref('base.group_user').write({'implied_ids': [(4, self.env.ref('product.group_sale_pricelist').id)]})
         """ install a chart of accounts for the given company (if required) """
@@ -77,6 +90,19 @@ class ResConfigSettings(models.TransientModel):
             })
             wizard.onchange_chart_template_id()
             wizard.execute()
+
+    @api.onchange('account_use_mailgateway', 'alias_domain')
+    def _onchange_account_use_mailgateway(self):
+        if self.account_use_mailgateway:
+            if self.alias_domain not in ['localhost', '', False]:
+                if not self.vendor_bill_alias_prefix:
+                    self.vendor_bill_alias_prefix = 'billing'
+                else:
+                    self.vendor_bill_alias_prefix = self.env.ref('account.mail_alias_vendor_bills').alias_name
+            else:
+                self.vendor_bill_alias_prefix = False
+        else:
+            self.vendor_bill_alias_prefix = False
 
     @api.depends('company_id')
     def _compute_has_chart_of_accounts(self):

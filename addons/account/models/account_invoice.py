@@ -10,7 +10,7 @@ from dateutil.relativedelta import relativedelta
 from werkzeug.urls import url_encode
 
 from odoo import api, exceptions, fields, models, _
-from odoo.tools import float_is_zero, float_compare, pycompat
+from odoo.tools import email_split, float_is_zero, float_compare, pycompat
 from odoo.tools.misc import formatLang
 
 from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
@@ -34,6 +34,14 @@ TYPE2REFUND = {
     'in_invoice': 'in_refund',          # Vendor Bill
     'out_refund': 'out_invoice',        # Customer Credit Note
     'in_refund': 'in_invoice',          # Vendor Credit Note
+}
+
+# mapping invoice type to it's label
+TYPES = {
+    'out_invoice': _('Invoice'),
+    'in_invoice': _('Vendor Bill'),
+    'out_refund': _('Credit Note'),
+    'in_refund': _('Vendor Credit note'),
 }
 
 MAGIC_COLUMNS = ('id', 'create_uid', 'create_date', 'write_uid', 'write_date')
@@ -240,7 +248,7 @@ class AccountInvoice(models.Model):
             ('in_invoice','Vendor Bill'),
             ('out_refund','Customer Credit Note'),
             ('in_refund','Vendor Credit Note'),
-        ], readonly=True, index=True, change_default=True,
+        ], readonly=True, states={'draft': [('readonly', False)]}, index=True, change_default=True,
         default=lambda self: self._context.get('type', 'out_invoice'),
         track_visibility='always')
     access_token = fields.Char(
@@ -284,7 +292,7 @@ class AccountInvoice(models.Model):
              "term is not set on the invoice. If you keep the Payment terms and the due date empty, it "
              "means direct payment.")
     partner_id = fields.Many2one('res.partner', string='Partner', change_default=True,
-        required=True, readonly=True, states={'draft': [('readonly', False)]},
+        readonly=True, states={'draft': [('readonly', False)]},
         track_visibility='always')
     payment_term_id = fields.Many2one('account.payment.term', string='Payment Terms', oldname='payment_term',
         readonly=True, states={'draft': [('readonly', False)]},
@@ -297,7 +305,7 @@ class AccountInvoice(models.Model):
         readonly=True, states={'draft': [('readonly', False)]})
 
     account_id = fields.Many2one('account.account', string='Account',
-        required=True, readonly=True, states={'draft': [('readonly', False)]},
+        readonly=True, states={'draft': [('readonly', False)]},
         domain=[('deprecated', '=', False)], help="The partner account used for this invoice.")
     invoice_line_ids = fields.One2many('account.invoice.line', 'invoice_id', string='Invoice Lines', oldname='invoice_line',
         readonly=True, states={'draft': [('readonly', False)]}, copy=True)
@@ -392,7 +400,7 @@ class AccountInvoice(models.Model):
         for order in self:
             order.portal_url = '/my/invoices/%s' % (order.id)
 
-    @api.depends('state', 'journal_id', 'date_invoice')
+    @api.depends('state', 'journal_id', 'date_invoice', 'type')
     def _get_sequence_prefix(self):
         """ computes the prefix of the number that will be assigned to the first invoice/bill/refund of a journal, in order to
         let the user manually change it.
@@ -411,7 +419,7 @@ class AccountInvoice(models.Model):
             else:
                 invoice.sequence_number_next_prefix = False
 
-    @api.depends('state', 'journal_id')
+    @api.depends('state', 'journal_id', 'type')
     def _get_sequence_number_next(self):
         """ computes the number that will be assigned to the first invoice/bill/refund of a journal, in order to
         let the user manually change it.
@@ -463,8 +471,6 @@ class AccountInvoice(models.Model):
                 for field in changed_fields:
                     if field not in vals and invoice[field]:
                         vals[field] = invoice._fields[field].convert_to_write(invoice[field], invoice)
-        if not vals.get('account_id',False):
-            raise UserError(_('Configuration error!\nCould not find any account to create the invoice, are you sure you have a chart of account installed?'))
 
         invoice = super(AccountInvoice, self.with_context(mail_create_nolog=True)).create(vals)
 
@@ -591,6 +597,31 @@ class AccountInvoice(models.Model):
         if self.env.context.get('mark_invoice_as_sent'):
             self.filtered(lambda inv: not inv.sent).write({'sent': True})
         return super(AccountInvoice, self.with_context(mail_post_autofollow=True)).message_post(**kwargs)
+
+    @api.model
+    def get_empty_list_help(self, help_message):
+        if help_message and self.env.context.get('type', False) == 'in_invoice':
+            account_use_mailgateway = self.env['ir.config_parameter'].sudo().get_param('account.account_use_mailgateway')
+            alias_record = account_use_mailgateway and self.env.ref('account.mail_alias_vendor_bills', False)
+            if alias_record and alias_record.alias_domain and alias_record.alias_name:
+                link = "<a id='o_mail_test' href='mailto:%(email)s'>%(email)s</a>" % {
+                    'email': '%s@%s' % (alias_record.alias_name, alias_record.alias_domain)
+                }
+                return '<p class="oe_view_nocontent_create">%s or %s</p>%s' % (
+                    _('Click to record a new vendor bill'),
+                    _('send vendor bills by email to %s.') % (link,),
+                    help_message)
+        return super(AccountInvoice, self).get_empty_list_help(help_message)
+
+    @api.model
+    def message_new(self, msg_dict, custom_values=None):
+        if custom_values is None:
+            custom_values = {}
+        invoice_type = custom_values.get('type')
+        email_address = email_split(msg_dict.get('email_from'))[0]
+        partner = self.env['res.partner'].search([('email', 'ilike', email_address)], limit=1)
+        custom_values['partner_id'] = partner.id
+        return super(AccountInvoice, self.with_context(type=invoice_type, mail_post_autofollow=True)).message_new(msg_dict, custom_values)
 
     @api.multi
     def compute_taxes(self):
@@ -779,10 +810,15 @@ class AccountInvoice(models.Model):
     def action_invoice_open(self):
         # lots of duplicate calls to action_invoice_open, so we remove those already open
         to_open_invoices = self.filtered(lambda inv: inv.state != 'open')
+        for inv in to_open_invoices.filtered(lambda inv: not inv.partner_id):
+            partner = inv.type in ('in_invoice', 'in_refund') and _('Vendor') or _('Customer')
+            raise UserError(_("The field %s is required, please complete it to validate the %s." % (partner, TYPES[inv.type].lower())))
         if to_open_invoices.filtered(lambda inv: inv.state != 'draft'):
             raise UserError(_("Invoice must be in draft state in order to validate it."))
         if to_open_invoices.filtered(lambda inv: inv.amount_total < 0):
             raise UserError(_("You cannot validate an invoice with a negative total amount. You should create a credit note instead."))
+        if to_open_invoices.filtered(lambda inv: not inv.account_id):
+            raise UserError(_('Configuration error!\nCould not find any account to validate the invoice, are you sure you have a chart of account installed?'))
         to_open_invoices.action_date_assign()
         to_open_invoices.action_move_create()
         return to_open_invoices.invoice_validate()
@@ -1236,12 +1272,6 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def name_get(self):
-        TYPES = {
-            'out_invoice': _('Invoice'),
-            'in_invoice': _('Vendor Bill'),
-            'out_refund': _('Credit Note'),
-            'in_refund': _('Vendor Credit note'),
-        }
         result = []
         for inv in self:
             result.append((inv.id, "%s %s" % (inv.number or TYPES[inv.type], inv.name or '')))
