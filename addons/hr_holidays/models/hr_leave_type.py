@@ -14,6 +14,7 @@ _logger = logging.getLogger(__name__)
 class HolidaysType(models.Model):
     _name = "hr.leave.type"
     _description = "Leave Type"
+    _order = "sequence, id"
 
     name = fields.Char('Leave Type', required=True, translate=True)
     categ_id = fields.Many2one('calendar.event.type', string='Meeting Type',
@@ -52,9 +53,56 @@ class HolidaysType(models.Model):
     virtual_remaining_leaves = fields.Float(compute='_compute_leaves', string='Virtual Remaining Leaves',
         help='Maximum Leaves Allowed - Leaves Already Taken - Leaves Waiting Approval')
 
-    double_validation = fields.Boolean(string='Apply Double Validation',
+    double_validation = fields.Boolean(string='Apply Double Validation', compute='_compute_double_validation',
         help="When selected, the Allocation/Leave Requests for this type require a second validation to be approved.")
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
+
+    validation_type = fields.Selection([('hr', 'Human Resource Responsible'),
+                                      ('manager', 'Department Manager'),
+                                      ('both', 'Double Validation')],
+                                     default='hr',
+                                     string='Validation By')
+
+    sequence = fields.Integer(default=100,
+                              help='The type with the smallest sequence is the default value in leave request')
+
+    employee_visibility = fields.Selection([('both', 'On Leave As Well As On Allocation'),
+                                            ('leave', 'Only On Leave'),
+                                            ('allocation', 'Only On Allocation')],
+                                           default='both', string='Available For Employee :',
+                                           help='This leave type will be available on Leave / Allocation request based on selected value')
+
+    validity_start = fields.Date("Start Date", default=fields.Date.today(),
+                                 help='Adding validity to types of leaves so that it cannot be selected outside'
+                                 'this time period')
+    validity_stop = fields.Date("End Date")
+
+    valid = fields.Boolean(compute='_compute_valid', search='_search_valid', help='This indicates if it is still possible to use this type of leave')
+
+    @api.multi
+    @api.depends('validation_type')
+    def _compute_double_validation(self):
+        for holiday in self:
+            holiday.double_validation = holiday.validation_type == 'both'
+
+    @api.multi
+    @api.depends('validity_start', 'validity_stop', 'limit')
+    def _compute_valid(self):
+        today = fields.Date.today()
+
+        for holiday in self:
+            if holiday.validity_start and holiday.validity_stop:
+                holiday.valid = ((today < holiday.validity_stop) and (today > holiday.validity_start))
+            else:
+                holiday.valid = holiday.limit or False
+
+    def _search_valid(self, operator, value):
+        today = fields.Date.today()
+        signs = ['>=', '<='] if operator == '=' else ['<=', '>=']
+
+        return ['|', ('limit', operator, value), '&',
+                ('validity_stop', signs[0] if value else signs[1], today),
+                ('validity_start', signs[1] if value else signs[0], today)]
 
     @api.multi
     def get_days(self, employee_id):
@@ -125,23 +173,3 @@ class HolidaysType(models.Model):
                 }
             res.append((record.id, name))
         return res
-
-    @api.model
-    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        """ Override _search to order the results, according to some employee.
-        The order is the following
-
-         - limit (limited leaves first, such as Legal Leaves)
-         - virtual remaining leaves (higher the better, so using reverse on sorted)
-
-        This override is necessary because those fields are not stored and depends
-        on an employee_id given in context. This sort will be done when there
-        is an employee_id in context and that no other order has been given
-        to the method.
-        """
-        leave_ids = super(HolidaysType, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
-        if not count and not order and self._context.get('employee_id'):
-            leaves = self.browse(leave_ids)
-            sort_key = lambda l: (not l.limit, l.virtual_remaining_leaves)
-            return leaves.sorted(key=sort_key, reverse=True).ids
-        return leave_ids

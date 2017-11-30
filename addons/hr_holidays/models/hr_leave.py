@@ -47,7 +47,9 @@ class HolidaysRequest(models.Model):
     date_to = fields.Datetime('End Date', readonly=True, copy=False, required=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, track_visibility='onchange')
     holiday_status_id = fields.Many2one("hr.leave.type", string="Leave Type", required=True, readonly=True,
-        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
+        domain="['&', ('valid', '=', True), ('employee_visibility', 'in', ['leave', 'both'])]",
+        default= lambda self: self.env['hr.leave.type'].search([], order='sequence', limit=1))
     employee_id = fields.Many2one('hr.employee', string='Employee', index=True, readonly=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, default=_default_employee, track_visibility='onchange')
     manager_id = fields.Many2one('hr.employee', related='employee_id.parent_id', string='Manager', readonly=True, store=True)
@@ -208,6 +210,20 @@ class HolidaysRequest(models.Model):
         if employee.user_id:
             self.message_subscribe_users(user_ids=employee.user_id.ids)
 
+    @api.constrains('holiday_status_id')
+    @api.multi
+    def _check_leave_type_validity(self):
+        for leave in self:
+            if leave.holiday_status_id.validity_start and leave.holiday_status_id.validity_stop:
+                vstart = fields.Datetime.from_string(leave.holiday_status_id.validity_start)
+                vstop  = fields.Datetime.from_string(leave.holiday_status_id.validity_stop)
+                dfrom  = fields.Datetime.from_string(leave.date_from)
+                dto    = fields.Datetime.from_string(leave.date_to)
+
+                if dfrom and dto and (dfrom < vstart or dto > vstop):
+                    raise UserError(_('You can take %s only between %s and %s') % (leave.holiday_status_id.display_name, \
+                                                                                  leave.holiday_status_id.validity_start, leave.holiday_status_id.validity_stop))
+
     @api.model
     def create(self, values):
         """ Override to avoid automatic logging of creation """
@@ -339,6 +355,14 @@ class HolidaysRequest(models.Model):
         current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
         if any(holiday.state != 'confirm' for holiday in self):
             raise UserError(_('Leave request must be confirmed ("To Approve") in order to approve it.'))
+
+        for holiday in self:
+            validation_type = holiday.holiday_status_id.validation_type
+            manager = holiday.employee_id.parent_id
+            if (holiday.holiday_status_id.double_validation or validation_type == 'manager') and (manager and manager != current_employee):
+                raise UserError(_('You must be %s manager to approve this leave') % (holiday.employee_id.name))
+            elif validation_type == 'hr' and not self.env.user.has_group('hr_holidays.group_hr_holidays_manager'):
+                raise UserError(_('You must be a Human Resource Manager to approve this Leave'))
 
         self.filtered(lambda hol: hol.double_validation).write({'state': 'validate1', 'first_approver_id': current_employee.id})
         self.filtered(lambda hol: not hol.double_validation).action_validate()

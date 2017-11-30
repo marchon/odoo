@@ -6,7 +6,7 @@
 import logging
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError, AccessError
+from odoo.exceptions import UserError, AccessError, ValidationError
 from odoo.tools.translate import _
 
 _logger = logging.getLogger(__name__)
@@ -34,7 +34,9 @@ class HolidaysAllocation(models.Model):
             "\nThe status is 'Refused', when leave request is refused by manager." +
             "\nThe status is 'Approved', when leave request is approved by manager.")
     holiday_status_id = fields.Many2one("hr.leave.type", string="Leave Type", required=True, readonly=True,
-        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
+        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
+        domain="['&', ('valid', '=', True), ('employee_visibility', 'in', ['allocation', 'both'])]",
+        default= lambda self: self.env['hr.leave.type'].search([], order='sequence', limit=1))
     employee_id = fields.Many2one('hr.employee', string='Employee', index=True, readonly=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, default=_default_employee, track_visibility='onchange')
     notes = fields.Text('Reasons', readonly=True, states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]})
@@ -121,8 +123,25 @@ class HolidaysAllocation(models.Model):
             self.message_subscribe_users(user_ids=employee.user_id.ids)
 
     @api.model
+    def _check_validity(self, values):
+        if 'holiday_status_id' in values:
+            holiday_status = self.env['hr.leave.type'].browse([values['holiday_status_id']])
+
+            if holiday_status.validity_start and holiday_status.validity_stop:
+                vstart = fields.Datetime.from_string(holiday_status.validity_start)
+                vstop  = fields.Datetime.from_string(holiday_status.validity_stop)
+                dfrom  = fields.Datetime.from_string(values.get('date_from', False))
+                dto    = fields.Datetime.from_string(values.get('date_to', False))
+
+                if dfrom and dto and (dfrom < vstart or dto > vstop):
+                    raise UserError(_('You can allocate %s only between %s and %s') % (holiday_status.display_name, \
+                                                                                  holiday_status.validity_start, holiday_status.validity_stop))
+
+    @api.model
     def create(self, values):
         """ Override to avoid automatic logging of creation """
+        self._check_validity(values)
+
         employee_id = values.get('employee_id', False)
         if not values.get('department_id'):
             values.update({'department_id': self.env['hr.employee'].browse(employee_id).department_id.id})
@@ -132,6 +151,8 @@ class HolidaysAllocation(models.Model):
 
     @api.multi
     def write(self, values):
+        self._check_validity(values)
+
         employee_id = values.get('employee_id', False)
         result = super(HolidaysAllocation, self).write(values)
         self.add_follower(employee_id)
@@ -199,6 +220,14 @@ class HolidaysAllocation(models.Model):
         current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
         if any(holiday.state != 'confirm' for holiday in self):
             raise UserError(_('Leave request must be confirmed ("To Approve") in order to approve it.'))
+
+        for holiday in self:
+            validation_type = holiday.holiday_status_id.validation_type
+            manager = holiday.employee_id.parent_id
+            if (holiday.holiday_status_id.double_validation or validation_type == 'manager') and (manager and manager != current_employee):
+                raise UserError(_('You must be %s manager to approve this leave') % (holiday.employee_id.name))
+            elif validation_type == 'hr' and not self.env.user.has_group('hr_holidays.group_hr_holidays_manager'):
+                raise UserError(_('You must be a Human Resource Manager to approve this Leave'))
 
         self.filtered(lambda hol: hol.double_validation).write({'state': 'validate1', 'first_approver_id': current_employee.id})
         self.filtered(lambda hol: not hol.double_validation).action_validate()
