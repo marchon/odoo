@@ -60,12 +60,27 @@ var ListRenderer = BasicRenderer.extend({
         this.selection = [];
         this.pagers = []; // instantiated pagers (only for grouped lists)
         this.editable = params.editable;
+        this.isStickyHeader = params.isStickyHeader;
+    },
+    start: function () {
+        var self = this;
+        this._super();
+        if (this.isStickyHeader && !config.device.isMobile) {
+            this.$el.on('scroll', function () {
+                // Set left of the header when scrolling horizontally and substract sidebar
+                var theadLeft = self.$el.closest(".modal-body").length > 0 ? (this.scrollLeft * (-1)) : (self.$el.offset().left - this.scrollLeft);
+                self.$('.o_list_view_header_clone').css({ "left" : (theadLeft) + "px"});
+            });
+        }
     },
 
     //--------------------------------------------------------------------------
     // Public
     //--------------------------------------------------------------------------
 
+    resetStickyHeaderProps: function () {
+        this._resetStickyHeaderProps();
+    },
     /**
      * @override
      */
@@ -149,6 +164,26 @@ var ListRenderer = BasicRenderer.extend({
                 value: aggregateValue,
             };
         }
+    },
+    /**
+     * This method creates clone of thead to make thead sticky
+     * this will also call _resetStickyHeaderProps to reset properties of cloned header
+     *
+     * @private
+     */
+    _createStickyHeader: function () {
+        var $thead = this.$('table > thead');
+        var $thead_clone = $thead.clone(true, true);
+        var $theadCloneDiv = $("<div>", {
+            class: "o_list_view_header_clone",
+            css: {
+                "z-index": "1",
+                "position": "fixed",
+            }
+        });
+        $thead_clone.appendTo($theadCloneDiv);
+        this._resetStickyHeaderProps($theadCloneDiv);
+        return $theadCloneDiv;
     },
     /**
      * return the number of visible columns.  Note that this number depends on
@@ -662,7 +697,35 @@ var ListRenderer = BasicRenderer.extend({
             });
             $checked_rows.find('.o_list_record_selector input').prop('checked', true);
         }
+        if (this.isStickyHeader && !config.device.isMobile) {
+            var $headerClone = this._createStickyHeader();
+            $headerClone.insertBefore($table);
+        }
         return this._super();
+    },
+    /**
+     * Reset width and padding on cloned thead cells,
+     * copy the width and padding of orignal cells and assign it to cloned cells,
+     * this method will take left of original head ans assign it to cloned thead,
+     * this will be useful when we have horizontal scroll
+     *
+     * @private
+     * @param {jQueryElement} clone of thead
+     */
+    _resetStickyHeaderProps: function ($cloned_thead) {
+        var $cloned_thead = $cloned_thead || this.$(".o_list_view_header_clone");
+        var $original_thead = this.$("table > thead");
+        if ($original_thead.length && $cloned_thead.length) {
+            $cloned_thead.width($original_thead.width());
+            $original_thead.find("th").each(function (index) {
+                $cloned_thead.find("th").eq(index)
+                    .outerWidth($(this).outerWidth())
+                    .css('padding', $(this).css('padding'));
+            });
+            // Reset left of cloned thead if there is any horizontal scroll
+            var theadLeft = this.$el.closest(".modal-body").length ? (this.$el.scrollLeft() * (-1)) : (this.$el.offset().left - this.$el.scrollLeft());
+            $cloned_thead.css({ "left" : (theadLeft) + "px"});
+        }
     },
     /**
      * Each line can be decorated according to a few simple rules. The arch

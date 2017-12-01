@@ -304,6 +304,10 @@ var SelectCreateDialog = ViewDialog.extend({
                         callbacks: [{widget: self.list_controller}],
                         in_DOM: true,
                     });
+                    // when modal dialog opened with list view add list-scroll class to scroll
+                    // listview table not modal-body to make listview headers sticky
+                    self.$el.addClass('list-scroll');
+
                     self.set_buttons(self.__buttons);
                 });
                 _super();

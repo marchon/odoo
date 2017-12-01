@@ -105,11 +105,11 @@ QUnit.module('Views', {
             "should not have className 'o_cannot_create'");
 
         // 3 th (1 for checkbox, 2 for columns)
-        assert.strictEqual(list.$('th').length, 3, "should have 3 columns");
+        assert.strictEqual(list.$('table th').length, 3, "should have 3 columns");
 
         assert.strictEqual(list.$('td:contains(gnap)').length, 1, "should contain gnap");
         assert.strictEqual(list.$('tbody tr').length, 4, "should have 4 rows");
-        assert.strictEqual(list.$('th.o_column_sortable').length, 1, "should have 1 sortable column");
+        assert.strictEqual(list.$('table th.o_column_sortable').length, 1, "should have 1 sortable column");
 
         assert.strictEqual(list.$('thead th:nth(2)').css('text-align'), 'right',
             "header cells of integer fields should be right aligned");
@@ -174,8 +174,8 @@ QUnit.module('Views', {
             arch: '<tree editable="bottom"><field name="foo"/><field name="bar"/></tree>',
         });
 
-        assert.strictEqual(list.$('th').length, 3, "should have 2 th");
-        assert.strictEqual(list.$('th').length, 3, "should have 3 th");
+        assert.strictEqual(list.$('table th').length, 3, "should have 3 th");
+        assert.strictEqual(list.$('table th').length, 3, "should have 3 th");
         assert.strictEqual(list.$('td:contains(yop)').length, 1, "should contain yop");
 
         assert.ok(list.$buttons.find('.o_list_button_add').is(':visible'),
@@ -219,7 +219,7 @@ QUnit.module('Views', {
         });
 
         // 1 th for checkbox, 1 for 1 visible column
-        assert.strictEqual(list.$('th').length, 2, "should have 2 th");
+        assert.strictEqual(list.$('table th').length, 2, "should have 2 th");
         list.destroy();
     });
 
@@ -299,8 +299,8 @@ QUnit.module('Views', {
             groupBy: ['bar'],
         });
 
-        assert.strictEqual(list.$('th:contains(Foo)').length, 1, "should contain Foo");
-        assert.strictEqual(list.$('th:contains(Bar)').length, 1, "should contain Bar");
+        assert.strictEqual(list.$('table th:contains(Foo)').length, 1, "should contain Foo");
+        assert.strictEqual(list.$('table th:contains(Bar)').length, 1, "should contain Bar");
         assert.strictEqual(list.$('tr.o_group_header').length, 2, "should have 2 .o_group_header");
         assert.strictEqual(list.$('th.o_group_name').length, 2, "should have 2 .o_group_name");
         list.destroy();
@@ -552,7 +552,7 @@ QUnit.module('Views', {
             arch: '<tree><field name="foo"/><field name="bar"/></tree>',
         });
         var $tbody_selector = list.$('tbody .o_list_record_selector input').first();
-        var $thead_selector = list.$('thead .o_list_record_selector input');
+        var $thead_selector = list.$('table thead .o_list_record_selector input');
 
         var n = 0;
         testUtils.intercept(list, "selection_changed", function () {
@@ -738,7 +738,7 @@ QUnit.module('Views', {
                         '<field name="m2m" widget="many2many_tags"/>' +
                     '</tree>',
         });
-        var startWidths = _.pluck(list.$('thead th'), 'offsetWidth');
+        var startWidths = _.pluck(list.$('table thead th'), 'offsetWidth');
 
         // start edition of first row
         list.$('td:not(.o_list_record_selector)').first().click();
