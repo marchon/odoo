@@ -48,7 +48,9 @@ class HolidaysRequest(models.Model):
     date_to = fields.Datetime('End Date', readonly=True, copy=False, required=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, track_visibility='onchange')
     holiday_status_id = fields.Many2one("hr.leave.type", string="Leave Type", required=True, readonly=True,
-        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, domain=[('valid', '=', True)])
+        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
+        domain="['&', ('valid', '=', True), ('employee_visibility', 'in', [(type == 'add') and 'ar' or 'lr', 'both'])]",
+        default= lambda self: self.env['hr.leave.type'].search([], limit=1))
     employee_id = fields.Many2one('hr.employee', string='Employee', index=True, readonly=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, default=_default_employee, track_visibility='onchange')
     manager_id = fields.Many2one('hr.employee', related='employee_id.parent_id', string='Manager', readonly=True, store=True)
