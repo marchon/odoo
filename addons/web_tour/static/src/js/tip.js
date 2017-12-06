@@ -160,8 +160,9 @@ var Tip = Widget.extend({
     },
     _bind_anchor_events: function () {
         this.consume_event = Tip.getConsumeEventType(this.$anchor);
-        this.$anchor.on(this.consume_event + ".anchor", (function (e) {
-            if (e.type !== "mousedown" || e.which === 1) { // only left click
+        var $el = (this.$anchor.hasClass('o_field_many2one') || this.$anchor.hasClass('o_field_many2manytags')) ? this.$anchor.find('input') : this.$anchor;
+        $el.on(this.consume_event + ".anchor", (function (e) {
+            if (e.type === "input" || e.which === 1 || e.type === "autocompleteselect") {
                 this.trigger("tip_consumed");
                 this._unbind_anchor_events();
             }
@@ -280,7 +281,9 @@ var Tip = Widget.extend({
 });
 
 Tip.getConsumeEventType = function ($element) {
-    if ($element.is("textarea") || $element.filter("input").is(function () {
+    if ($element.hasClass('o_field_many2one') || $element.hasClass('o_field_many2manytags')) {
+        return "autocompleteselect";
+    } else if ($element.is("textarea") || $element.filter("input").is(function () {
         var type = $(this).attr("type");
         return !type || !!type.match(/^(email|number|password|search|tel|text|url)$/);
     })) {
