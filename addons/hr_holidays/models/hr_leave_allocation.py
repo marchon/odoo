@@ -35,7 +35,7 @@ class HolidaysAllocation(models.Model):
             "\nThe status is 'Approved', when leave request is approved by manager.")
     holiday_status_id = fields.Many2one("hr.leave.type", string="Leave Type", required=True, readonly=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
-        domain="['&', ('valid', '=', True), ('employee_visibility', 'in', [(type == 'add') and 'ar' or 'lr', 'both'])]",
+        domain="['&', ('valid', '=', True), ('employee_visibility', 'in', ['ar', 'both'])]",
         default= lambda self: self.env['hr.leave.type'].search([], limit=1))
     employee_id = fields.Many2one('hr.employee', string='Employee', index=True, readonly=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, default=_default_employee, track_visibility='onchange')

@@ -78,6 +78,12 @@ class HolidaysType(models.Model):
 
     valid = fields.Boolean(compute='_compute_valid', search='_search_valid')
 
+    method = fields.Selection([('day', 'Day'),
+                               ('half', 'Half day'),
+                               ('hour', 'Hour')],
+                              default='day', string='Take Leaves in',
+                              required=True)
+
     @api.multi
     @api.depends('validation_type')
     def _compute_double_validation(self):

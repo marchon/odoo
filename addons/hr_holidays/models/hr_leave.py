@@ -5,7 +5,7 @@
 
 import logging
 import math
-from datetime import timedelta
+from datetime import timedelta, datetime, time
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError, AccessError, ValidationError
@@ -49,7 +49,7 @@ class HolidaysRequest(models.Model):
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, track_visibility='onchange')
     holiday_status_id = fields.Many2one("hr.leave.type", string="Leave Type", required=True, readonly=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
-        domain="['&', ('valid', '=', True), ('employee_visibility', 'in', [(type == 'add') and 'ar' or 'lr', 'both'])]",
+        domain="['&', ('valid', '=', True), ('employee_visibility', 'in', ['lr', 'both'])]",
         default= lambda self: self.env['hr.leave.type'].search([], limit=1))
     employee_id = fields.Many2one('hr.employee', string='Employee', index=True, readonly=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, default=_default_employee, track_visibility='onchange')
@@ -88,6 +88,80 @@ class HolidaysRequest(models.Model):
         ('date_check', "CHECK ( number_of_days_temp >= 0 )", "The number of days must be greater than 0."),
     ]
 
+    # Those fields are mostly for the interface only
+
+    date_from_date = fields.Date()
+    date_to_date = fields.Date()
+
+    method = fields.Selection(related='holiday_status_id.method', store=True)
+
+    date_from_am_pm = fields.Selection([('am', 'AM'), ('pm', 'PM')])
+    date_to_am_pm = fields.Selection([('am', 'AM'), ('pm', 'PM')])
+
+    unit = fields.Selection([('half', 'Half Day'),
+                             ('day', '1 Day'),
+                             ('period', 'Period')],
+                            default='day')
+    unit_day = fields.Selection([('day', '1 Day'),
+                                 ('period', 'Period')],
+                                default='day')
+
+    def _calc_days_temp(self):
+        if self.unit == 'day' and self.date_from_date:
+            self.number_of_days_temp = 1
+        if self.unit == 'half' and self.date_from_date and self.date_from_am_pm:
+            self.number_of_days_temp = .5
+        if self.unit == 'period':
+            is_set = (self.date_from and self.date_to)
+            is_set_date = (self.date_from_date and self.date_to_date)
+
+            date_from = False
+            date_to = False
+
+            if self.method == 'day' and is_set_date:
+                date_from = fields.Datetime.to_string(datetime.combine(fields.Date.from_string(self.date_from_date), time(9)))
+                date_to = fields.Datetime.to_string(datetime.combine(fields.Date.from_string(self.date_to_date), time(17)))
+            if self.method == 'half' and is_set_date:
+                date_from = fields.Datetime.to_string(datetime.combine(fields.Date.from_string(self.date_from_date), time(9 if self.date_from_am_pm == 'am' else 12)))
+                date_to = fields.Datetime.to_string(datetime.combine(fields.Date.from_string(self.date_to_date), time(12 if self.date_to_am_pm == 'am' else 17)))
+            if self.method == 'hour' and is_set:
+                date_from = self.date_from
+                date_to = self.date_to
+
+            if date_from and date_to:
+                self.number_of_days_temp = self._get_number_of_days(date_from, date_to, self.employee_id.id)
+            else:
+                self.number_of_days_temp = 0
+
+    @api.onchange('unit')
+    def _onchange_unit(self):
+        self._calc_days_temp()
+
+    @api.onchange('unit_day')
+    def _onchange_unit_day(self):
+        self.unit = self.unit_day
+        self._calc_days_temp()
+
+    @api.onchange('date_from_date')
+    def _onchange_date_from_date(self):
+        if self.date_from_date:
+            self.date_from = self.date_from_date
+        self._calc_days_temp()
+
+    @api.onchange('date_to_date')
+    def _onchange_date_to_date(self):
+        if self.date_to_date:
+            self.date_to = self.date_to_date
+        self._calc_days_temp()
+
+    @api.onchange('date_from_am_pm')
+    def _onchange_date_from_am_pm(self):
+        self._calc_days_temp()
+
+    @api.onchange('date_to_am_pm')
+    def _onchange_date_to_am_pm(self):
+        self._calc_days_temp()
+
     @api.multi
     @api.depends('number_of_days_temp')
     def _compute_number_of_days(self):
@@ -125,34 +199,15 @@ class HolidaysRequest(models.Model):
 
     @api.onchange('date_from')
     def _onchange_date_from(self):
-        """ If there are no date set for date_to, automatically set one 8 hours later than
-            the date_from. Also update the number_of_days.
-        """
-        date_from = self.date_from
-        date_to = self.date_to
-
-        # No date_to set so far: automatically compute one 8 hours later
-        if date_from and not date_to:
-            date_to_with_delta = fields.Datetime.from_string(date_from) + timedelta(hours=HOURS_PER_DAY)
-            self.date_to = str(date_to_with_delta)
-
-        # Compute and update the number of days
-        if (date_to and date_from) and (date_from <= date_to):
-            self.number_of_days_temp = self._get_number_of_days(date_from, date_to, self.employee_id.id)
-        else:
-            self.number_of_days_temp = 0
+        self.date_from_date = self.date_from
+        if self.date_from:
+            self.date_to = fields.Datetime.from_string(self.date_from) + timedelta(hours=4 if self.unit == 'halfday' else 8)
+        self._calc_days_temp()
 
     @api.onchange('date_to')
     def _onchange_date_to(self):
-        """ Update the number_of_days. """
-        date_from = self.date_from
-        date_to = self.date_to
-
-        # Compute and update the number of days
-        if (date_to and date_from) and (date_from <= date_to):
-            self.number_of_days_temp = self._get_number_of_days(date_from, date_to, self.employee_id.id)
-        else:
-            self.number_of_days_temp = 0
+        self.date_to_date = self.date_to
+        self._calc_days_temp()
 
     @api.constrains('date_from', 'date_to')
     def _check_date(self):
@@ -214,6 +269,9 @@ class HolidaysRequest(models.Model):
     @api.model
     def create(self, values):
         """ Override to avoid automatic logging of creation """
+        if values.get('unit', 'period') != 'period':
+            td = fields.Date.from_string(values['date_to']) - fields.Date.from_string(values['date_from'])
+            values['date_to'] = fields.Datetime.to_string(fields.Datetime.from_string(values['date_to']) - td)
         employee_id = values.get('employee_id', False)
         if not values.get('department_id'):
             values.update({'department_id': self.env['hr.employee'].browse(employee_id).department_id.id})
@@ -246,13 +304,27 @@ class HolidaysRequest(models.Model):
     def _create_resource_leave(self):
         """ This method will create entry in resource calendar leave object at the time of holidays validated """
         for leave in self:
+            is_datetime = leave.method == 'hour' and leave.unit == 'period'
+            if not leave.date_from_date:
+                leave.date_from_date = leave.date_from
+                leave.date_to_date = leave.date_to
+            if leave.unit != 'period':
+                leave.date_to_date = leave.date_from_date
             self.env['resource.calendar.leaves'].create({
                 'name': leave.name,
-                'date_from': leave.date_from,
+                #'date_from': leave.date_from,
                 'holiday_id': leave.id,
-                'date_to': leave.date_to,
+                #'date_to': leave.date_to,
                 'resource_id': leave.employee_id.resource_id.id,
-                'calendar_id': leave.employee_id.resource_calendar_id.id
+                'calendar_id': leave.employee_id.resource_calendar_id.id,
+                'leave_infos': {
+                    'unit': leave.unit,
+                    'method': leave.method,
+                    'date_from': leave.date_from if is_datetime else leave.date_from_date,
+                    'date_to': leave.date_to if is_datetime else leave.date_to_date,
+                    'date_from_am_pm': leave.date_from_am_pm,
+                    'date_to_am_pm': leave.date_to_am_pm
+                }
             })
         return True
 
