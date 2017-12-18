@@ -77,8 +77,10 @@ var KanbanController = BasicController.extend({
         var data = this.model.get(this.handle, {raw: true});
         var grouped = data.groupedBy.length;
         if (grouped) {
+            this.renderer.updateState(data, {noRender: true});
             var columnState = this.model.getColumn(id);
-            return this.renderer.updateColumn(columnState.id, columnState);
+            return this.renderer.updateColumn(columnState.id, columnState)
+                .then(this.renderer.updateConversionTooltip.bind(this.renderer));
         }
         return this.renderer.updateRecord(this.model.get(id));
     },
@@ -174,10 +176,14 @@ var KanbanController = BasicController.extend({
             .then(function (column_db_ids) {
                 return self._resequenceRecords(column.db_id, event.data.ids)
                     .then(function () {
+                        var state = self.model.get(self.handle);
+                        var defs = []
+                        self.renderer.updateState(state, {noRender: true});
                         _.each(column_db_ids, function (db_id) {
-                            var data = self.model.get(db_id);
-                            self.renderer.updateColumn(db_id, data);
+                            var data = _.findWhere(state.data, {id: db_id});
+                            defs.push(self.renderer.updateColumn(db_id, data));
                         });
+                        $.when.apply($, defs).then(self.renderer.updateConversionTooltip.bind(self.renderer));
                     });
             }).fail(this.reload.bind(this));
     },
@@ -291,8 +297,10 @@ var KanbanController = BasicController.extend({
         var self = this;
         var column = event.target;
         this.model.loadMore(column.db_id).then(function (db_id) {
-            var data = self.model.get(db_id);
-            self.renderer.updateColumn(db_id, data);
+            var state = self.model.get(self.handle);
+            var data = _.findWhere(state.data, {id: db_id});
+            self.renderer.updateState(state, {noRender: true});
+            self.renderer.updateColumn(db_id, data).then(self.renderer.updateConversionTooltip.bind(self.renderer));
             self._updateEnv();
         });
     },
@@ -316,12 +324,15 @@ var KanbanController = BasicController.extend({
             self._updateEnv();
 
             var columnState = self.model.getColumn(db_id);
+            var state = self.model.get(self.handle);
+            self.renderer.updateState(state, {noRender: true});
             return self.renderer
                 .updateColumn(columnState.id, columnState, {openQuickCreate: true})
                 .then(function () {
                     if (event.data.openRecord) {
                         self.trigger_up('open_record', {id: db_id, mode: 'edit'});
                     }
+                    self.renderer.updateConversionTooltip();
                 });
         };
 
@@ -361,6 +372,9 @@ var KanbanController = BasicController.extend({
         var state = this.model.get(this.handle, {raw: true});
         var model = state.fields[state.groupedBy[0]].relation;
         this.model.resequence(model, event.data.ids, this.handle).then(function () {
+            state = self.model.get(self.handle);
+            self.renderer.updateState(state, {noRender: true});
+            self.renderer.updateConversionTooltip();
             self._updateEnv();
         });
     },
@@ -378,7 +392,7 @@ var KanbanController = BasicController.extend({
             var options = {
                 openQuickCreate: !!event.data.openQuickCreate,
             };
-            self.renderer.updateColumn(db_id, data, options);
+            self.renderer.updateColumn(db_id, data, options).then(self.renderer.updateConversionTooltip.bind(self.renderer));
             self._updateEnv();
         });
     },
