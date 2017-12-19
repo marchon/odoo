@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="snailmail_send_order_line_wizard_view_form" model="ir.ui.view">
+            <field name="name">snailmail.send.order.line.wizard.list</field>
+            <field name="model">snailmail.send.order.line.wizard</field>
+            <field name="arch" type="xml">
+                <tree string="Send Order Lines" create="false" delete="false" editable="bottom" decoration-danger="not has_address">
+                    <field name="name"/>
+                    <field name="partner_id"/>
+                    <field name="has_address" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="snailmail_send_order_wizard_view_form" model="ir.ui.view">
+            <field name="name">snailmail.send.order.wizard.form</field>
+            <field name="model">snailmail.send.order.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Send order">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="ink"/>
+                                <field name="cost_estimation"/>
+                            </group>
+                            <group>
+                                <field name="report_id" options="{'no_create': True, 'no_open': True}"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="send_order_line_wizard_ids" nolabel="1" options="{'no_create': True}"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string="Send" type="object" class="oe_highlight" name="action_snailmail_print" />
+                        <button string="Cancel" class="btn btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Add entry action in the 'More' Menu -->
+        <record id="snailmail_print_order_wizard_action_multi_print" model="ir.actions.act_window">
+            <field name="name">Send Invoices by Mail</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">snailmail.send.order.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="snailmail_send_order_wizard_view_form"/>
+            <field name="target">new</field>
+            <field name="multi">True</field>
+            <field name="binding_model_id" ref="account.model_account_invoice" />
+        </record>
+    </data>
+</odoo>

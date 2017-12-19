@@ -1,0 +1,15 @@
+<odoo>
+    <data>
+        <record id="invoice_form_snailmail" model="ir.ui.view">
+            <field name="name">account.invoice.form.snailmail</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@id='account_invoice_payment_btn']" position='before'>
+                    <button name="action_invoice_send" string="Send" type="object" attrs="{'invisible':['|',('sent','=',True), ('state', 'not in', ('open','paid'))]}" class="oe_highlight" groups="base.group_user"/>
+                    <button name="action_invoice_send" string="Send" type="object" attrs="{'invisible':['|',('sent','=',False), ('state', 'not in', ('open','paid'))]}" groups="base.group_user"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
