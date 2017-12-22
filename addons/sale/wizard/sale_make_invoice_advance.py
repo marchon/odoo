@@ -21,11 +21,12 @@ class SaleAdvancePaymentInv(models.TransientModel):
         if self._count() == 1:
             sale_obj = self.env['sale.order']
             order = sale_obj.browse(self._context.get('active_ids'))[0]
-            if all([line.product_id.invoice_policy == 'order' for line in order.order_line]) or order.invoice_count:
-                return 'all'
-        else:
-            return 'all'
-        return 'delivered'
+            if order.order_line.filtered(lambda dp: dp.is_downpayment is True):
+                if all([line.product_id.invoice_policy == 'order' for line in order.order_line]) or order.invoice_count:
+                    return 'all'
+            else:
+                return 'delivered'
+        return 'all'
 
     @api.model
     def _default_product_id(self):
