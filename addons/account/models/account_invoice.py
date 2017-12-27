@@ -1329,13 +1329,18 @@ class AccountInvoice(models.Model):
             :return: list of command tuple for one2many line creation [(0, 0, dict of valueis), ...]
         """
         result = []
+        model_invoice_line = lines._name == 'account.invoice.line'
         for line in lines:
             values = {}
             for name, field in line._fields.items():
                 if name in MAGIC_COLUMNS:
                     continue
                 elif field.type == 'many2one':
-                    values[name] = line[name].id
+                    if model_invoice_line and line.invoice_id.type == 'out_invoice' and field.name == 'account_id':
+                        income_refund_account = line.product_id.product_tmpl_id.get_product_accounts(line.invoice_id.fiscal_position_id.id).get('income_refund')
+                        values[name] = income_refund_account and income_refund_account.id or line[name].id
+                    else:
+                        values[name] = line[name].id
                 elif field.type not in ['many2many', 'one2many']:
                     values[name] = line[name]
                 elif name == 'invoice_line_tax_ids':
@@ -1595,8 +1600,10 @@ class AccountInvoiceLine(models.Model):
     @api.v8
     def get_invoice_line_account(self, type, product, fpos, company):
         accounts = product.product_tmpl_id.get_product_accounts(fpos)
-        if type in ('out_invoice', 'out_refund'):
+        if type == 'out_invoice':
             return accounts['income']
+        if type == 'out_refund':
+            return accounts['income_refund']
         return accounts['expense']
 
     def _set_taxes(self):

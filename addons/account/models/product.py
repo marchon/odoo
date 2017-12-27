@@ -15,6 +15,9 @@ class ProductCategory(models.Model):
         string="Expense Account", oldname="property_account_expense_categ",
         domain=[('deprecated', '=', False)],
         help="The expense is accounted for when a vendor bill is validated, except in anglo-saxon accounting with perpetual inventory valuation in which case the expense (Cost of Goods Sold account) is recognized at the customer invoice validation.")
+    property_account_income_refund_categ_id = fields.Many2one('account.account', company_dependent=True,
+        string="Income Refund Account", domain=[('deprecated', '=', False)],
+        help="This account will be used by default on the customer credit notes if no income refund account is set on the product")
 
 #----------------------------------------------------------
 # Products
@@ -34,6 +37,9 @@ class ProductTemplate(models.Model):
         string="Expense Account", oldname="property_account_expense",
         domain=[('deprecated', '=', False)],
         help="The expense is accounted for when a vendor bill is validated, except in anglo-saxon accounting with perpetual inventory valuation in which case the expense (Cost of Goods Sold account) is recognized at the customer invoice validation. If the field is empty, it uses the one defined in the product category.")
+    property_account_income_refund_id = fields.Many2one('account.account', company_dependent=True,
+        string="Income Refund Account", domain=[('deprecated', '=', False)],
+        help="This account will be used by default on the customer credit notes")
 
     @api.multi
     def write(self, vals):
@@ -53,9 +59,13 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def _get_product_accounts(self):
+        income_account = self.property_account_income_id or self.categ_id.property_account_income_categ_id
+        income_refund_account = self.property_account_income_refund_id or self.categ_id.property_account_income_refund_categ_id
+        expense_account = self.property_account_expense_id or self.categ_id.property_account_expense_categ_id
         return {
-            'income': self.property_account_income_id or self.categ_id.property_account_income_categ_id,
-            'expense': self.property_account_expense_id or self.categ_id.property_account_expense_categ_id
+            'income': income_account,
+            'income_refund': income_refund_account or income_account,
+            'expense': expense_account
         }
 
     @api.multi
