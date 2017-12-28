@@ -42,8 +42,9 @@ class SaleAdvancePaymentInv(models.TransientModel):
         return self._default_product_id().taxes_id
 
     advance_payment_method = fields.Selection([
-        ('delivered', 'Invoiceable lines'),
-        ('all', 'Invoiceable lines (deduct down payments)'),
+        ('delivered', 'Ready to invoice'),
+        ('all', 'Ready to invoice, deduct down payments (only if down payments)'),
+        ('unbilled', 'Unbilled Total'),
         ('percentage', 'Down payment (percentage)'),
         ('fixed', 'Down payment (fixed amount)')
         ], string='What do you want to invoice?', default=_get_advance_payment_method, required=True)
@@ -54,6 +55,14 @@ class SaleAdvancePaymentInv(models.TransientModel):
     deposit_account_id = fields.Many2one("account.account", string="Income Account", domain=[('deprecated', '=', False)],
         help="Account used for deposits", default=_default_deposit_account_id)
     deposit_taxes_id = fields.Many2many("account.tax", string="Customer Taxes", help="Taxes used for deposits", default=_default_deposit_taxes_id)
+    order_total = fields.Float(string='Order Total', readonly=True)
+    upsell_downsell = fields.Float(string='Upsell/Downsell', readonly=True)
+    total_to_invoice = fields.Float(string='Total to Invoice', readonly=True)
+    downpayment_total = fields.Float(string='Downpayment', readonly=True)
+    already_invoiced = fields.Float(string='Already Invoiced', readonly=True)
+    unbilled_total = fields.Float(string='Unbilled Total', readonly=True)
+    undelivered_products = fields.Float(string='Undelivered Products', readonly=True)
+    ready_to_invoice = fields.Float(string='Ready to Invoice', readonly=True)
 
     @api.onchange('advance_payment_method')
     def onchange_advance_payment_method(self):
@@ -135,6 +144,8 @@ class SaleAdvancePaymentInv(models.TransientModel):
             sale_orders.action_invoice_create()
         elif self.advance_payment_method == 'all':
             sale_orders.action_invoice_create(final=True)
+        elif self.advance_payment_method == 'unbilled':
+            sale_orders.action_invoice_create(unbilled=True)
         else:
             # Create deposit product if necessary
             if not self.product_id:

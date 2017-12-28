@@ -10,24 +10,47 @@
                         them before validation.
                     </p>
                     <group>
-                        <field name="count" invisible="[('count','=',1)]" readonly="True"/>
-                        <field name="advance_payment_method" class="oe_inline" widget="radio"
-                            attrs="{'invisible': [('count','&gt;',1)]}"/>
-                        <field name="product_id"
+                        <group>
+                            <field name="count" invisible="[('count','=',1)]" readonly="True"/>
+                            <field name="advance_payment_method" class="oe_inline" widget="radio" attrs="{'invisible': [('count','&gt;',1)]}"/>
+                            <field name="product_id"
                             context="{'search_default_services': 1, 'default_type': 'service', 'default_invoice_policy': 'order'}" class="oe_inline"
                             invisible="1"/>
-                        <label for="amount" attrs="{'invisible': [('advance_payment_method', 'not in', ('fixed','percentage'))]}"/>
-                        <div attrs="{'invisible': [('advance_payment_method', 'not in', ('fixed','percentage'))]}">
-                            <field name="amount"
+                            <label for="amount" attrs="{'invisible': [('advance_payment_method', 'not in', ('fixed','percentage'))]}"/>
+                            <div attrs="{'invisible': [('advance_payment_method', 'not in', ('fixed','percentage'))]}">
+                                <field name="amount"
                                 attrs="{'required': [('advance_payment_method', 'in', ('fixed','percentage'))]}" class="oe_inline" widget="monetary"/>
-                            <label string="%%"
+                                <label string="%%"
                                 attrs="{'invisible': [('advance_payment_method', '!=', 'percentage')]}" class="oe_inline"/>
-                        </div>
-                        <field name="deposit_account_id" class="oe_inline"
+                            </div>
+                            <field name="deposit_account_id" class="oe_inline"
                             attrs="{'invisible': ['|', ('advance_payment_method', 'not in', ('fixed', 'percentage')), ('product_id', '!=', False)]}" groups="account.group_account_manager"/>
-                        <field name="deposit_taxes_id" class="oe_inline" widget="many2many_tags"
+                            <field name="deposit_taxes_id" class="oe_inline" widget="many2many_tags"
                             domain="[('type_tax_use','=','sale')]"
                             attrs="{'invisible': ['|', ('advance_payment_method', 'not in', ('fixed', 'percentage')), ('product_id', '!=', False)]}"/>
+                        </group>
+                        <group class="oe_subtotal_footer">
+                            <field name="order_total"/>
+                            <field name="upsell_downsell" help="Price changes or extra lines added in previous invoices" attrs="{'invisible': [('upsell_downsell','=',0)]}"/>
+                            <div class="oe_subtotal_footer_separator o_td_label" attrs="{'invisible': [('upsell_downsell','=',0)]}">
+                                <label for="total_to_invoice"/>
+                            </div>
+                            <field name="total_to_invoice" nolabel="1" class="oe_subtotal_footer_separator" attrs="{'invisible': [('upsell_downsell','=',0)]}"/>
+                            <div class="oe_grey o_td_label oe_right" attrs="{'invisible': [('downpayment_total','=',0)]}">
+                                <label for="downpayment_total"/>
+                            </div>
+                            <field name="downpayment_total" nolabel="1" class="oe_grey" attrs="{'invisible': [('downpayment_total','=',0)]}"/>
+                            <field name="already_invoiced" attrs="{'invisible': [('already_invoiced','=',0)]}"/>
+                            <div class="oe_subtotal_footer_separator o_td_label" attrs="{'invisible': [('undelivered_products','=',0)]}">
+                                <label for="unbilled_total"/>
+                            </div>
+                            <field name="unbilled_total" nolabel="1" class="oe_subtotal_footer_separator" attrs="{'invisible': [('undelivered_products','=',0)]}"/>
+                            <field name="undelivered_products" help="Products to invoice after the delivery" attrs="{'invisible': [('undelivered_products','=',0)]}"/>
+                            <div class="oe_subtotal_footer_separator o_td_label">
+                                <label for="ready_to_invoice"/>
+                            </div>
+                            <field name="ready_to_invoice" nolabel="1" class="oe_subtotal_footer_separator"/>
+                        </group>
                     </group>
                     <footer>
                         <button name="create_invoices" string="Create and View Invoices" type="object"
@@ -38,18 +61,6 @@
                     </footer>
                 </form>
             </field>
-        </record>
-
-        <record id="action_view_sale_advance_payment_inv" model="ir.actions.act_window">
-            <field name="name">Invoice Order</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">sale.advance.payment.inv</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">form</field>
-            <field name="target">new</field>
-            <field name="groups_id" eval="[(4,ref('sales_team.group_sale_salesman'))]"/>
-            <!-- TODO: check if we need this -->
-            <field name="binding_model_id" ref="sale.model_sale_order" />
         </record>
 
 </odoo>
