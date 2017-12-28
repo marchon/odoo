@@ -9,6 +9,7 @@
             <field name="arch" type="xml">
                 <div name="standard_price_uom" position="after">
                     <button name="compute_price"
+                        context="{'button': True}"
                         string="Compute from BOM" type="object"
                         attrs="{'invisible': ['|', '|', ('cost_method', '!=', 'standard'), ('bom_count', '=', 0), ('product_variant_count', '!=', 1)]}"
                         help="Compute the price of the product using products and operations of related bill of materials, for manufactured products only."
@@ -27,12 +28,35 @@
             <field name="arch" type="xml">
                <div name="standard_price_uom" position="after">
                     <button name="compute_price"
+                        context="{'button': True}"
                         string="Compute from BOM" type="object"
                         attrs="{'invisible': ['|', ('cost_method', '!=', 'standard'), ('bom_count', '=', 0)]}"
                         help="Compute the price of the product using products and operations of related bill of materials, for manufactured products only."
                         class="oe_link oe_read_only"
                         colspan="2"/>
                 </div>
+            </field>
+        </record>
+
+        <record id="action_compute_price_bom_template" model="ir.actions.server">
+            <field name="name">Compute Price from BoM</field>
+            <field name="model_id" ref="product.model_product_template"/>
+            <field name="binding_model_id" ref="product.model_product_template"/>
+            <field name="state">code</field>
+            <field name="code">
+            if records:
+                records.compute_price()
+            </field>
+        </record>
+
+        <record id="action_compute_price_bom_product" model="ir.actions.server">
+            <field name="name">Compute Price from BoM</field>
+            <field name="model_id" ref="product.model_product_product"/>
+            <field name="binding_model_id" ref="product.model_product_product"/>
+            <field name="state">code</field>
+            <field name="code">
+            if records:
+                records.compute_price()
             </field>
         </record>
 </odoo>

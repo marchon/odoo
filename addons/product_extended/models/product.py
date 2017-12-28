@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo import api, models
+from odoo.tools.float_utils import float_round
 
 
 class ProductTemplate(models.Model):
@@ -10,9 +11,8 @@ class ProductTemplate(models.Model):
 
     @api.multi
     def compute_price(self):
-        for template in self:
-            if template.product_variant_count == 1:
-                return template.product_variant_id.compute_price()
+        templates = self.filtered(lambda t: t.product_variant_count == 1 and t.bom_count > 0)
+        return templates.mapped('product_variant_id').compute_price()
 
 
 class ProductProduct(models.Model):
@@ -21,33 +21,43 @@ class ProductProduct(models.Model):
 
     @api.multi
     def compute_price(self):
-        bom_obj = self.env['mrp.bom']
+        BoM = self.env['mrp.bom']
         action_rec = self.env.ref('stock_account.action_view_change_standard_price')
-        for product in self:
-            bom = bom_obj._bom_find(product=product)
-            if bom:
-                price = product._calc_price(bom)
-                if action_rec:
-                    action = action_rec.read([])[0]
+        action = action_rec.read([])[0]
+        is_button = self.env.context.get('button', False)
+        for product in self.filtered(lambda p: p.bom_count > 0):
+            bom = BoM._bom_find(product=product)
+            if bom.bom_line_ids:
+                price = product._compute_hierarchy(bom.bom_line_ids)
+                if action_rec and is_button:
                     action['context'] = {'default_new_price': price}
                     return action
+                else:
+                    product.standard_price = price
+            else:
+                return action
         return True
 
-    def _calc_price(self, bom):
-        price = 0.0
-        result, result2 = bom.explode(self, 1)
-        for sbom, sbom_data in result2:
-            if not sbom.attribute_value_ids:
-                # No attribute_value_ids means the bom line is not variant specific
-                price += sbom.product_id.uom_id._compute_price(sbom.product_id.standard_price, sbom.product_uom_id) * sbom_data['qty']
-        if bom.routing_id:
-            # FIXME master: remove me
-            if hasattr(self.env['mrp.workcenter'], 'costs_hour'):                
+    def _compute_hierarchy(self, bom_line_ids):
+        total = 0
+        bom_ids = []
+        for line in bom_line_ids:
+            bom_id = line.bom_id
+            if line.bom_id.routing_id and line.bom_id not in bom_ids:
+                bom_ids.append(line.bom_id)
                 total_cost = 0.0
-                for order in bom.routing_id.operation_ids:
-                    total_cost += (order.time_cycle/60) * order.workcenter_id.costs_hour
-                price += bom.product_uom_id._compute_price(total_cost, bom.product_id.uom_id)
-        # Convert on product UoM quantities
-        if price > 0:
-            price = bom.product_uom_id._compute_price(price / bom.product_qty, self.uom_id)
-        return price
+                for opt in line.bom_id.routing_id.operation_ids:
+                    rounding = line.bom_id.product_uom_id.rounding
+                    cycle_number = float_round(line.bom_id.product_qty / (opt.workcenter_id.capacity * line.bom_id.product_qty)  , precision_rounding=rounding)
+                    duration_expected = (opt.workcenter_id.time_start + opt.workcenter_id.time_stop +
+                        cycle_number * opt.time_cycle * 100.0 / opt.workcenter_id.time_efficiency)
+                    total_cost += (duration_expected / 60) * opt.workcenter_id.costs_hour
+                total += total_cost
+
+            # Compute recursive if line has `child_line_ids`
+            if line.child_line_ids:
+                child_total = self._compute_hierarchy(line.child_line_ids)
+                total += line.product_id.uom_id._compute_price(child_total, line.product_uom_id) * line.product_qty
+            else:
+                total += line.product_id.uom_id._compute_price(line.product_id.standard_price, line.product_uom_id) * line.product_qty
+        return bom_id.product_uom_id._compute_price(total / bom_id.product_qty, self.uom_id)
