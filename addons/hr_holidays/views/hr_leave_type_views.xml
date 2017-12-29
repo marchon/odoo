@@ -32,6 +32,7 @@
                         <group name="leave_request" string="Leave Request">
                             <field name="limit"/>
                             <field name="sequence" attrs="{'invisible': [('limit', '=', 'False')]}"/>
+                            <field name="method"/>
                         </group>
                         <group name="validity" string="Validity">
                             <field name="validity_start"/>

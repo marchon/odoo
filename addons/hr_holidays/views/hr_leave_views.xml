@@ -94,12 +94,8 @@
                         <field name="holiday_status_id" context="{'employee_id':employee_id}"/>
                         <label for="number_of_days_temp" string="Duration"/>
                         <div>
+                            <field name="method" invisible="1"/>
                             <div>
-<<<<<<< Updated upstream
-                                <field name="date_from" class="oe_inline"/>
-                                <label string="-" class="oe_inline"/>
-                                <field name="date_to" class="oe_inline"/>
-=======
                               <field name="unit" widget="radio" attrs="{'invisible': [('method', '=', 'day')]}"/>
                               <field name="unit_day" widget="radio" attrs="{'invisible': [('method', '!=', 'day')]}"/>
 
@@ -114,9 +110,12 @@
 
                               <!-- By Half Days -->
                               <div attrs="{'invisible': [('method', '!=', 'half')]}">
-                                <div attrs="{'invisible': [('unit', '=', 'period')]}">
+                                <div attrs="{'invisible': [('unit', '!=', 'day')]}">
+                                    <field name="date_from_date" class="oe_inline"/>
+                                </div>
+                                <div attrs="{'invisible': [('unit', '!=', 'half')]}">
                                   <field name="date_from_date" class="oe_inline"/> :
-                                  <field name="date_from_am_pm" attrs="{'invisible': [('unit', '=', 'day')]}" class="oe_inline" widget="radio" options="{'horizontal': True}"/>
+                                  <field name="date_from_am_pm" class="oe_inline" widget="radio" options="{'horizontal': True}"/>
                                 </div>
                                 <div attrs="{'invisible': [('unit', '!=', 'period')]}">
                                   <div>
@@ -145,10 +144,9 @@
                                   </div>
                                 </div>
                               </div>
->>>>>>> Stashed changes
                             </div>
                             <div>
-                                <field name="number_of_days_temp" class="oe_inline"/> days
+                                <field name="number_of_days_temp" class="oe_inline"/> day(s)
                             </div>
                         </div>
                     </group>
