@@ -56,6 +56,11 @@ class HolidaysType(models.Model):
         help="When selected, the Allocation/Leave Requests for this type require a second validation to be approved.")
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
 
+    accrual = fields.Boolean('Can be Accrual', default=False,
+                             help='This option allows this type of leave to be allocated accrually')
+
+    unpaid = fields.Boolean('Is Unpaid', default=False)
+
     @api.multi
     def get_days(self, employee_id):
         # need to use `dict` constructor to create a dict per id
