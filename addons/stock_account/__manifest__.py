@@ -32,6 +32,9 @@ Dashboard / Reports for Warehouse Management includes:
         'views/res_config_settings_views.xml',
         'data/product_data.xml',
         'views/product_views.xml',
+        'wizard/stock_inventory_valuation.xml',
+        'wizard/stock_immediate_transfer_views.xml',
+        'wizard/stock_warn_insufficient_qty_views.xml',
     ],
     'test': [
     ],
