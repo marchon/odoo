@@ -128,6 +128,7 @@ var ListController = BasicController.extend({
      */
     renderSidebar: function ($node) {
         if (this.hasSidebar) {
+            var self = this;
             var other = [{
                 label: _t("Export"),
                 callback: this._onExportData.bind(this)
@@ -157,9 +158,9 @@ var ListController = BasicController.extend({
                 },
                 actions: _.extend(this.toolbarActions, {other: other}),
             });
-            this.sidebar.appendTo($node);
-
-            this._toggleSidebar();
+            this.sidebar.appendTo($node).then(function () {
+                self._toggleSidebar();
+            });
         }
     },
 

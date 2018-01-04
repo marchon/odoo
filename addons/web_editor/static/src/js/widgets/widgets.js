@@ -6,6 +6,7 @@ var core = require('web.core');
 var Dialog = require('web.Dialog');
 var Widget = require('web.Widget');
 var weContext = require("web_editor.context");
+require('summernote/summernote');
 
 var QWeb = core.qweb;
 var range = $.summernote.core.range;

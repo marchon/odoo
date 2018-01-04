@@ -51,11 +51,13 @@ FormRenderer.include({
     _renderNode: function (node) {
         if (node.tag === 'div' && node.attrs.class === 'oe_chatter') {
             if (!this.chatter) {
+                var self = this;
                 this.chatter = new Chatter(this, this.state, this.mailFields, {
                     isEditable: this.activeActions.edit,
                 });
-                this.chatter.appendTo($('<div>'));
-                this._handleAttributes(this.chatter.$el, node);
+                this.chatter.appendTo($('<div>')).then(function () {
+                    self._handleAttributes(self.chatter.$el, node);
+                });
             } else {
                 this.chatter.update(this.state);
             }

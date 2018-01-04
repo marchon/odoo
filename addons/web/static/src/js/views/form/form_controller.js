@@ -150,6 +150,7 @@ var FormController = BasicController.extend({
      **/
     renderSidebar: function ($node) {
         if (this.hasSidebar) {
+            var self = this;
             var otherItems = [];
             if (this.is_action_enabled('delete')) {
                 otherItems.push({
@@ -173,10 +174,10 @@ var FormController = BasicController.extend({
                 },
                 actions: _.extend(this.toolbarActions, {other: otherItems}),
             });
-            this.sidebar.appendTo($node);
-
-            // Show or hide the sidebar according to the view mode
-            this._updateSidebar();
+            this.sidebar.appendTo($node).then(function () {
+                // Show or hide the sidebar according to the view mode
+                self._updateSidebar();
+            });
         }
     },
     /**
