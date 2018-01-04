@@ -6,6 +6,10 @@ import odoo.tests
 
 class TestUiTranslate(odoo.tests.HttpCase):
     def test_admin_tour_rte_translator(self):
+        with self.registry.cursor() as cr:
+            env = self.env(cr=cr)
+            language = env["base.language.install"].create({"lang": "fr_BE", "website_ids": [(4, 1)]})
+            language.lang_install()
         self.phantom_js("/", "odoo.__DEBUG__.services['web_tour.tour'].run('rte_translator')", "odoo.__DEBUG__.services['web_tour.tour'].tours.rte_translator.ready", login='admin', timeout=120)
 
 
