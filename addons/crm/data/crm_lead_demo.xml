@@ -508,7 +508,7 @@ Andrew</p>]]></field>
             <field name="priority">2</field>
             <field name="date_deadline" eval="(DateTime.today() + relativedelta(weeks=1)).strftime('%Y-%m-%d %H:%M')"/>
             <field name="team_id" ref="sales_team.team_sales_department"/>
-            <field name="user_id" ref="base.user_demo"/>
+            <field name="user_id" ref="base.user_root"/>
             <field name="stage_id" ref="crm.stage_lead2"/>
             <field name="campaign_id" ref="utm.utm_campaign_email_campaign_products"/>
             <field name="source_id" ref="utm.utm_source_mailing"/>
@@ -563,7 +563,7 @@ Andrew</p>]]></field>
             <field name="priority">1</field>
             <field name="date_deadline" eval="(DateTime.today() + relativedelta(weeks=3)).strftime('%Y-%m-%d %H:%M')"/>
             <field name="team_id" ref="sales_team.crm_team_1"/>
-            <field name="user_id" ref="base.user_demo"/>
+            <field name="user_id" ref="base.user_root"/>
             <field name="stage_id" ref="crm.stage_lead2"/>
             <field eval="1" name="active"/>
             <field name="campaign_id" ref="utm.utm_campaign_email_campaign_products"/>
@@ -638,11 +638,20 @@ Andrew</p>]]></field>
             <field name="campaign_id" ref="utm.utm_campaign_email_campaign_products"/>
             <field name="source_id" ref="utm.utm_source_mailing"/>
         </record>
+        <record id="activity_lead_20_1" model="mail.activity">
+            <field name="res_id" ref="crm.crm_case_20" />
+            <field name="res_model_id" ref="crm.model_crm_lead"/>
+            <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
+            <field name="summary">Call with customer</field>
+            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=3)).strftime('%Y-%m-%d %H:%M')"/>
+        </record>
+        <function model="mail.activity" name="action_done" eval="[[ref('crm.activity_lead_20_1')]]"/>
 
         <record id="crm_case_21" model="crm.lead">
             <field name="type">opportunity</field>
             <field name="name">“Resource Planning” project develpment</field>
             <field name="planned_revenue">9000</field>
+            <field name="probability">100</field>
             <field name="partner_id" ref="base.res_partner_4"/>
             <field name="country_id" ref="base.uk"/>
             <field name="city">Birmingham</field>
@@ -652,7 +661,7 @@ Andrew</p>]]></field>
             <field name="priority">2</field>
             <field name="team_id" ref="sales_team.team_sales_department"/>
             <field name="user_id" ref="base.user_root"/>
-            <field name="stage_id" ref="crm.stage_lead3"/>
+            <field name="stage_id" ref="crm.stage_lead4"/>
             <field name="campaign_id" ref="utm.utm_campaign_email_campaign_services"/>
             <field name="medium_id" ref="utm.utm_medium_phone"/>
             <field name="source_id" ref="utm.utm_source_search_engine"/>
@@ -714,7 +723,7 @@ Andrew</p>]]></field>
             <field name="type">opportunity</field>
             <field name="name">Need to customize the solution</field>
             <field name="planned_revenue">4500</field>
-            <field name="probability">60</field>
+            <field name="probability">100</field>
             <field name="contact_name">Henry Jordan</field>
             <field name="partner_name">E-light Industry</field>
             <field name="email_from">henry@elight.com</field>
@@ -727,7 +736,7 @@ Andrew</p>]]></field>
             <field name="tag_ids" eval="[(6, 0, [categ_oppor4])]"/>
             <field name="team_id" ref="sales_team.team_sales_department"/>
             <field name="user_id" ref="base.user_root"/>
-            <field name="stage_id" ref="crm.stage_lead3"/>
+            <field name="stage_id" ref="crm.stage_lead4"/>
             <field name="campaign_id" ref="utm.utm_campaign_email_campaign_services"/>
             <field name="source_id" ref="utm.utm_source_search_engine"/>
         </record>
@@ -775,9 +784,28 @@ Andrew</p>]]></field>
             <field name="stage_id" ref="crm.stage_lead3"/>
         </record>
 
+        <record id="crm_case_28" model="crm.lead">
+            <field name="type">opportunity</field>
+            <field name="name">Need 45 days consultancy</field>
+            <field name="planned_revenue">10000</field>
+            <field name="partner_name">Agrolait</field>
+            <field name="email_from">info@agrolait.com</field>
+            <field name="partner_id" ref="base.res_partner_2"/>
+            <field name="country_id" ref="base.be"/>
+            <field name="city">Wavre</field>
+            <field name="zip">1300</field>
+            <field name="street">Rue de Namur 69</field>
+            <field name="priority">2</field>
+            <field name="tag_ids" eval="[(6, 0, [categ_oppor7])]"/>
+            <field name="team_id" ref="sales_team.team_sales_department"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="stage_id" ref="crm.stage_lead1"/>
+        </record>
+        <function model="crm.lead" name="action_set_lost" eval="[[ref('crm_case_28')]]"/>
+
         <!-- Call Function to set some opportunities as Won -->
         <function model="crm.lead" name="action_set_won"
-            eval="[ref('crm_case_20'), ref('crm_case_23'), ref('crm_case_27')],
+            eval="[ref('crm_case_20'), ref('crm_case_23'), ref('crm_case_27'), ref('crm_case_21'), ref('crm_case_25')],
                   {'install_mode': True}"/>
 
         <!-- Activities -->
@@ -813,7 +841,7 @@ Andrew</p>]]></field>
             <field name="res_id" ref="crm.crm_case_17" />
             <field name="res_model_id" ref="crm.model_crm_lead"/>
             <field name="activity_type_id" ref="mail.mail_activity_data_email"/>
-            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d %H:%M')" />
+            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=1)).strftime('%Y-%m-%d %H:%M')" />
             <field name="summary">Send our service pricelist</field>
         </record>
         <record id="activity_6" model="mail.activity">
@@ -827,26 +855,20 @@ Andrew</p>]]></field>
             <field name="res_id" ref="crm.crm_case_19" />
             <field name="res_model_id" ref="crm.model_crm_lead"/>
             <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
-            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=-2)).strftime('%Y-%m-%d %H:%M')" />
+            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=2)).strftime('%Y-%m-%d %H:%M')" />
             <field name="summary">Followup on the proposal</field>
-        </record>
-        <record id="activity_8" model="mail.activity">
-            <field name="res_id" ref="crm.crm_case_20" />
-            <field name="res_model_id" ref="crm.model_crm_lead"/>
-            <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
-            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=1)).strftime('%Y-%m-%d %H:%M')" />
         </record>
         <record id="activity_9" model="mail.activity">
             <field name="res_id" ref="crm.crm_case_21" />
             <field name="res_model_id" ref="crm.model_crm_lead"/>
             <field name="activity_type_id" ref="mail.mail_activity_data_call"/>
-            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=-1)).strftime('%Y-%m-%d %H:%M')" />
+            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=1)).strftime('%Y-%m-%d %H:%M')" />
         </record>
         <record id="activity_10" model="mail.activity">
             <field name="res_id" ref="crm.crm_case_22" />
             <field name="res_model_id" ref="crm.model_crm_lead"/>
             <field name="activity_type_id" ref="mail.mail_activity_data_email"/>
-            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=-2)).strftime('%Y-%m-%d %H:%M')" />
+            <field name="date_deadline" eval="(DateTime.today() + relativedelta(days=2)).strftime('%Y-%m-%d %H:%M')" />
         </record>
         <record id="activity_11" model="mail.activity">
             <field name="res_id" ref="crm.crm_case_23" />
