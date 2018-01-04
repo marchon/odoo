@@ -336,13 +336,6 @@ class PosConfig(models.Model):
             pos_config.sequence_line_id.unlink()
         return super(PosConfig, self).unlink()
 
-    def _set_fiscal_position(self):
-        for config in self:
-            if config.tax_regime and config.default_fiscal_position_id.id not in config.fiscal_position_ids.ids:
-                config.fiscal_position_ids = [(4, config.default_fiscal_position_id.id)]
-            elif not config.tax_regime_selection and not config.tax_regime and config.fiscal_position_ids.ids:
-                config.fiscal_position_ids = [(5, 0, 0)]
-
     def _check_modules_to_install(self):
         module_installed = False
         for pos_config in self:
