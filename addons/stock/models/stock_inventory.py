@@ -368,9 +368,9 @@ class InventoryLine(models.Model):
             ('prod_lot_id', '=', values.get('prod_lot_id'))])
         res = super(InventoryLine, self).create(values)
         if existings:
-            raise UserError(_("You cannot have two inventory adjustments in progress for the same product (%s) "
-                              "in the same location, for the same package, the same owner and the same lot number. "
-                              "Please validate or cancel the first inventory adjustment before creating a new one.") % (res.product_id.display_name))
+            raise UserError(_("You cannot have two inventory adjustments in state 'In Progress' with the same product,"
+                               " same location, same package, same owner and same lot. Please first validate"
+                               " the first inventory adjustment before creating another one."))
         return res
 
     @api.constrains('product_id')
