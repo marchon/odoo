@@ -3,8 +3,7 @@
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
-
-from dateutil.relativedelta import relativedelta
+from odoo.tools.datetime import relativedelta
 
 
 class FleetVehicleCost(models.Model):
@@ -143,7 +142,7 @@ class FleetVehicleLogContract(models.Model):
             if record.cost_subtype_id.name:
                 name += ' / ' + record.cost_subtype_id.name
             if record.date:
-                name += ' / ' + record.date
+                name += ' / ' + str(record.date)
             record.name = name
 
     @api.depends('expiration_date', 'state')

@@ -4,28 +4,21 @@ import base64
 
 import babel.dates
 import collections
-from datetime import datetime, timedelta
-from dateutil import parser
-from dateutil import rrule
-from dateutil.relativedelta import relativedelta
 import logging
 from operator import itemgetter
 import pytz
 import re
-import time
 import uuid
 
 from odoo import api, fields, models
 from odoo import tools
 from odoo.tools.translate import _
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, pycompat
+from odoo.tools import pycompat
+from odoo.tools.datetime import date, datetime, relativedelta, timedelta, rrulestr, parse, DEFAULT_SERVER_DATE_FORMAT
 from odoo.exceptions import UserError, ValidationError
 
 
 _logger = logging.getLogger(__name__)
-
-VIRTUALID_DATETIME_FORMAT = "%Y%m%d%H%M%S"
-
 
 def calendar_id2real_id(calendar_id=None, with_date=False):
     """ Convert a "virtual/recurring event id" (type string) into a real event id (type int).
@@ -39,10 +32,9 @@ def calendar_id2real_id(calendar_id=None, with_date=False):
         if len(res) == 2:
             real_id = res[0]
             if with_date:
-                real_date = time.strftime(DEFAULT_SERVER_DATETIME_FORMAT, time.strptime(res[1], VIRTUALID_DATETIME_FORMAT))
-                start = datetime.strptime(real_date, DEFAULT_SERVER_DATETIME_FORMAT)
-                end = start + timedelta(hours=with_date)
-                return (int(real_id), real_date, end.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
+                real_date = datetime.from_string(res[1])
+                end = real_date + timedelta(hours=with_date)
+                return (int(real_id), real_date, end)
             return int(real_id)
     return calendar_id and int(calendar_id) or calendar_id
 
@@ -56,7 +48,8 @@ def get_real_ids(ids):
 
 
 def real_id2calendar_id(record_id, date):
-    return '%s-%s' % (record_id, date.strftime(VIRTUALID_DATETIME_FORMAT))
+    date = datetime.from_datetime(date)
+    return '%s-%s' % (record_id, date.to_virtualid())
 
 def any_id2key(record_id):
     """ Creates a (real_id: int, thing: str) pair which allows ordering mixed
@@ -388,7 +381,7 @@ class AlarmManager(models.AbstractModel):
                     if at_least_one and not last_found:  # if the precedent event had an alarm but not this one, we can stop the search for this event
                         break
             else:
-                in_date_format = datetime.strptime(meeting.start, DEFAULT_SERVER_DATETIME_FORMAT)
+                in_date_format = meeting.start
                 last_found = self.do_check_alarm_for_one_date(in_date_format, meeting, max_delta, 0, 'email', after=last_notif_mail, missing=True)
                 for alert in last_found:
                     self.do_mail_reminder(alert)
@@ -597,7 +590,7 @@ class Meeting(models.Model):
             reference_date = self.start
 
         def todate(date):
-            val = parser.parse(''.join((re.compile('\d')).findall(date)))
+            val = parse(''.join((re.compile('\d')).findall(str(date))))
             ## Dates are localized to saved timezone if any, else current timezone.
             if not val.tzinfo:
                 val = pytz.UTC.localize(val)
@@ -609,12 +602,12 @@ class Meeting(models.Model):
             event_date = datetime.now()
 
         if self.allday and self.rrule and 'UNTIL' in self.rrule and 'Z' not in self.rrule:
-            rset1 = rrule.rrulestr(str(self.rrule), dtstart=event_date.replace(tzinfo=None), forceset=True, ignoretz=True)
+            rset1 = rrulestr(str(self.rrule), dtstart=event_date.replace(tzinfo=None), forceset=True, ignoretz=True)
         else:
             # Convert the event date to saved timezone (or context tz) as it'll
             # define the correct hour/day asked by the user to repeat for recurrence.
             event_date = event_date.astimezone(timezone)  # transform "+hh:mm" timezone
-            rset1 = rrule.rrulestr(str(self.rrule), dtstart=event_date, forceset=True, tzinfos={})
+            rset1 = rrulestr(str(self.rrule), dtstart=event_date, forceset=True, tzinfos={})
         recurring_meetings = self.search([('recurrent_id', '=', self.id), '|', ('active', '=', False), ('active', '=', True)])
 
         for meeting in recurring_meetings:
@@ -935,9 +928,11 @@ class Meeting(models.Model):
         def ics_datetime(idate, allday=False):
             if idate:
                 if allday:
-                    return fields.Date.from_string(idate)
+                    return date.from_date(idate).to_pydate()
+                elif isinstance(idate, datetime):
+                    return datetime.from_datetime(idate).replace(tzinfo=pytz.timezone('UTC')).to_pydatetime()
                 else:
-                    return fields.Datetime.from_string(idate).replace(tzinfo=pytz.timezone('UTC'))
+                    return datetime.from_date(idate).replace(tzinfo=pytz.timezone('UTC')).to_pydatetime()
             return False
 
         try:
@@ -953,7 +948,7 @@ class Meeting(models.Model):
 
             if not meeting.start or not meeting.stop:
                 raise UserError(_("First you have to specify the date of the invitation."))
-            event.add('created').value = ics_datetime(time.strftime(DEFAULT_SERVER_DATETIME_FORMAT))
+            event.add('created').value = ics_datetime(datetime.now())
             event.add('dtstart').value = ics_datetime(meeting.start, meeting.allday)
             event.add('dtend').value = ics_datetime(meeting.stop, meeting.allday)
             event.add('summary').value = meeting.name
@@ -1050,7 +1045,8 @@ class Meeting(models.Model):
                     if len(name_get) and len(name_get[0]) >= 2:
                         sort_fields[field] = name_get[0][1]
         if r_date:
-            sort_fields['sort_start'] = r_date.strftime(VIRTUALID_DATETIME_FORMAT)
+            r_date = datetime.from_datetime(r_date)
+            sort_fields['sort_start'] = r_date.to_virtualid()
         else:
             display_start = self.display_start
             sort_fields['sort_start'] = display_start.replace(' ', '').replace('-', '') if display_start else False
@@ -1095,22 +1091,21 @@ class Meeting(models.Model):
                             r_date = r_start_date
                         else:
                             r_date = r_stop_date
-                        if arg[2] and len(arg[2]) > len(r_date.strftime(DEFAULT_SERVER_DATE_FORMAT)):
-                            dformat = DEFAULT_SERVER_DATETIME_FORMAT
-                        else:
-                            dformat = DEFAULT_SERVER_DATE_FORMAT
+                        l_date = datetime.from_string(arg[2])
+                        if not l_date.tzinfo:
+                            l_date = l_date.replace(tzinfo=r_date.tzinfo)
                         if (arg[1] == '='):
-                            ok = r_date.strftime(dformat) == arg[2]
+                            ok = r_date == l_date
                         if (arg[1] == '>'):
-                            ok = r_date.strftime(dformat) > arg[2]
+                            ok = r_date > l_date
                         if (arg[1] == '<'):
-                            ok = r_date.strftime(dformat) < arg[2]
+                            ok = r_date < l_date
                         if (arg[1] == '>='):
-                            ok = r_date.strftime(dformat) >= arg[2]
+                            ok = r_date >= l_date
                         if (arg[1] == '<='):
-                            ok = r_date.strftime(dformat) <= arg[2]
+                            ok = r_date <= l_date
                         if (arg[1] == '!='):
-                            ok = r_date.strftime(dformat) != arg[2]
+                            ok = r_date != l_date
                         pile.append(ok)
                     elif str(arg) == str('&') or str(arg) == str('|'):
                         pile.append(arg)
@@ -1183,7 +1178,8 @@ class Meeting(models.Model):
             return ''
 
         def get_end_date():
-            end_date_new = ''.join((re.compile('\d')).findall(self.final_date)) + 'T235959Z' if self.final_date else False
+            end_date_new = ''.join((re.compile('\d')).findall(self.final_date.to_string(DEFAULT_SERVER_DATE_FORMAT))) +\
+                'T235959Z' if self.final_date else False
             return (self.end_type == 'count' and (';COUNT=' + str(self.count)) or '') +\
                 ((end_date_new and self.end_type == 'end_date' and (';UNTIL=' + end_date_new)) or '')
 
@@ -1218,13 +1214,13 @@ class Meeting(models.Model):
     def _rrule_parse(self, rule_str, data, date_start):
         day_list = ['mo', 'tu', 'we', 'th', 'fr', 'sa', 'su']
         rrule_type = ['yearly', 'monthly', 'weekly', 'daily']
-        rule = rrule.rrulestr(rule_str, dtstart=fields.Datetime.from_string(date_start))
+        rule = rrulestr(rule_str, dtstart=fields.Datetime.from_string(date_start))
 
         if rule._freq > 0 and rule._freq < 4:
             data['rrule_type'] = rrule_type[rule._freq]
         data['count'] = rule._count
         data['interval'] = rule._interval
-        data['final_date'] = rule._until and rule._until.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        data['final_date'] = rule._until
         #repeat weekly
         if rule._byweekday:
             for i in range(0, 7):
@@ -1320,7 +1316,7 @@ class Meeting(models.Model):
                 rrule_type=False,
                 rrule='',
                 recurrency=False,
-                final_date=datetime.strptime(data.get('start'), DEFAULT_SERVER_DATETIME_FORMAT if data['allday'] else DEFAULT_SERVER_DATETIME_FORMAT) + timedelta(hours=values.get('duration', False) or data.get('duration'))
+                final_date=datetime.from_string(data.get('start') + timedelta(hours=values.get('duration', False) or data.get('duration')))
             )
 
             # do not copy the id

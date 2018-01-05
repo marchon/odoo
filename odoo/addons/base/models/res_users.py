@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import pytz
-import datetime
 import itertools
 import logging
 
@@ -15,6 +14,7 @@ from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationErro
 from odoo.osv import expression
 from odoo.service.db import check_super
 from odoo.tools import partition, pycompat
+from odoo.tools import datetime
 
 _logger = logging.getLogger(__name__)
 

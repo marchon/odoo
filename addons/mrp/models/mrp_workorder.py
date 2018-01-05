@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 from odoo.tools import float_compare, float_round
 from odoo.addons import decimal_precision as dp
+from odoo.tools.datetime import datetime, relativedelta
 
 
 class MrpWorkorder(models.Model):

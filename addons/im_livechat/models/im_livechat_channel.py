@@ -3,9 +3,9 @@
 import base64
 import random
 import re
-from datetime import datetime, timedelta
 
 from odoo import api, fields, models, modules, tools
+from odoo.tools.datetime import datetime, timedelta
 
 class ImLivechatChannel(models.Model):
     """ Livechat Channel

@@ -3,7 +3,7 @@
 
 from .common import TestCrmCases
 from odoo import fields
-from datetime import datetime, timedelta
+from odoo.tools.datetime import datetime, timedelta
 
 
 class TestCrmMailActivity(TestCrmCases):

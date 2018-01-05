@@ -2,13 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import itertools
 import logging
-from datetime import date, timedelta
-
-from dateutil.relativedelta import relativedelta, MO
 
 from odoo import api, models, fields, _, exceptions
 from odoo.tools import ustr
 from odoo.tools.safe_eval import safe_eval
+from odoo.tools.datetime import date, timedelta, relativedelta, MO
 
 _logger = logging.getLogger(__name__)
 
@@ -18,8 +16,8 @@ MAX_VISIBILITY_RANKING = 3
 def start_end_date_for_period(period, default_start_date=False, default_end_date=False):
     """Return the start and end date for a goal period based on today
 
-    :param str default_start_date: string date in DEFAULT_SERVER_DATE_FORMAT format
-    :param str default_end_date: string date in DEFAULT_SERVER_DATE_FORMAT format
+    :param str default_start_date: odoo date or string date in DEFAULT_SERVER_DATE_FORMAT format
+    :param str default_end_date: odoo date or string date in DEFAULT_SERVER_DATE_FORMAT format
 
     :return: (start_date, end_date), dates in string format, False if the period is
     not defined or unknown"""
@@ -40,9 +38,7 @@ def start_end_date_for_period(period, default_start_date=False, default_end_date
         start_date = default_start_date  # for manual goal, start each time
         end_date = default_end_date
 
-        return (start_date, end_date)
-
-    return fields.Datetime.to_string(start_date), fields.Datetime.to_string(end_date)
+    return start_date, end_date
 
 class Challenge(models.Model):
     """Gamification challenge
@@ -345,10 +341,10 @@ class Challenge(models.Model):
                 query_params = [line.id]
                 if start_date:
                     date_clause += "AND g.start_date = %s"
-                    query_params.append(start_date)
+                    query_params.append(str(start_date))
                 if end_date:
-                    date_clause += "AND g.end_date = %s"
-                    query_params.append(end_date)
+                    date_clause += " AND g.end_date = %s"
+                    query_params.append(str(end_date))
             
                 query = """SELECT u.id AS user_id
                              FROM res_users u

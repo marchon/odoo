@@ -2,12 +2,11 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import logging
-from datetime import datetime, timedelta, date
-from dateutil.relativedelta import relativedelta
 
 from odoo import api, fields, models, tools, SUPERUSER_ID
 from odoo.tools.translate import _
 from odoo.tools import email_re, email_split
+from odoo.tools.datetime import datetime, timedelta, date, relativedelta
 from odoo.exceptions import UserError, AccessError
 
 from . import crm_stage
@@ -1047,7 +1046,7 @@ class Lead(models.Model):
         meetings = self.env['calendar.event'].search(meetings_domain)
         for meeting in meetings:
             if meeting['start']:
-                start = datetime.strptime(meeting['start'], tools.DEFAULT_SERVER_DATETIME_FORMAT).date()
+                start = meeting['start']
                 if start == date.today():
                     result['meeting']['today'] += 1
                 if date.today() <= start <= date.today() + timedelta(days=7):

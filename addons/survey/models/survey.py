@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import datetime
 import logging
 import re
 import uuid
@@ -12,6 +11,7 @@ from werkzeug import urls
 from odoo import api, fields, models, tools, SUPERUSER_ID, _
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import datetime
 email_validator = re.compile(r"[^@]+@[^@]+\.[^@]+")
 _logger = logging.getLogger(__name__)
 

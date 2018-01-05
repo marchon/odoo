@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, timedelta
-
 from odoo.fields import Datetime as Dt
 from odoo.addons.mrp.tests.common import TestMrpCommon
-
+from odoo.tools.datetime import datetime, timedelta
 
 class TestMrpOrder(TestMrpCommon):
 

@@ -1,6 +1,6 @@
 from odoo.addons.account.tests.account_test_classes import AccountingTestCase
 from odoo.tests import tagged
-import time
+from odoo.tools.datetime import date
 
 
 @tagged('post_install', '-at_install')
@@ -48,7 +48,7 @@ class TestPayment(AccountingTestCase):
             'name': type,
             'account_id': account_id or self.account_receivable.id,
             'type': type,
-            'date_invoice': time.strftime('%Y') + '-06-26',
+            'date_invoice': date.today().replace(day=26, month=6),
         })
         self.invoice_line_model.create({
             'product_id': self.product.id,
@@ -65,7 +65,7 @@ class TestPayment(AccountingTestCase):
         """ Reconcile a journal entry corresponding to a payment with its bank statement line """
         bank_stmt = self.acc_bank_stmt_model.create({
             'journal_id': liquidity_aml.journal_id.id,
-            'date': time.strftime('%Y') + '-07-15',
+            'date': date.today().replace(day=15, month=7),
         })
         bank_stmt_line = self.acc_bank_stmt_line_model.create({
             'name': 'payment',
@@ -74,7 +74,7 @@ class TestPayment(AccountingTestCase):
             'amount': amount,
             'amount_currency': amount_currency,
             'currency_id': currency_id,
-            'date': time.strftime('%Y') + '-07-15'
+            'date': date.today().replace(day=15, month=7)
         })
 
         bank_stmt_line.process_reconciliation(payment_aml_rec=liquidity_aml)
@@ -120,7 +120,7 @@ class TestPayment(AccountingTestCase):
 
         ctx = {'active_model': 'account.invoice', 'active_ids': [inv_1.id, inv_2.id]}
         register_payments = self.register_payments_model.with_context(ctx).create({
-            'payment_date': time.strftime('%Y') + '-07-15',
+            'payment_date': date.today().replace(day=15, month=7),
             'journal_id': self.bank_journal_euro.id,
             'payment_method_id': self.payment_method_manual_in.id,
         })
@@ -149,7 +149,7 @@ class TestPayment(AccountingTestCase):
     def test_internal_transfer_journal_usd_journal_eur(self):
         """ Create a transfer from a EUR journal to a USD journal """
         payment = self.payment_model.create({
-            'payment_date': time.strftime('%Y') + '-07-15',
+            'payment_date': date.today().replace(day=15, month=7),
             'payment_type': 'transfer',
             'amount': 50,
             'currency_id': self.currency_usd_id,
@@ -167,7 +167,7 @@ class TestPayment(AccountingTestCase):
 
     def test_payment_chf_journal_usd(self):
         payment = self.payment_model.create({
-            'payment_date': time.strftime('%Y') + '-07-15',
+            'payment_date': date.today().replace(day=15, month=7),
             'payment_type': 'outbound',
             'amount': 50,
             'currency_id': self.currency_chf_id,
@@ -195,7 +195,7 @@ class TestPayment(AccountingTestCase):
 
         ids = [inv_1.id, inv_2.id, inv_3.id, inv_4.id]
         register_payments = self.register_payments_model.with_context(active_ids=ids).create({
-            'payment_date': time.strftime('%Y') + '-07-15',
+            'payment_date': date.today().replace(day=15, month=7),
             'journal_id': self.bank_journal_euro.id,
             'payment_method_id': self.payment_method_manual_in.id,
         })
@@ -252,7 +252,7 @@ class TestPayment(AccountingTestCase):
 
         ids = [inv_1.id, inv_2.id]
         register_payments = self.register_payments_model.with_context(active_ids=ids).create({
-            'payment_date': time.strftime('%Y') + '-07-15',
+            'payment_date': date.today().replace(day=15, month=7),
             'journal_id': self.bank_journal_euro.id,
             'payment_method_id': self.payment_method_manual_in.id,
         })
@@ -275,7 +275,7 @@ class TestPayment(AccountingTestCase):
         inv_1 = self.create_invoice(amount=600)
         ids = [inv_1.id]
         register_payments = self.register_payments_model.with_context(active_ids=ids).create({
-            'payment_date': time.strftime('%Y') + '-07-15',
+            'payment_date': date.today().replace(day=15, month=7),
             'journal_id': self.bank_journal_euro.id,
             'payment_method_id': self.payment_method_manual_in.id,
         })
@@ -300,7 +300,7 @@ class TestPayment(AccountingTestCase):
         inv_2 = self.create_invoice(amount=500, type='in_invoice', partner=self.partner_china_exp.id)
         ids = [inv_2.id]
         register_payments = self.register_payments_model.with_context(active_ids=ids).create({
-            'payment_date': time.strftime('%Y') + '-07-15',
+            'payment_date': date.today().replace(day=15, month=7),
             'journal_id': self.bank_journal_euro.id,
             'payment_method_id': self.payment_method_manual_in.id,
         })
@@ -336,7 +336,7 @@ class TestPayment(AccountingTestCase):
 
         ids = [inv_1.id, inv_2.id, inv_3.id]
         register_payments = self.register_payments_model.with_context(active_ids=ids).create({
-            'payment_date': time.strftime('%Y') + '-07-15',
+            'payment_date': date.today().replace(day=15, month=7),
             'journal_id': self.bank_journal_euro.id,
             'payment_method_id': self.payment_method_manual_in.id,
         })

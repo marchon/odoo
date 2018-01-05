@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 import babel.dates
 import pytz
 
 from odoo.tools import pycompat
-from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT, DEFAULT_SERVER_DATE_FORMAT
+from odoo.tools.datetime import datetime
 from odoo import _, api, fields, models
 
 
@@ -48,8 +47,7 @@ class Base(models.AbstractModel):
             field_type = self._fields[group_by].type
             if field_type in ['date', 'datetime'] and isinstance(group_by_value, pycompat.string_types):
                 locale = self._context.get('lang') or 'en_US'
-                dt_format = DEFAULT_SERVER_DATETIME_FORMAT if field_type == 'datetime' else DEFAULT_SERVER_DATE_FORMAT
-                group_by_value = datetime.strptime(group_by_value, dt_format)
+                group_by_value = datetime.from_string(group_by_value)
                 group_by_value = pytz.timezone('UTC').localize(group_by_value)
                 tz_info = None
                 if field_type == 'datetime' and self._context.get('tz') in pytz.all_timezones:

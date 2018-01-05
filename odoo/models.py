@@ -21,10 +21,7 @@
 
 """
 
-import datetime
-
 import collections
-import dateutil
 import functools
 import itertools
 import logging
@@ -37,7 +34,6 @@ from inspect import getmembers, currentframe
 from operator import attrgetter, itemgetter
 
 import babel.dates
-import dateutil.relativedelta
 import psycopg2
 from lxml import etree
 from lxml.builder import E
@@ -53,9 +49,10 @@ from .tools import frozendict, lazy_classproperty, lazy_property, ormcache, \
                    Collector, LastOrderedSet, OrderedSet, pycompat, groupby
 from .tools.config import config
 from .tools.func import frame_codeinfo
-from .tools.misc import CountingStream, DEFAULT_SERVER_DATETIME_FORMAT, DEFAULT_SERVER_DATE_FORMAT
+from .tools.misc import CountingStream
 from .tools.safe_eval import safe_eval
 from .tools.translate import _
+from .tools.datetime import datetime, timedelta, relativedelta
 
 _logger = logging.getLogger(__name__)
 _schema = logging.getLogger(__name__ + '.schema')
@@ -1690,11 +1687,11 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 'year': 'yyyy',
             }
             time_intervals = {
-                'day': dateutil.relativedelta.relativedelta(days=1),
-                'week': datetime.timedelta(days=7),
-                'month': dateutil.relativedelta.relativedelta(months=1),
-                'quarter': dateutil.relativedelta.relativedelta(months=3),
-                'year': dateutil.relativedelta.relativedelta(years=1)
+                'day': relativedelta(days=1),
+                'week': timedelta(days=7),
+                'month': relativedelta(months=1),
+                'quarter': relativedelta(months=3),
+                'year': relativedelta(years=1)
             }
             if tz_convert:
                 qualified_field = "timezone('%s', timezone('UTC',%s))" % (self._context.get('tz', 'UTC'), qualified_field)
@@ -1722,8 +1719,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         gb = groupby_dict.get(key)
         if gb and gb['type'] in ('date', 'datetime') and value:
             if isinstance(value, pycompat.string_types):
-                dt_format = DEFAULT_SERVER_DATETIME_FORMAT if gb['type'] == 'datetime' else DEFAULT_SERVER_DATE_FORMAT
-                value = datetime.datetime.strptime(value, dt_format)
+                value = datetime.from_string(value) if gb['type'] == 'datetime' else date.from_string(value)
             if gb['tz_convert']:
                 value = pytz.timezone(self._context['tz']).localize(value)
         return value
@@ -1753,7 +1749,6 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     value = value[0]
                 elif ftype in ('date', 'datetime'):
                     locale = self._context.get('lang') or 'en_US'
-                    fmt = DEFAULT_SERVER_DATETIME_FORMAT if ftype == 'datetime' else DEFAULT_SERVER_DATE_FORMAT
                     tzinfo = None
                     range_start = value
                     range_end = value + gb['interval']
@@ -1766,8 +1761,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                         range_start = range_start.astimezone(pytz.utc)
                         range_end = range_end.astimezone(pytz.utc)
 
-                    range_start = range_start.strftime(fmt)
-                    range_end = range_end.strftime(fmt)
+                    range_start = range_start
+                    range_end = range_end
                     if ftype == 'datetime':
                         label = babel.dates.format_datetime(
                             value, format=gb['display_format'],
@@ -2912,18 +2907,12 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
           :class:`python:int`)
         * For :class:`~odoo.fields.Many2one`, the value should be the
           database identifier of the record to set
+        * For :class:`datetime` and :class:`date`, the value could be an odoo
+          date/datetime format, a python date/datetime format or a string based
+          on the format defined by :const:`DEFAULT_SERVER_DATE_FORMAT` or by
+          :const:`DEFAULT_SERVER_DATETIME_FORMAT`. Date and datetime types
+          from :class:`odoo.tools.datetime` are preferred.
         * Other non-relational fields use a string for value
-
-          .. danger::
-
-              for historical and compatibility reasons,
-              :class:`~odoo.fields.Date` and
-              :class:`~odoo.fields.Datetime` fields use strings as values
-              (written and read) rather than :class:`~python:datetime.date` or
-              :class:`~python:datetime.datetime`. These date strings are
-              UTC-only and formatted according to
-              :const:`odoo.tools.misc.DEFAULT_SERVER_DATE_FORMAT` and
-              :const:`odoo.tools.misc.DEFAULT_SERVER_DATETIME_FORMAT`
         * .. _openerp/models/relationals/format:
 
           :class:`~odoo.fields.One2many` and

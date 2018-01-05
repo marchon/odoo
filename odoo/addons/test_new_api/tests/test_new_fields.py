@@ -465,7 +465,7 @@ class TestFields(common.TransactionCase):
         self.assertEqual(record.date, '2012-05-01')
 
         record.date = datetime(2012, 5, 1, 10, 45, 00)
-        self.assertEqual(record.date, '2012-05-01')
+        self.assertNotEqual(record.date, '2012-05-01')
 
         # one may assign dates in the default format, and it must be checked
         record.date = '2012-05-01'
@@ -492,7 +492,7 @@ class TestFields(common.TransactionCase):
             record.startdt.from_string('1985-10-26 1:80:0')
 
         with self.assertRaises(ValueError):
-            record.startdt.fromstring('108-18-43')
+            record.startdt.from_string('108-18-43')
 
         with self.assertRaises(ValueError):
             datetime(88, 88, 88)

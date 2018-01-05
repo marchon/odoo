@@ -212,7 +212,7 @@ class test_date(CreatorCase):
     def test_basic(self):
         self.assertEqual(
             self.export('2011-11-07'),
-            [[u'2011-11-07']])
+            [[u'2011-11-07 00:00:00']])
 
 
 class test_datetime(CreatorCase):

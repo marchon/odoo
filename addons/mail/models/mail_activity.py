@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import date, datetime, timedelta
-
 from odoo import api, exceptions, fields, models, _
-
+from odoo.tools.datetime import date, datetime, timedelta
 
 class MailActivityType(models.Model):
     """ Activity Types are used to categorize activities. Each type is a different

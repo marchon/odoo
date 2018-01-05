@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import datetime
-
-from datetime import datetime, timedelta
 
 from odoo import fields
+from odoo.tools.datetime import datetime, timedelta
 from odoo.tests.common import TransactionCase
 
 
@@ -102,8 +100,8 @@ class TestCalendar(TransactionCase):
         # I create a recuring rule for my event
         calendar_event_sprint_review = self.CalendarEvent.create({
             'name': 'Begin of month meeting',
-            'start': fields.Date.today() + ' 12:00:00',
-            'stop': fields.Date.today() + ' 18:00:00',
+            'start': fields.Datetime.today().replace(hour=12),
+            'stop': fields.Datetime.today().replace(hour=18),
             'recurrency': True,
             'rrule': 'FREQ=MONTHLY;INTERVAL=1;COUNT=12;BYDAY=1MO'
         })

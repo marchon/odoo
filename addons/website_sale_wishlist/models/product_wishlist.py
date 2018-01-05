@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timedelta
 from odoo import api, fields, models
+from odoo.tools.datetime import datetime, timedelta
 
 
 class ProductWishlist(models.Model):

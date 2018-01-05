@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from dateutil.relativedelta import relativedelta
-
 from odoo import api, fields, models, _
+from odoo.tools.datetime import relativedelta
 
 
 class FleetVehicle(models.Model):
@@ -272,9 +271,9 @@ class FleetVehicleOdometer(models.Model):
         for record in self:
             name = record.vehicle_id.name
             if not name:
-                name = record.date
+                name = str(record.date)
             elif record.date:
-                name += ' / ' + record.date
+                name += ' / ' + str(record.date)
             record.name = name
 
     @api.onchange('vehicle_id')

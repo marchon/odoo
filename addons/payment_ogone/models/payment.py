@@ -1,6 +1,5 @@
 # coding: utf-8
 import base64
-import datetime
 import logging
 import time
 from hashlib import sha1
@@ -15,9 +14,10 @@ from odoo import api, fields, models, _
 from odoo.addons.payment.models.payment_acquirer import ValidationError
 from odoo.addons.payment_ogone.controllers.main import OgoneController
 from odoo.addons.payment_ogone.data import ogone
-from odoo.tools import float_round, DEFAULT_SERVER_DATE_FORMAT
+from odoo.tools import float_round
 from odoo.tools.float_utils import float_compare, float_repr
 from odoo.tools.safe_eval import safe_eval
+from odoo.tools.datetime import date, datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -289,7 +289,7 @@ class PaymentTxOgone(models.Model):
         if status in self._ogone_valid_tx_status:
             vals = {
                 'state': 'done',
-                'date_validate': datetime.datetime.strptime(data['TRXDATE'], '%m/%d/%y').strftime(DEFAULT_SERVER_DATE_FORMAT),
+                'date_validate': datetime.from_string(data['TRXDATE'], '%m/%d/%y').date(),
                 'acquirer_reference': data['PAYID'],
             }
             if data.get('ALIAS') and self.partner_id and \
@@ -341,7 +341,7 @@ class PaymentTxOgone(models.Model):
     def ogone_s2s_do_transaction(self, **kwargs):
         # TODO: create tx with s2s type
         account = self.acquirer_id
-        reference = self.reference or "ODOO-%s-%s" % (datetime.datetime.now().strftime('%y%m%d_%H%M%S'), self.partner_id.id)
+        reference = self.reference or "ODOO-%s-%s" % (datetime.now().strftime('%y%m%d_%H%M%S'), self.partner_id.id)
 
         param_plus = {
             'return_url': kwargs.get('return_url', False)
@@ -402,7 +402,7 @@ class PaymentTxOgone(models.Model):
 
         self.state = 'refunding'
         account = self.acquirer_id
-        reference = self.reference or "ODOO-%s-%s" % (datetime.datetime.now().strftime('%y%m%d_%H%M%S'), self.partner_id.id)
+        reference = self.reference or "ODOO-%s-%s" % (datetime.now().strftime('%y%m%d_%H%M%S'), self.partner_id.id)
 
         data = {
             'PSPID': account.ogone_pspid,
@@ -449,7 +449,7 @@ class PaymentTxOgone(models.Model):
             new_state = 'refunded' if self.state == 'refunding' else 'done'
             self.write({
                 'state': new_state,
-                'date_validate': datetime.date.today().strftime(DEFAULT_SERVER_DATE_FORMAT),
+                'date_validate': date.today(),
                 'acquirer_reference': tree.get('PAYID'),
             })
             if tree.get('ALIAS') and self.partner_id and \

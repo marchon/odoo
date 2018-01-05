@@ -5,12 +5,12 @@
 
 import logging
 import math
-from datetime import timedelta
 
 from odoo import api, fields, models
 from odoo.exceptions import UserError, AccessError, ValidationError
 from odoo.tools import float_compare
 from odoo.tools.translate import _
+from odoo.tools.datetime import timedelta
 
 from odoo.addons.resource.models.resource import HOURS_PER_DAY
 

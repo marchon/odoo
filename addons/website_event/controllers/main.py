@@ -3,12 +3,11 @@
 import babel.dates
 import re
 import werkzeug
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 
 from odoo import fields, http, _
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.http import request
+from odoo.tools.datetime import datetime, timedelta, relativedelta
 
 
 class WebsiteEventController(http.Controller):
@@ -50,14 +49,14 @@ class WebsiteEventController(http.Controller):
                 0],
             ['month', _('This month'), [
                 ("date_end", ">=", sd(today.replace(day=1))),
-                ("date_begin", "<", (today.replace(day=1) + relativedelta(months=1)).strftime('%Y-%m-%d 00:00:00'))],
+                ("date_begin", "<", (today.replace(day=1) + relativedelta(months=1)).to_string())],
                 0],
             ['nextmonth', _('Next month'), [
                 ("date_end", ">=", sd(today.replace(day=1) + relativedelta(months=1))),
-                ("date_begin", "<", (today.replace(day=1) + relativedelta(months=2)).strftime('%Y-%m-%d 00:00:00'))],
+                ("date_begin", "<", (today.replace(day=1) + relativedelta(months=2)).to_string())],
                 0],
             ['old', _('Old Events'), [
-                ("date_end", "<", today.strftime('%Y-%m-%d 00:00:00'))],
+                ("date_end", "<", today.to_string())],
                 0],
         ]
 

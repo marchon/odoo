@@ -4,12 +4,12 @@
 import json
 import logging
 import werkzeug
-from datetime import datetime
 from math import ceil
 
 from odoo import fields, http, SUPERUSER_ID
 from odoo.http import request
 from odoo.tools import ustr
+from odoo.tools.datetime import datetime
 
 _logger = logging.getLogger(__name__)
 

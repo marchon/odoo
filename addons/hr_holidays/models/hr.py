@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import datetime
-from dateutil.relativedelta import relativedelta
-
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools import datetime
 
 
 class Department(models.Model):
@@ -27,7 +25,7 @@ class Department(models.Model):
         Allocations = self.env['hr.leave.allocation']
         today_date = datetime.datetime.utcnow().date()
         today_start = fields.Datetime.to_string(today_date)  # get the midnight of the current utc day
-        today_end = fields.Datetime.to_string(today_date + relativedelta(hours=23, minutes=59, seconds=59))
+        today_end = fields.Datetime.to_string(today_date + datetime.relativedelta(hours=23, minutes=59, seconds=59))
 
         leave_data = Requests.read_group(
             [('department_id', 'in', self.ids),
@@ -194,7 +192,7 @@ class Employee(models.Model):
     def _compute_absent_employee(self):
         today_date = datetime.datetime.utcnow().date()
         today_start = fields.Datetime.to_string(today_date)  # get the midnight of the current utc day
-        today_end = fields.Datetime.to_string(today_date + relativedelta(hours=23, minutes=59, seconds=59))
+        today_end = fields.Datetime.to_string(today_date + datetime.relativedelta(hours=23, minutes=59, seconds=59))
         data = self.env['hr.leave'].read_group([
             ('employee_id', 'in', self.ids),
             ('state', 'not in', ['cancel', 'refuse']),
@@ -212,7 +210,7 @@ class Employee(models.Model):
     def _search_absent_employee(self, operator, value):
         today_date = datetime.datetime.utcnow().date()
         today_start = fields.Datetime.to_string(today_date)  # get the midnight of the current utc day
-        today_end = fields.Datetime.to_string(today_date + relativedelta(hours=23, minutes=59, seconds=59))
+        today_end = fields.Datetime.to_string(today_date + datetime.relativedelta(hours=23, minutes=59, seconds=59))
         holidays = self.env['hr.leave'].sudo().search([
             ('employee_id', '!=', False),
             ('state', 'not in', ['cancel', 'refuse']),

@@ -2830,7 +2830,7 @@ class StockMove(TransactionCase):
             ('product_id', '=', self.product3.id),
             ('lot_id', '=', lot1.id),
         ])
-        from datetime import datetime, timedelta
+        from odoo.tools.datetime import datetime, timedelta
         initial_in_date_lot1 = datetime.now() - timedelta(days=5)
         quant_lot1.in_date = initial_in_date_lot1
 
@@ -2935,7 +2935,7 @@ class StockMove(TransactionCase):
             ('product_id', '=', self.product3.id),
             ('lot_id', '=', lot1.id),
         ])
-        from datetime import datetime, timedelta
+        from odoo.tools.datetime import datetime, timedelta
         initial_in_date_lot1 = datetime.now() - timedelta(days=5)
         quant_lot1.in_date = initial_in_date_lot1
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import base64
-import datetime
 import json
 import os
 import logging
@@ -20,6 +19,7 @@ from odoo.tools import pycompat, OrderedSet
 from odoo.addons.http_routing.models.ir_http import slug, _guess_mimetype
 from odoo.addons.web.controllers.main import WebClient, Binary, Home
 from odoo.addons.portal.controllers.portal import pager as portal_pager
+from odoo.tools import datetime
 
 logger = logging.getLogger(__name__)
 

@@ -3,10 +3,9 @@
 
 import calendar
 
-from datetime import timedelta
-from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools.datetime import timedelta, relativedelta
 
 
 class HrHolidaySummaryReport(models.AbstractModel):

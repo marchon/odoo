@@ -2,11 +2,10 @@
 
 import babel
 
-from datetime import datetime, timedelta, time
-
 from odoo import fields, http, _
 from odoo.addons.website.controllers.backend import WebsiteBackend
 from odoo.http import request
+from odoo.tools.datetime import datetime, timedelta, time
 
 
 class WebsiteSaleBackend(WebsiteBackend):

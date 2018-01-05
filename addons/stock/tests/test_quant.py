@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, timedelta
 
 from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import AccessError, UserError
+from odoo.tools.datetime import datetime, timedelta
 
 
 class StockQuant(TransactionCase):

@@ -5,7 +5,7 @@ from .common import TestAccountBudgetCommon
 from odoo.fields import Date
 from odoo.tests import tagged
 
-import datetime
+from odoo.tools import datetime
 
 # ---------------------------------------------------------
 # Tests

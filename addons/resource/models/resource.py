@@ -1,20 +1,17 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import datetime
 import math
 import pytz
 
 from collections import namedtuple
-from datetime import timedelta
-from dateutil import rrule
-from dateutil.relativedelta import relativedelta
 from operator import itemgetter
 
 from odoo import api, fields, models, _
 from odoo.addons.base.models.res_partner import _tz_get
 from odoo.exceptions import ValidationError
 from odoo.tools.float_utils import float_compare, float_round
+from odoo.tools import datetime
 
 # Default hour per day value. The one should
 # only be used when the one from the calendar
@@ -211,7 +208,7 @@ class ResourceCalendar(models.Model):
 
         :param list intervals:  a list of time intervals
         :param int/float hours: number of hours to schedule. It will be converted
-                                into a timedelta, but should be submitted as an
+                                into a datetime.timedelta, but should be submitted as an
                                 int or float
         :param boolean backwards: schedule starting from last hour
 
@@ -219,14 +216,14 @@ class ResourceCalendar(models.Model):
         if backwards:
             intervals.reverse()  # first interval is the last working interval of the day
         results = []
-        res = timedelta()
-        limit = timedelta(hours=hour)
+        res = datetime.timedelta()
+        limit = datetime.timedelta(hours=hour)
         for interval in intervals:
             res += interval[1] - interval[0]
             if res > limit and not backwards:
-                interval = (interval[0], interval[1] + relativedelta(seconds=(limit - res).total_seconds()))
+                interval = (interval[0], interval[1] + datetime.relativedelta(seconds=(limit - res).total_seconds()))
             elif res > limit:
-                interval = (interval[0] + relativedelta(seconds=(res - limit).total_seconds()), interval[1])
+                interval = (interval[0] + datetime.relativedelta(seconds=(res - limit).total_seconds()), interval[1])
             results.append(interval)
             if res > limit:
                 break
@@ -275,7 +272,7 @@ class ResourceCalendar(models.Model):
         if days < 0:
             days = 7 + days
 
-        return day_date + relativedelta(days=days)
+        return day_date + datetime.relativedelta(days=days)
 
     @api.multi
     def _get_previous_work_day(self, day_date):
@@ -288,7 +285,7 @@ class ResourceCalendar(models.Model):
         if days > 0:
             days = days - 7
 
-        return day_date + relativedelta(days=days)
+        return day_date + datetime.relativedelta(days=days)
 
     @api.multi
     def _get_leave_intervals(self, resource_id=None, start_datetime=None, end_datetime=None):
@@ -308,10 +305,10 @@ class ResourceCalendar(models.Model):
             domain = [('resource_id', '=', False)]
         if start_datetime:
             # domain += [('date_to', '>', fields.Datetime.to_string(to_naive_utc(start_datetime, self.env.user)))]
-            domain += [('date_to', '>', fields.Datetime.to_string(start_datetime + timedelta(days=-1)))]
+            domain += [('date_to', '>', fields.Datetime.to_string(start_datetime + datetime.timedelta(days=-1)))]
         if end_datetime:
             # domain += [('date_from', '<', fields.Datetime.to_string(to_naive_utc(end_datetime, self.env.user)))]
-            domain += [('date_from', '<', fields.Datetime.to_string(start_datetime + timedelta(days=1)))]
+            domain += [('date_from', '<', fields.Datetime.to_string(start_datetime + datetime.timedelta(days=1)))]
         leaves = self.env['resource.calendar.leaves'].search(domain + [('calendar_id', '=', self.id)])
 
         filtered_leaves = self.env['resource.calendar.leaves']
@@ -432,7 +429,7 @@ class ResourceCalendar(models.Model):
         start_dt = to_naive_user_tz(start_dt, self.env.user)
         end_dt = to_naive_user_tz(end_dt, self.env.user)
 
-        for day in rrule.rrule(rrule.DAILY,
+        for day in datetime.rrule(datetime.DAILY,
                                dtstart=start_dt,
                                until=end_dt,
                                byweekday=self._get_weekdays()):
@@ -461,7 +458,7 @@ class ResourceCalendar(models.Model):
         start_dt = to_naive_user_tz(start_dt, self.env.user)
         end_dt = to_naive_user_tz(end_dt, self.env.user)
 
-        for day in rrule.rrule(rrule.DAILY,
+        for day in datetime.rrule(datetime.DAILY,
                                dtstart=start_dt,
                                until=end_dt,
                                byweekday=self._get_weekdays()):
@@ -486,7 +483,7 @@ class ResourceCalendar(models.Model):
         datetime expressed in naive UTC. """
 
         for interval in self._iter_work_intervals(from_datetime, to_datetime, resource_id):
-            td = timedelta()
+            td = datetime.timedelta()
             for work_interval in interval:
                 td += work_interval[1] - work_interval[0]
             yield (interval[0][0].date(), td.total_seconds() / 3600.0)
@@ -522,7 +519,7 @@ class ResourceCalendar(models.Model):
     def get_work_hours_count(self, start_dt, end_dt, resource_id, compute_leaves=True):
         """ Count number of work hours between two datetimes. For compute_leaves,
         resource_id: see _get_day_work_intervals. """
-        res = timedelta()
+        res = datetime.timedelta()
         for intervals in self._iter_work_intervals(start_dt, end_dt, resource_id, compute_leaves=compute_leaves):
             for interval in intervals:
                 res += interval[1] - interval[0]
@@ -568,7 +565,7 @@ class ResourceCalendar(models.Model):
             if working_intervals:
                 new_working_intervals = self._interval_schedule_hours(working_intervals, remaining_hours, backwards=backwards)
 
-                res = timedelta()
+                res = datetime.timedelta()
                 for interval in working_intervals:
                     res += interval[1] - interval[0]
                 remaining_hours -= res.total_seconds() / 3600.0

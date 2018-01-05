@@ -3,14 +3,11 @@
 
 import babel.dates
 
-from datetime import datetime, timedelta, date, time
-
-from dateutil import rrule
-from dateutil.relativedelta import relativedelta
 
 from odoo.fields import Date, Datetime
 from odoo.addons.resource.models.resource import to_naive_utc, to_naive_user_tz
 from odoo.addons.resource.tests.common import TestResourceCommon
+from odoo.tools.datetime import datetime, timedelta, date, time, relativedelta, rrule, DAILY
 
 
 class TestIntervals(TestResourceCommon):
@@ -405,7 +402,7 @@ class TestWorkDays(TestResourceCommon):
             ]
         })
 
-        self._days = [dt.date() for dt in rrule.rrule(rrule.DAILY, dtstart=WAR_START, until=WAR_END)]
+        self._days = [dt.date() for dt in rrule(DAILY, dtstart=WAR_START, until=WAR_END)]
 
     def test_trivial_calendar_no_leaves(self):
         """ If leaves are not involved, only calendar attendances (basic

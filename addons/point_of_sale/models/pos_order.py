@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 import logging
-from datetime import timedelta
 from functools import partial
 
 import psycopg2
@@ -12,6 +11,7 @@ from odoo.tools import float_is_zero
 from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.addons import decimal_precision as dp
+from odoo.tools.datetime import timedelta
 
 _logger = logging.getLogger(__name__)
 

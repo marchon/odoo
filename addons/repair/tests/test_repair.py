@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime
 
 from odoo.addons.account.tests.account_test_classes import AccountingTestCase
 from odoo.tests import tagged
+from odoo.tools.datetime import datetime
 
 
 @tagged('post_install', '-at_install')

@@ -6,12 +6,12 @@ import uuid
 from functools import partial
 
 from lxml import etree
-from dateutil.relativedelta import relativedelta
 from werkzeug.urls import url_encode
 
 from odoo import api, exceptions, fields, models, _
 from odoo.tools import float_is_zero, float_compare, pycompat
 from odoo.tools.misc import formatLang
+from odoo.tools.datetime import relativedelta
 
 from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
 

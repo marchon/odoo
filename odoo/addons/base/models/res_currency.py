@@ -5,7 +5,6 @@ import json
 import logging
 import math
 import re
-import time
 
 try:
     from num2words import num2words
@@ -14,6 +13,7 @@ except ImportError:
     num2words = None
 
 from odoo import api, fields, models, tools, _
+from odoo.tools.datetime import date
 
 CURRENCY_DISPLAY_PATTERN = re.compile(r'(\w+)\s*(?:\((.*)\))?')
 
@@ -241,7 +241,8 @@ class CurrencyRate(models.Model):
                     langs = self.env['res.lang'].search([('code', '=', self._context['lang'])])
                     if langs:
                         date_format = langs.date_format
-                name = time.strftime('%Y-%m-%d', time.strptime(name, date_format))
+
+                name = str(date.from_string(name, date_format))
             except ValueError:
                 try:
                     args.append(('rate', operator, float(name)))

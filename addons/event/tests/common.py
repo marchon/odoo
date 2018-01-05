@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime, timedelta
-
 from odoo import fields
 from odoo.tests import common
+from odoo.tools.datetime import datetime, timedelta
 
 
 class TestEventCommon(common.TransactionCase):

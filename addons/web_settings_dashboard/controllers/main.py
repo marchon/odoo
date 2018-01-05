@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from datetime import datetime, timedelta
 
 from odoo import _, fields, http
 from odoo.exceptions import AccessError
 from odoo.http import request
 from odoo import release
+from odoo.tools.datetime import datetime, timedelta
 
 class WebSettingsDashboard(http.Controller):
 

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
+
 import time
-
 from .common import TestPurchase
-
+from odoo.tools.datetime import date
 
 class TestFifoPrice(TestPurchase):
 
@@ -43,7 +43,7 @@ class TestFifoPrice(TestPurchase):
                 'product_qty': 10.0,
                 'product_uom': self.env.ref('product.product_uom_kgm').id,
                 'price_unit': 50.0,
-                'date_planned': time.strftime('%Y-%m-%d')})],
+                'date_planned': date.today()})],
         })
 
         # Confirm the first purchase order
@@ -70,7 +70,7 @@ class TestFifoPrice(TestPurchase):
                 'product_qty': 30.0,
                 'product_uom': self.env.ref('product.product_uom_kgm').id,
                 'price_unit': 80.0,
-                'date_planned': time.strftime('%Y-%m-%d')})],
+                'date_planned': date.today()})],
             })
 
         # Confirm the second purchase order
@@ -138,7 +138,7 @@ class TestFifoPrice(TestPurchase):
         NewUSD = self.env['res.currency'].create({
             'name': 'new_usd',
             'symbol': '$²',
-            'rate_ids': [(0, 0, {'rate': 1.2834, 'name': time.strftime('%Y-%m-%d')})],
+            'rate_ids': [(0, 0, {'rate': 1.2834, 'name': date.today()})],
         })
 
         # Create PO for 30000 g at 0.150$/g and 10 kg at 150$/kg
@@ -151,14 +151,14 @@ class TestFifoPrice(TestPurchase):
                     'product_qty': 30,
                     'product_uom': self.env.ref('product.product_uom_kgm').id,
                     'price_unit': 0.150,
-                    'date_planned': time.strftime('%Y-%m-%d')}),
+                    'date_planned': date.today()}),
                 (0, 0, {
                     'name': product_icecream.name,
                     'product_id': product_icecream.id,
                     'product_qty': 10.0,
                     'product_uom': self.env.ref('product.product_uom_kgm').id,
                     'price_unit': 150.0,
-                    'date_planned': time.strftime('%Y-%m-%d')})]
+                    'date_planned': date.today()})]
                 })
 
         # Confirm the purchase order in USD
@@ -286,7 +286,7 @@ class TestFifoPrice(TestPurchase):
                 'product_qty': 50.0,
                 'product_uom': self.env.ref('product.product_uom_kgm').id,
                 'price_unit': 50.0,
-                'date_planned': time.strftime('%Y-%m-%d')})],
+                'date_planned': date.today()})],
         })
 
         # I confirm the first purchase order
@@ -305,7 +305,7 @@ class TestFifoPrice(TestPurchase):
                 'product_qty': 600.0,
                 'product_uom': self.env.ref('product.product_uom_kgm').id,
                 'price_unit': 80.0,
-                'date_planned': time.strftime('%Y-%m-%d')})],
+                'date_planned': date.today()})],
         })
 
         # I confirm the second negative purchase order

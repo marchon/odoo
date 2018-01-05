@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
-import datetime
 import dateutil
 import logging
 import time
@@ -12,6 +11,7 @@ from odoo.modules.registry import Registry
 from odoo.osv import expression
 from odoo.tools import pycompat
 from odoo.tools.safe_eval import safe_eval
+from odoo.tools import datetime
 
 _logger = logging.getLogger(__name__)
 

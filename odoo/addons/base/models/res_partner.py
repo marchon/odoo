@@ -2,7 +2,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import base64
-import datetime
 import hashlib
 import pytz
 import threading
@@ -17,6 +16,7 @@ from odoo import api, fields, models, tools, SUPERUSER_ID, _
 from odoo.modules import get_module_resource
 from odoo.osv.expression import get_unaccent_wrapper
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import datetime
 
 # Global variables used for the warning fields declared on the res.partner
 # in the following modules : sale, purchase, account, stock 

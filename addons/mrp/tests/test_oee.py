@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import datetime
-
 from odoo.addons.mrp.tests.common import TestMrpCommon
+from odoo.tools import datetime
 
 
 class TestOee(TestMrpCommon):

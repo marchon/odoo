@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-import time
-
-from datetime import datetime, timedelta
-from dateutil import relativedelta
-
 from odoo import fields, tools
 from odoo.modules.module import get_module_resource
 from odoo.tests import common
+from odoo.tools.datetime import date, datetime, timedelta, relativedelta
 
 
 class TestHrPayrollAccount(common.TransactionCase):
@@ -81,8 +77,8 @@ class TestHrPayrollAccount(common.TransactionCase):
     def test_00_hr_payslip(self):
         """ checking the process of payslip. """
 
-        date_from = time.strftime('%Y-%m-01')
-        date_to = str(datetime.now() + relativedelta.relativedelta(months=+1, day=1, days=-1))[:10]
+        date_from = date.today().get_start_month()
+        date_to = date.today() + relativedelta(months=+1, day=1, days=-1)
         res = self.hr_payslip.onchange_employee_id(date_from, date_to, self.hr_employee_john.id)
         vals = {
             'struct_id': res['value']['struct_id'],

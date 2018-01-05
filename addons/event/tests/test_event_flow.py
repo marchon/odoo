@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import datetime
-from dateutil.relativedelta import relativedelta
-
 from odoo.addons.event.tests.common import TestEventCommon
 from odoo.exceptions import ValidationError, UserError, AccessError
 from odoo.tools import mute_logger
 from odoo.fields import Datetime
+from odoo.tools import datetime
 try:
     from unittest.mock import patch
 except ImportError:
@@ -22,8 +20,8 @@ class TestEventFlow(TestEventCommon):
         test_event = self.Event.sudo(self.user_eventmanager).create({
             'name': 'TestEvent',
             'auto_confirm': True,
-            'date_begin': datetime.datetime.now() + relativedelta(days=-1),
-            'date_end': datetime.datetime.now() + relativedelta(days=1),
+            'date_begin': datetime.datetime.now() + datetime.relativedelta(days=-1),
+            'date_end': datetime.datetime.now() + datetime.relativedelta(days=1),
             'seats_max': 2,
             'seats_availability': 'limited',
         })
@@ -72,8 +70,8 @@ class TestEventFlow(TestEventCommon):
         # EventUser creates a new event: ok
         test_event = self.Event.sudo(self.user_eventmanager).create({
             'name': 'TestEvent',
-            'date_begin': datetime.datetime.now() + relativedelta(days=-1),
-            'date_end': datetime.datetime.now() + relativedelta(days=1),
+            'date_begin': datetime.datetime.now() + datetime.relativedelta(days=-1),
+            'date_end': datetime.datetime.now() + datetime.relativedelta(days=1),
             'seats_max': 10,
         })
         self.assertEqual(
@@ -94,8 +92,8 @@ class TestEventFlow(TestEventCommon):
         with self.assertRaises(AccessError):
             self.Event.sudo(self.user_eventuser).create({
                 'name': 'TestEvent',
-                'date_begin': datetime.datetime.now() + relativedelta(days=-1),
-                'date_end': datetime.datetime.now() + relativedelta(days=1),
+                'date_begin': datetime.datetime.now() + datetime.relativedelta(days=-1),
+                'date_end': datetime.datetime.now() + datetime.relativedelta(days=1),
                 'seats_max': 10,
             })
         with self.assertRaises(AccessError):

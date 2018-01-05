@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 from odoo.addons.account.tests.account_test_classes import AccountingTestCase
 from odoo.tests import tagged
+from odoo.tools.datetime import datetime, relativedelta
 
 
 @tagged('post_install', '-at_install')

@@ -6,7 +6,6 @@ from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
 from odoo.tools import pycompat
 from odoo.tools.float_utils import float_round
-from datetime import datetime
 import operator as py_operator
 
 OPERATORS = {

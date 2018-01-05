@@ -88,7 +88,7 @@ class HrPayrollAdvice(models.Model):
             if not advice.line_ids:
                 raise UserError(_('You can not confirm Payment advice without advice lines.'))
             date = fields.Date.from_string(fields.Date.today())
-            advice_year = date.strftime('%m') + '-' + date.strftime('%Y')
+            advice_year = date.strftime('%m-%Y')
             number = self.env['ir.sequence'].next_by_code('payment.advice')
             advice.write({
                 'number': 'PAY' + '/' + advice_year + '/' + number,
