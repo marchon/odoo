@@ -193,10 +193,16 @@ class IrActionsActWindow(models.Model):
         """
         result = super(IrActionsActWindow, self).read(fields, load=load)
         if not fields or 'help' in fields:
+            context = dict(self.env.context)
             for values in result:
                 model = values.get('res_model')
                 if model in self.env:
-                    values['help'] = self.env[model].get_empty_list_help(values.get('help', ""))
+                    try:
+                        action_context = safe_eval(values.get('context', '{}'))
+                    except:
+                        action_context = {}
+                    context.update(action_context)
+                    values['help'] = self.env[model].with_context(**context).get_empty_list_help(values.get('help', ""))
         return result
 
     @api.model
