@@ -31,8 +31,8 @@ var CalendarView = AbstractView.extend({
     viewType: 'calendar',
     init: function (viewInfo, params) {
         this._super.apply(this, arguments);
-        var arch = viewInfo.arch;
-        var fields = viewInfo.fields;
+        var arch = this.arch;
+        var fields = this.fields;
         var attrs = arch.attrs;
 
         if (!attrs.date_start) {
