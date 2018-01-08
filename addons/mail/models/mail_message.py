@@ -34,6 +34,10 @@ class Message(models.Model):
     def _get_default_author(self):
         return self.env.user.partner_id
 
+    @api.model
+    def _get_default_server(self):
+        return self.env['ir.mail_server'].sudo().search(['|', ('company_id', '=', self.env.user.company_id.id), ('company_id', '=', False)], limit=1)
+
     # content
     subject = fields.Char('Subject')
     date = fields.Datetime('Date', default=fields.Datetime.now)
@@ -106,7 +110,7 @@ class Message(models.Model):
         help='Answers do not go in the original document discussion thread. This has an impact on the generated message-id.')
     message_id = fields.Char('Message-Id', help='Message unique identifier', index=True, readonly=1, copy=False)
     reply_to = fields.Char('Reply-To', help='Reply email address. Setting the reply_to bypasses the automatic thread creation.')
-    mail_server_id = fields.Many2one('ir.mail_server', 'Outgoing mail server')
+    mail_server_id = fields.Many2one('ir.mail_server', 'Outgoing mail server', domain=lambda self: ['|', ('company_id', '=', self.env.user.company_id.id), ('company_id', '=', False)], default=_get_default_server)
 
     @api.multi
     def _get_needaction(self):
