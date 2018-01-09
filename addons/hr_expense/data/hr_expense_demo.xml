@@ -75,5 +75,145 @@
             <field eval="5.0" name="quantity"/>
         </record>
 
+        <record id="expense_refused_report_1" model="hr.expense.sheet">
+            <field name="name">Trip to New Jersey</field>
+            <field name="state">cancel</field>
+        </record>
+        <record id="expense_refused_report_2" model="hr.expense.sheet">
+            <field name="name">Accomodation in US</field>
+            <field name="employee_id" ref="hr.employee_qdp"/>
+            <field name="state">cancel</field>
+        </record>
+        <record id="expense_report_1" model="hr.expense.sheet">
+            <field name="name">On Site Consultance For San Fransisco Customer</field>
+            <field name="employee_id" ref="hr.employee_jod"/>
+        </record>
+        <record id="expense_report_2" model="hr.expense.sheet">
+            <field name="name">GAP Analysis For US Customer</field>
+            <field name="employee_id" ref="hr.employee_qdp"/>
+        </record>
+        <record id="expense_report_3" model="hr.expense.sheet">
+            <field name="name">On Site system setup to customer</field>
+            <field name="state">post</field>
+        </record>
+        <record id="expense_report_4" model="hr.expense.sheet">
+            <field name="name">Training to customer employees</field>
+            <field name="state">approve</field>
+        </record>
+        <record id="expense_report_5" model="hr.expense.sheet">
+            <field name="name">Application deployement of latest version</field>
+            <field name="state">post</field>
+            <field name="employee_id" ref="hr.employee_qdp"/>
+        </record>
+        <record id="expense_report_6" model="hr.expense.sheet">
+            <field name="name">Visit to Canada for promotional programs</field>
+            <field name="state">approve</field>
+            <field name="employee_id" ref="hr.employee_qdp"/>
+        </record>
+
+        <record id="hotel_bill_expense_NJ" model="hr.expense">
+            <field name="name">NJ Hotel Expenses</field>
+            <field name="analytic_account_id" ref="analytic.analytic_nebula"/>
+            <field name="product_id" ref="hotel_rent"/>
+            <field name="unit_amount" eval="500.0"/>
+            <field name="product_uom_id" ref="product.product_uom_day"/>
+            <field name="quantity" eval="3.0" />
+            <field name="sheet_id" ref="expense_refused_report_1"/>
+        </record>
+        <record id="travel_by_air_expense_to_SAN" model="hr.expense">
+            <field name="name">Travel by Air for on Site Consultance For San Fransisco Customer</field>
+            <field name="analytic_account_id" ref="analytic.analytic_our_super_product"/>
+            <field name="product_id" ref="air_ticket"/>
+            <field name="unit_amount" eval="800.0"/>
+            <field name="product_uom_id" ref="product.product_uom_unit"/>
+            <field name="quantity" eval="1.0" />
+            <field name="sheet_id" ref="expense_report_1"/>
+            <field name="employee_id" ref="hr.employee_jod"/>
+        </record>
+        <record id="hotel_bill_expense_SAN" model="hr.expense">
+            <field name="name">San Fransisco Hotel Expenses</field>
+            <field name="analytic_account_id" ref="analytic.analytic_our_super_product"/>
+            <field name="product_id" ref="hotel_rent"/>
+            <field name="unit_amount" eval="600.0"/>
+            <field name="product_uom_id" ref="product.product_uom_day"/>
+            <field name="quantity" eval="2.0" />
+            <field name="sheet_id" ref="expense_report_1"/>
+        </record>
+
+        <record id="hr_expense_air_ticket_1" model="ir.attachment">
+            <field name="name">john_doe_air_ticket.pdf</field>
+            <field name="datas_fname">john_doe_air_ticket.pdf</field>
+            <field name="datas" type="base64" file="hr_expense/data/john_doe_air_ticket.pdf"></field>
+            <field name="res_model">hr.expense</field>
+            <field name="res_id" ref="travel_by_air_expense_to_SAN"/>
+        </record>
+
+        <record id="travel_by_car_expense_to_france" model="hr.expense">
+            <field name="name">Travel by car US from New York to Pennsylvania</field>
+            <field name="analytic_account_id" ref="analytic.analytic_our_super_product"/>
+            <field name="product_id" ref="car_travel"/>
+            <field name="unit_amount" eval="200.0"/>
+            <field name="product_uom_id" ref="product.product_uom_unit"/>
+            <field name="quantity" eval="1.0" />
+            <field name="sheet_id" ref="expense_report_2"/>
+        </record>
+        <record id="travel_by_air_expense_to_US" model="hr.expense">
+            <field name="name">Travel by Air for GAP Analysis For US Customer</field>
+            <field name="analytic_account_id" ref="analytic.analytic_our_super_product"/>
+            <field name="product_id" ref="air_ticket"/>
+            <field name="unit_amount" eval="600.0" />
+            <field name="product_uom_id" ref="product.product_uom_unit"/>
+            <field name="quantity" eval="1.0"/>
+            <field name="employee_id" ref="hr.employee_qdp"/>
+        </record>
+        <record id="hotel_bill_expense_US" model="hr.expense">
+            <field name="name">Hotel Expenses</field>
+            <field name="analytic_account_id" ref="analytic.analytic_nebula"/>
+            <field name="product_id" ref="hotel_rent"/>
+            <field name="unit_amount" eval="400.0" />
+            <field name="product_uom_id" ref="product.product_uom_day"/>
+            <field name="quantity" eval="5.0"/>
+            <field name="sheet_id" ref="expense_refused_report_2"/>
+            <field name="employee_id" ref="hr.employee_qdp"/>
+            <field name="state">draft</field>
+        </record>
+        <record id="travel_by_car_expense_to_Paris" model="hr.expense">
+            <field name="name">System setup at customer's location</field>
+            <field name="analytic_account_id" ref="analytic.analytic_our_super_product"/>
+            <field name="product_id" ref="car_travel"/>
+            <field name="unit_amount" eval="400.0"/>
+            <field name="product_uom_id" ref="product.product_uom_unit"/>
+            <field name="quantity" eval="1.0" />
+            <field name="sheet_id" ref="expense_report_3"/>
+        </record>
+        <record id="hotel_bill_expense_NY" model="hr.expense">
+            <field name="name">Hotel Expenses</field>
+            <field name="analytic_account_id" ref="analytic.analytic_nebula"/>
+            <field name="product_id" ref="hotel_rent"/>
+            <field name="unit_amount" eval="200.0"/>
+            <field name="product_uom_id" ref="product.product_uom_day"/>
+            <field name="quantity" eval="5.0"/>
+            <field name="sheet_id" ref="expense_report_4"/>
+        </record>
+        <record id="hotel_bill_expense_PN" model="hr.expense">
+            <field name="name">Hotel Expenses</field>
+            <field name="analytic_account_id" ref="analytic.analytic_nebula"/>
+            <field name="product_id" ref="hotel_rent"/>
+            <field name="unit_amount" eval="400.0"/>
+            <field name="product_uom_id" ref="product.product_uom_day"/>
+            <field name="quantity" eval="2.0"/>
+            <field name="sheet_id" ref="expense_report_5"/>
+            <field name="employee_id" ref="hr.employee_qdp"/>
+        </record>
+        <record id="travel_by_car_expense_to_Canada" model="hr.expense">
+            <field name="name">Trip to Canada customers for promotional programs</field>
+            <field name="analytic_account_id" ref="analytic.analytic_our_super_product"/>
+            <field name="product_id" ref="car_travel"/>
+            <field name="unit_amount" eval="400.0"/>
+            <field name="product_uom_id" ref="product.product_uom_unit"/>
+            <field name="quantity" eval="2.0"/>
+            <field name="sheet_id" ref="expense_report_6"/>
+            <field name="employee_id" ref="hr.employee_qdp"/>
+        </record>
     </data>
 </odoo>
