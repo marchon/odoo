@@ -20,13 +20,10 @@ class ResConfigSettings(models.TransientModel):
         ], string="Bill Control", default_model="product.template",
         help="This default value is applied to any new product created. "
         "This can be changed in the product detail form.", default="receive")
-    module_purchase_requisition = fields.Boolean("Purchase Agreements")
     group_warning_purchase = fields.Boolean("Purchase Warnings", implied_group='purchase.group_warning_purchase')
-    module_stock_dropshipping = fields.Boolean("Dropshipping")
     group_manage_vendor_price = fields.Boolean("Vendor Pricelists",
         implied_group="purchase.group_manage_vendor_price")
     module_account_3way_match = fields.Boolean("3-way matching: purchases, receptions and bills")
-    is_installed_sale = fields.Boolean(string="Is the Sale Module Installed")
     group_analytic_account_for_purchases = fields.Boolean('Analytic accounting for purchases',
         implied_group='purchase.group_analytic_accounting')
     po_lead = fields.Float(related='company_id.po_lead')
@@ -44,7 +41,6 @@ class ResConfigSettings(models.TransientModel):
     def get_values(self):
         res = super(ResConfigSettings, self).get_values()
         res.update(
-            is_installed_sale=self.env['ir.module.module'].search([('name', '=', 'sale'), ('state', '=', 'installed')]).id,
             use_po_lead=self.env['ir.config_parameter'].sudo().get_param('purchase.use_po_lead')
         )
         return res

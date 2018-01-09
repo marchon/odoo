@@ -9,7 +9,7 @@ from odoo import api, fields, models, tools
 
 
 class PurchaseReport(models.Model):
-    _name = "purchase.report"
+    _name = "purchase.stock.report"
     _description = "Purchases Orders"
     _auto = False
     _order = 'date_order desc, price_total desc'
@@ -22,7 +22,7 @@ class PurchaseReport(models.Model):
         ('purchase', 'Purchase Order'),
         ('done', 'Done'),
         ('cancel', 'Cancelled')
-        ], 'Order Status', readonly=True)
+    ], 'Order Status', readonly=True)
     product_id = fields.Many2one('product.product', 'Product', readonly=True)
     picking_type_id = fields.Many2one('stock.warehouse', 'Warehouse', readonly=True)
     partner_id = fields.Many2one('res.partner', 'Vendor', readonly=True)
@@ -50,9 +50,9 @@ class PurchaseReport(models.Model):
 
     @api.model_cr
     def init(self):
-        tools.drop_view_if_exists(self._cr, 'purchase_report')
+        tools.drop_view_if_exists(self._cr, 'purchase_stock_report')
         self._cr.execute("""
-            create view purchase_report as (
+            create view purchase_stock_report as (
                 WITH currency_rate as (%s)
                 select
                     min(l.id) as id,

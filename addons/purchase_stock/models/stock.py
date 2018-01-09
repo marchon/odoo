@@ -110,7 +110,7 @@ class StockWarehouse(models.Model):
     @api.multi
     def _get_buy_pull_rule(self):
         try:
-            buy_route_id = self.env['ir.model.data'].get_object_reference('purchase', 'route_warehouse0_buy')[1]
+            buy_route_id = self.env['ir.model.data'].get_object_reference('purchase_stock', 'route_warehouse0_buy')[1]
         except:
             buy_route_id = self.env['stock.location.route'].search([('name', 'like', _('Buy'))])
             buy_route_id = buy_route_id[0].id if buy_route_id else False
@@ -129,7 +129,7 @@ class StockWarehouse(models.Model):
 
     @api.multi
     def create_routes(self):
-        res = super(StockWarehouse, self).create_routes() # super applies ensure_one()
+        res = super(StockWarehouse, self).create_routes()  # super applies ensure_one()
         if self.buy_to_resupply:
             buy_pull_vals = self._get_buy_pull_rule()
             buy_pull = self.env['procurement.rule'].create(buy_pull_vals)
@@ -161,7 +161,7 @@ class StockWarehouse(models.Model):
     def _update_name_and_code(self, name=False, code=False):
         res = super(StockWarehouse, self)._update_name_and_code(name, code)
         warehouse = self[0]
-        #change the buy procurement rule name
+        # change the buy procurement rule name
         if warehouse.buy_pull_id and name:
             warehouse.buy_pull_id.write({'name': warehouse.buy_pull_id.name.replace(warehouse.name, name, 1)})
         return res
@@ -173,6 +173,7 @@ class StockWarehouse(models.Model):
             if warehouse.in_type_id.default_location_dest_id != warehouse.buy_pull_id.location_id:
                 warehouse.buy_pull_id.write({'location_id': warehouse.in_type_id.default_location_dest_id.id})
         return res
+
 
 class ReturnPicking(models.TransientModel):
     _inherit = "stock.return.picking"
