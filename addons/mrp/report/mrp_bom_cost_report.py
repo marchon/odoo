@@ -60,15 +60,12 @@ class MrpBomCost(models.AbstractModel):
 
     @api.multi
     def get_lines(self, boms):
-        product_lines = []
+        product_lines = {}
         for bom in boms:
             products = bom.product_id
             if not products:
                 products = bom.product_tmpl_id.product_variant_ids
             for product in products:
-                attributes = []
-                for value in product.attribute_value_ids:
-                    attributes += [(value.attribute_id.name, value.name)]
                 total, lines = self.get_bom_lines(bom.bom_line_ids, product, bom.product_qty, False, 0)
                 if lines:
                     product_line = {'bom': bom, 'name': product.display_name, 'lines': [], 'total': 0.0,
@@ -76,15 +73,15 @@ class MrpBomCost(models.AbstractModel):
                                     'reference': bom.code,
                                     'product_uom_qty': bom.product_qty,
                                     'product_uom': bom.product_uom_id,
-                                    'attributes': attributes, 'id': product.id}
+                                    'id': product.id}
                     product_line['lines'] = lines
                     product_line['total'] = total
-                    product_lines += [product_line]
+                    product_lines[product] = product_line
         return product_lines
 
     @api.model
     def get_report_values(self, docids, data=None):
         boms = self.env['mrp.bom'].browse(docids)
-        res = self.get_lines(boms)
+        bom_prodcuts = self.get_lines(boms)
         print_mode = self.env.context.get('print_mode')
-        return {'lines': res, 'print_mode': print_mode}
+        return {'bom_prodcuts': bom_prodcuts, 'print_mode': print_mode}

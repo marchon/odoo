@@ -33,8 +33,7 @@ var BomReportAction = ReportAction.extend({
             'action': action,
         }, window.location.origin);
     },
-    _make_table_expandable: function () {
-        var $body = $(this.iframe).contents().find('html body');
+    _make_table_expandable: function ($body) {
         $body.find('.reports_m2o_web_action').on('click', this.openM2ORecord);
         $body.find('.header').hide();  // hide header
         var $trExpandable = $body.find('.tr_expandable');
@@ -54,9 +53,23 @@ var BomReportAction = ReportAction.extend({
             }
         });
     },
+    _add_variant_selector: function ($body) {
+        var $product_select = $body.find('#product_select');
+        if ($product_select.length){
+            $body.find('div.page:not(:first)').addClass('hidden');
+        }
+        $product_select.on('change', function (ev){
+            $body.find('.page').addClass('hidden');
+            var variantID = $(this).val();
+            var className = 'variant_' + variantID;
+            $body.find('.' + className).removeClass('hidden');
+        });
+    },
     _on_iframe_loaded: function () {
         this._super.apply(this, arguments);
-        this._make_table_expandable();
+        var $body = $(this.iframe).contents().find('html body');
+        this._make_table_expandable($body);
+        this._add_variant_selector($body);
     },
 });
 

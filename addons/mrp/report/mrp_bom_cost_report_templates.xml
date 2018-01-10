@@ -2,14 +2,28 @@
 <odoo>
     <template id="mrp_bom_cost_report">
         <t t-call="web.html_container">
-            <t t-foreach="lines" t-as="line">
+            <div class="form-horizontal mt32" t-if="print_mode == 'html' and len(bom_prodcuts.keys()) > 1" >
+                <div class="form-group">
+                    <label for="product_select" class="col-sm-3 control-label">Select Product Variant:</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" id="product_select">
+                            <t t-foreach="bom_prodcuts.keys()" t-as="variant">
+                                <option t-att-value="variant.id"><t t-esc="variant.display_name"/></option>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <t t-foreach="bom_prodcuts" t-as="product">
+                <t t-set="line" t-value="product_value"/>
                 <t t-call="web.internal_layout">
-                    <div class="page">
+                    <div t-attf-class="page variant_#{product.id}">
                         <t t-set="currency" t-value="line['currency']"/>
                         <h1>BoM Structure &amp; Cost</h1>
                         <span>
                             <t t-if="line['reference']">
-                                Reference: <t t-esc="line['reference']"/>
+                                Reference:
+                                <t t-esc="line['reference']"/>
                             </t>
                         </span>
                         <h4 class="mb64">
@@ -47,7 +61,6 @@
                                                 <i class="fa fa-caret-right td-caret" aria-hidden="true"></i>
                                             </t>
                                             <a class="mt8 mb16 reports_m2o_web_action" href="#" t-att-res-id="bom_line['product_id'].id" res-model="product.product">
-                                                <!-- <h3 t-esc="line['name']"/> -->
                                                 <span t-esc="bom_line['product_id'].display_name"/>
                                             </a>
                                         </td>
@@ -61,7 +74,6 @@
                                             <span t-esc="bom_line['price_unit']" t-options='{"widget": "monetary", "display_currency": currency}'/>
                                         </td>
                                         <td class="text-right">
-                                            <!-- <span style="color: white;" t-esc="'... '*(bom_line['level'])"/> -->
                                             <span t-esc="bom_line['total_price']" t-options='{"widget": "monetary", "display_currency": currency}'/>
                                         </td>
                                     </tr>
