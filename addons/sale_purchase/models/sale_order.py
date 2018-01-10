@@ -105,7 +105,6 @@ class SaleOrderLine(models.Model):
                 if not purchase_order:
                     values = line._purchase_service_prepare_order_values(supplierinfo)
                     purchase_order = PurchaseOrder.create(values)
-                    supplier_po_map[partner_supplier.id] = purchase_order
                 else:  # update origin of existing PO
                     so_name = line.order_id.name
                     origins = []
@@ -116,6 +115,7 @@ class SaleOrderLine(models.Model):
                         purchase_order.write({
                             'origin': ', '.join(origins)
                         })
+                supplier_po_map[partner_supplier.id] = purchase_order
 
                 # add a PO line to the PO
                 values = self._purchase_service_prepare_line_values(purchase_order)
