@@ -31,6 +31,20 @@ class StockMove(models.Model):
     created_purchase_line_id = fields.Many2one('purchase.order.line',
         'Created Purchase Order Line', ondelete='set null', readonly=True, copy=False)
 
+    def _merge_moves_fields(self):
+        """ If it exists a RFQ for a move that will be merged the move
+        dest on the RFQ line will lose its reference. This override will
+        update the move dest ids on purchase order line to the new
+        common move.
+        """
+        move_dict = super(StockMove, self)._merge_moves_fields()
+        related_rfq = self.mapped('created_purchase_line_id').filtered(lambda po_line: po_line.order_id.state not in ('purchase', 'done', 'cancel'))
+        if related_rfq:
+            move_dict.update({
+                'created_purchase_line_id': related_rfq.id,
+            })
+        return move_dict
+
     @api.model
     def _prepare_merge_moves_distinct_fields(self):
         distinct_fields = super(StockMove, self)._prepare_merge_moves_distinct_fields()
