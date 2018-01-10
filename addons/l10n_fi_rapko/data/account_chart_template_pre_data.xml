@@ -11,7 +11,9 @@
     <!-- Account Chart Template -->
     <record id="chart_template_fi_rapko" model="account.chart.template">
         <field name="name">Finnish Chart of Accounts (Raportointikoodisto)</field>
-        <field name="code_digits">5</field>
+        <field name="code_digits">6</field>
+        <field name="bank_account_code_prefix">1910</field>
+        <field name="cash_account_code_prefix">1901</field>
         <field name="currency_id" ref="base.EUR"/>
         <field name="transfer_account_id" ref="a19190"/>
     </record>
