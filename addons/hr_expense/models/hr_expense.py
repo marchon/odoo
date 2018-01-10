@@ -412,10 +412,12 @@ class HrExpense(models.Model):
         pattern = '\[([^)]*)\]'
         product_code = re.search(pattern, expense_description)
         if product_code is None:
-            product = default_product
+            # to select first word from string
+            product_to_search = expense_description.partition(' ')[0]
+            product = self.env['product.product'].search(['|', ('name', '=ilike', product_to_search), ('default_code', '=ilike', product_to_search)]) or default_product
         else:
             expense_description = expense_description.replace(product_code.group(), '')
-            product = self.env['product.product'].search([('default_code', 'ilike', product_code.group(1))]) or default_product
+            product = self.env['product.product'].search(['|', ('name', '=ilike', product_code.group(1)), ('default_code', '=ilike', product_code.group(1))]) or default_product
 
         pattern = '[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?'
         # Match the last occurence of a float in the string
@@ -442,7 +444,25 @@ class HrExpense(models.Model):
             'unit_amount': price,
             'company_id': employee.company_id.id,
         })
-        return super(HrExpense, self).message_new(msg_dict, custom_values)
+        if not custom_values['employee_id']:
+            self._send_hr_expense_mail(msg_dict)
+            raise Exception(_('Expense can not be registered. can not be found given email address in employee.'))
+        expense = super(HrExpense, self).message_new(msg_dict, custom_values)
+        self._send_hr_expense_mail(msg_dict, expense)
+        return expense
+
+    def _send_hr_expense_mail(self, msg_dict, expense=False):
+        expense_template = self.env.ref('hr_expense.hr_expense_template_expense_register')
+        rendered_body = expense_template.render({'expense': expense}, engine='ir.qweb')
+        body = self.env['mail.template']._replace_local_links(rendered_body)
+        hr_expense_mail_values = {
+            'body_html': body,
+            'subject': 'Re: %s' % msg_dict.get('subject', ''),
+            'email_to': msg_dict.get('email_from', False),
+            'auto_delete': True,
+            'references': msg_dict.get('message_id'),
+        }
+        return self.env['mail.mail'].create(hr_expense_mail_values).send()
 
 
 class HrExpenseSheet(models.Model):

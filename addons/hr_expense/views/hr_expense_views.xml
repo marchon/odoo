@@ -286,7 +286,7 @@
                                 <label for="default_code"/>
                                 <div>
                                     <field name="default_code"/>
-                                    <i class="text-muted oe_edit_only">Use [Reference] as a subject prefix for incoming receipts</i>
+                                    <i class="text-muted oe_edit_only">Use this reference as a subject prefix when submitting by email.</i>
                                 </div>
                             </group>
                             <group string="Accounting">
