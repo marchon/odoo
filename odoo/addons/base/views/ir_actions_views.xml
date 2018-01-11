@@ -140,7 +140,7 @@
             <field name="name">ir.actions.windows.tree</field>
             <field name="model">ir.actions.act_window</field>
             <field name="arch" type="xml">
-                <tree string="Open Window">
+                <tree string="Open Window" invalidate_cache="1">
                     <field name="name"/>
                     <field name="res_model"/>
                     <field name="view_type"/>
@@ -154,7 +154,7 @@
             <field name="name">ir.actions.windows.form</field>
             <field name="model">ir.actions.act_window</field>
             <field name="arch" type="xml">
-                <form string="Open a Window">
+                <form string="Open a Window" invalidate_cache="1">
                     <group>
                         <group>
                             <field name="name"/>

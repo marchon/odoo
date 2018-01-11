@@ -4,7 +4,7 @@
         <record id="ir_filters_view_form" model="ir.ui.view">
             <field name="model">ir.filters</field>
             <field name="arch" type="xml">
-                <form string="Filters">
+                <form string="Filters" invalidate_cache="1">
                   <sheet>
                     <group col="4">
                         <field name="name"/>
@@ -26,7 +26,7 @@
         <record id="ir_filters_view_tree" model="ir.ui.view">
             <field name="model">ir.filters</field>
             <field name="arch" type="xml">
-                <tree string="Filters">
+                <tree string="Filters" invalidate_cache="1">
                     <field name="name"/>
                     <field name="model_id"/>
                     <field name="user_id"/>
