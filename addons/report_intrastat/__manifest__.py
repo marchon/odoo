@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 {
-    'name': 'Intrastat Reporting',
+    'name': 'Intrastat & EC Sales List',
     'category': 'Accounting',
     'description': """
 A module that adds intrastat reports.
@@ -10,7 +10,7 @@ A module that adds intrastat reports.
 
 This module gives the details of the goods traded between the countries of
 European Union.""",
-    'depends': ['base', 'product', 'delivery', 'stock', 'sale_management', 'purchase'],
+    'depends': ['account'],
     'data': [
         'data/report_intrastat_data.xml',
         'report/report_intrastat_invoice_template.xml',
