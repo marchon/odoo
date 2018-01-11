@@ -1,0 +1,12 @@
+<odoo>
+	<record id="account_invoice_l10n_in_form" model="ir.ui.view">
+        <field name="name">account.invoice.l10n.in.form</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//page[@name='other_info']//field[@name='name']" position="after">
+        		<field name="refund_reason_id" groups="base.group_user" attrs="{'invisible': [('type', 'not in', ('out_refund','in_refund'))]}" widget="selection"/>
+        	</xpath>
+       	</field>
+    </record>
+</odoo>

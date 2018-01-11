@@ -14,6 +14,7 @@ class AccountInvoice(models.Model):
             invoice.amount_total_words = invoice.currency_id.amount_to_text(invoice.amount_total)
 
     amount_total_words = fields.Char("Total (In Words)", compute="_compute_amount_total_words")
+    refund_reason_id = fields.Many2one("account.invoice.refund.reason", string="Selected Reason")
 
     def _get_printed_report_name(self):
         self.ensure_one()
@@ -41,3 +42,17 @@ class AccountInvoice(models.Model):
                 tax_line['tag_ids'] = TAX.browse(tax_line['id']).tag_ids.ids
             tax_datas[line.id] = tax_lines
         return tax_datas
+
+    @api.multi
+    def _invoice_line_group_tax_values(self):
+        self.ensure_one()
+        tax_datas = {}
+        cgst_tag_id = self.env.ref('l10n_in.cgst_tag_tax').id
+        sgst_tag_id = self.env.ref('l10n_in.sgst_tag_tax').id
+        for line in self.mapped('tax_line_ids'):
+            tax_rate = line.tax_id.amount
+            if sgst_tag_id in line.tax_id.tag_ids.ids or cgst_tag_id in line.tax_id.tag_ids.ids:
+                tax_rate *= 2
+            tax_datas.setdefault(tax_rate,{}).update({'base_amount':line.base})
+        return tax_datas
+

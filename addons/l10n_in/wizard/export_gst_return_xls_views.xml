@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <record id="export_gst_return_xls_view_form" model="ir.ui.view">
+        <field name="name">Export Gst Return</field>
+        <field name="model">export.gst.return.xls</field>
+        <field name="arch" type="xml">
+        <form string="Export GSTR xls">
+            <group>
+                <group>
+                    <field name="month"/>
+                </group>
+                <group>
+                    <field name="year"/>
+                </group>
+            </group>
+            <group>
+                <field name="export_summary"/>
+            </group>
+            <footer>
+                <button name="export_gstr" string="Export(XLSX)" type="object" class="btn-primary"/>
+                <button string="Cancel" class="btn-default" special="cancel" />
+            </footer>
+
+        </form>
+        </field>
+    </record>
+
+    <record id="export_gst_return_xls_action" model="ir.actions.act_window">
+        <field name="name">Export GSTR</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">export.gst.return.xls</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        name="Export GSTR"
+        parent="l10n_in.account_reports_in_statements_menu"
+        sequence="2"
+        action="export_gst_return_xls_action"
+        id="menu_export_gst_return_xls"
+        />
+
+</odoo>

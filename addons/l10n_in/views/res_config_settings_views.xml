@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.l10n_in</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <div id="rounding_method" position="before">
+                <div class="col-xs-12 col-md-6 o_setting_box" title="The sales made to large consumers (where the invoice amount is above 2.5 lakh rupees) or unregistered businesses." groups="base.group_no_one">
+                    <div class="o_setting_left_pane"/>
+                    <div class="o_setting_right_pane">
+                        <label for="l10n_in_b2cs_max"/>
+                        <div class="text-muted">
+                            Amount For B2CL OR B2CS
+                        </div>
+                         <div class="content-group">
+                            <field name="l10n_in_b2cs_max" class="o_light_label mt16"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+	</record>
+
+</odoo>
