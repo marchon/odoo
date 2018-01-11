@@ -798,6 +798,15 @@
         t-att-autofocus="widget.attrs.autofocus"
         t-att-id="widget.idForLabel"/>
 </t>
+<t t-name="FieldTimezone">
+    <span>
+        <t t-call="FieldSelection"/>
+        <span
+            style="display:none"
+            class="fa fa-exclamation-triangle o_tz_warning"
+            title="Timezone Mismatch : The timezone of your browser doesn't match the selected one. The time in Odoo is displayed according to your field timezone."/>
+    </span>
+</t>
 <t t-name="FieldRadio.button">
     <div class="o_radio_item">
         <input type="radio" class="o_radio_input" t-att-checked="checked ? true : undefined"
