@@ -297,6 +297,61 @@
         </div>
     </div>
 
+    <!-- Crop Image Dialog (allows to crop image on the page) -->
+    <div t-name="web_editor.dialog.crop_image" class="o_crop_image_dialog">
+        <div class="row">
+           <div class="o_crop_area col-md-8">
+                <img class="img img-responsive o_cropper_image" t-att-src="widget.imageSrc" />
+           </div>
+           <div class="o_crop_options col-md-4">
+                <div class="mt8">
+                    <h4 class="text-muted o-heading"><i class="fa fa-cog"/> Options </h4>
+                    <a href="#" class="btn btn-xs btn-default pull-right" data-event="reset"><i class="fa fa-refresh"/> Reset</a>
+                </div>
+                <div class="o-option-box">
+                    <span class="text-muted text-center o-title"><i class="fa fa-object-ungroup"></i> Aspect Ratio</span>
+                    <div class="btn-group btn-group-justified" data-toggle="buttons">
+                        <a href="#" class="btn btn-sm btn-primary active" data-event="ratio" data-value="">
+                            <input type="radio" name="aspect_ratio_option" checked="checked"/> Free
+                        </a>
+                        <a href="#" class="btn btn-sm btn-primary" data-event="ratio" data-value="1.77">
+                            <input type="radio" name="aspect_ratio_option" /> 16:9
+                        </a>
+                        <a href="#" class="btn btn-sm btn-primary" data-event="ratio" data-value="1.33">
+                            <input type="radio" name="aspect_ratio_option" /> 4:3
+                        </a>
+                        <a href="#" class="btn btn-sm btn-primary" data-event="ratio" data-value="1.00">
+                            <input type="radio" name="aspect_ratio_option" /> 1:1
+                        </a>
+                        <a href="#" class="btn btn-sm btn-primary" data-event="ratio" data-value="0.66">
+                            <input type="radio" name="aspect_ratio_option" /> 2:3
+                        </a>
+                    </div>
+                </div>
+                <div class="o-option-box">
+                    <span class="text-muted text-center o-title"><i class="fa fa-search"/> Zoom</span>
+                    <div class="btn-group btn-group-justified" role="group">
+                        <a href="#" class="btn btn-sm btn-primary" data-event="zoom" data-value="0.1"><i class="fa fa-search-plus"/> Zoom In</a>
+                        <a href="#" class="btn btn-sm btn-primary" data-event="zoom" data-value="-0.1"><i class="fa fa-search-minus"/> Zoom Out</a>
+                    </div>
+                </div>
+                <div class="o-option-box">
+                    <span class="text-muted text-center o-title"><i class="fa fa-retweet"></i> Rotate</span>
+                    <div class="btn-group btn-group-justified" role="group">
+                        <a href="#" class="btn btn-sm btn-primary" data-event="rotate" data-value="45"><i class="fa fa-rotate-left"/> Clockwise</a>
+                        <a href="#" class="btn btn-sm btn-primary" data-event="rotate" data-value="-45"><i class="fa fa-rotate-right"/> Anti-clockwise</a>
+                    </div>
+                </div>
+                <div class="o-option-box">
+                    <span class="text-muted text-center o-title"><i class="fa fa-arrows"></i> Flip</span>
+                    <div class="btn-group btn-group-justified" role="group">
+                        <a href="#" class="btn btn-sm btn-primary" data-event="flip" data-value="horizontal" data-x="1"><i class="fa fa-arrows-h"/> Horizontally</a>
+                        <a href="#" class="btn btn-sm btn-primary" data-event="flip" data-value="vertical" data-y="1"><i class="fa fa-arrows-v"/> Vertically</a>
+                    </div>
+                </div>
+           </div>
+        </div>
+    </div>
     <!--=================-->
     <!-- Snippet options -->
     <!--=================-->

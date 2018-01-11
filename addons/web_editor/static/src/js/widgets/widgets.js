@@ -1,6 +1,7 @@
 odoo.define('web_editor.widget', function (require) {
 'use strict';
 
+var ajax = require('web.ajax');
 var base = require('web_editor.base');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
@@ -1495,10 +1496,160 @@ var LinkDialog = Dialog.extend({
     },
 });
 
+/**
+ * CropImageDialog widget. Let users crop a image.
+ */
+var CropImageDialog = Dialog.extend({
+    template: 'web_editor.dialog.crop_image',
+    xmlDependencies: Dialog.prototype.xmlDependencies.concat(
+        ['/web_editor/static/src/xml/editor.xml']
+    ),
+    jsLibs: [
+        '/web_editor/static/lib/cropper/js/cropper.js',
+    ],
+    cssLibs: [
+        '/web_editor/static/lib/cropper/css/cropper.css'
+    ],
+    events : _.extend({}, Dialog.prototype.events, {
+        'click .o_crop_options [data-event]': '_onClickCropOptions',
+    }),
+    init: function (parent, data) {
+        var options = {
+            title: _t('Crop Image'),
+            buttons: [{
+                text: _t('Save'),
+                classes: 'btn-primary',
+                click: this._onSave.bind(this),
+                close: true
+            }, {
+                text: _t('Discard'),
+                close: true
+            }],
+        };
+        this.$image = data.image;
+        var imageSrc = data.image.attr('src');
+        // If image from cross origin then get it from controller
+        var host = window.location.host;
+        var isExternalURL = imageSrc.match(/^https?:\/\//);
+        if (isExternalURL && imageSrc.indexOf(host) === -1) {
+            imageSrc = '/web_editor/crop_cross_origin_img?url=' + imageSrc;
+        }
+        this.imageSrc = imageSrc;
+        this._super(parent, options);
+    },
+    /**
+     * Load the libraries
+     *
+     * @override
+     */
+    willStart: function () {
+        return $.when(ajax.loadLibs(this), this._super.apply(this, arguments));
+    },
+    /**
+     * @override
+     */
+    start: function () {
+        this.$cropperImage = this.$el.find('.o_cropper_image');
+        this.$cropperImage.cropper({viewMode: 1});
+        return this._super.apply(this, arguments);
+     },
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
+    /**
+     * @override
+     */
+     destroy: function () {
+        this.$cropperImage.cropper('destroy');
+        this._super.apply(this, arguments);
+    },
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
+    /**
+     * Get base64 of cropper image
+     *
+     * @private
+     * @returns {string} image base64
+     */
+    _getImageBase64: function () {
+        var canvas = this.$cropperImage.cropper('getCroppedCanvas');
+        return canvas.toDataURL().split(',')[1];
+    },
+    /**
+     * Create a new image
+     *
+     * @private
+     * @returns {Deferred}
+     */
+    _onSave: function () {
+        var self = this;
+        var values = {
+            name: 'crop_image',
+            datas: this._getImageBase64(),
+            public: 'True'
+        };
+        return this._rpc({
+            model: 'ir.attachment',
+            method: 'create',
+            args: [values],
+        }).then(function(res) {
+            self.$image.attr('src', '/web/image/' + res);
+            self.$image.trigger('content_changed');
+        });
+    },
+
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
+
+    /**
+     * Handle crop options
+     *
+     * @private
+     * @param {MouseEvent} event
+     */
+    _onClickCropOptions: function (event) {
+        event.preventDefault();
+        var $option = $(event.currentTarget);
+        var value = $option.data('value');
+        switch ($option.data('event')) {
+            case 'ratio':
+                this.$cropperImage.cropper('setAspectRatio', value);
+                break;
+            case 'zoom':
+                this.$cropperImage.cropper('zoom', value);
+                break;
+            case 'rotate':
+                this.$cropperImage.cropper('rotate', value);
+                break;
+            case 'flip':
+                if (value === 'horizontal') {
+                    var scaleX = -$option.data('x');
+                    $option.data('x', scaleX);
+                    this.$cropperImage.cropper('scaleX', scaleX);
+                } else if (value === 'vertical') {
+                    var scaleY = -$option.data('y');
+                    $option.data('y', scaleY);
+                    this.$cropperImage.cropper('scaleY', scaleY);
+                }
+                break;
+            case 'reset':
+                this.$cropperImage.cropper('reset');
+                break;
+        }
+    },
+});
+
 return {
     Dialog: Dialog,
     AltDialog: AltDialog,
     MediaDialog: MediaDialog,
     LinkDialog: LinkDialog,
+    CropImageDialog: CropImageDialog,
 };
 });
