@@ -63,6 +63,12 @@ class PurchaseOrder(models.Model):
     # --------------------------------------------------
 
     @api.multi
+    def button_approve(self, force=False):
+        result = super(PurchaseOrder, self).button_approve(force=force)
+        self._create_picking()
+        return result
+
+    @api.multi
     def button_cancel(self):
         for order in self:
             for pick in order.picking_ids:
