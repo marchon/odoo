@@ -19,13 +19,6 @@ var FieldTimezoneMismatch = FieldSelection.extend({
     /**
      * @override
      */
-    start: function () {
-        this._datetime = setInterval(this._renderDateTimeTimezone.bind(this), 1000);
-        return this._super.apply(this, arguments);
-    },
-    /**
-     * @override
-     */
     destroy: function () {
         clearInterval(this._datetime);
         return this._super();
