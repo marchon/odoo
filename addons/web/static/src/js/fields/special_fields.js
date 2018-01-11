@@ -16,8 +16,6 @@ var _t = core._t;
  * the time difference between UTC time and local time, in minutes.
  */
 var FieldTimezoneMismatch = FieldSelection.extend({
-    template: 'FieldTimezone',
-
     /**
      * @override
      */
@@ -57,9 +55,9 @@ var FieldTimezoneMismatch = FieldSelection.extend({
         var offset = this.recordData.tz_offset.match(/([+-])([0-9]{2})([0-9]{2})/);
         offset = (offset[1] === '-' ? -1 : 1) * (parseInt(offset[2])*60 + parseInt(offset[3]));
         var datetime = field_utils.format.datetime(moment.utc().add(offset, 'minutes'), this.field, {timezone: false});
-        var content = this.$option.text().split(' ')[0];
+        var content = this.$option.html().split(' ')[0];
         content += '    ('+ datetime + ')';
-        this.$option.text(content);
+        this.$option.html(content);
     },
     /**
      * Display the timezone alert
@@ -71,15 +69,16 @@ var FieldTimezoneMismatch = FieldSelection.extend({
      */
     _renderTimezoneMismatch: function () {
 
-        // if (!warning.length) {
-        //     var $span = $('<span class="fa fa-exclamation-triangle o_tz_warning"/>');
-        //     $span.insertAfter(this.$el);
-        //     $span.attr('title', _t("Timezone Mismatch : The timezone of your browser doesn't match the selected one. The time in Odoo is displayed according to your field timezone."));
-        //     this.$el = this.$el.add($span);
-        //     warning = $span;
-        // }
+        var warning = this.$el.filter('.o_tz_warning');
+        if (!warning.length) {
+            var $span = $('<span class="fa fa-exclamation-triangle o_tz_warning"/>');
+            $span.insertAfter(this.$el);
+            $span.attr('title', _t("Timezone Mismatch : The timezone of your browser doesn't match the selected one. The time in Odoo is displayed according to your field timezone."));
+            this.$el = this.$el.add($span);
+            warning = $span;
+        }
 
-        var value = this.$el.find('select').val();
+        var value = this.$el.first().val();
 
         if (this.$option) {
             this.$option.text(value);
@@ -95,7 +94,6 @@ var FieldTimezoneMismatch = FieldSelection.extend({
             this.mismatch = (browserOffset !== userOffset);
         }
 
-        var warning = this.$el.find('.o_tz_warning');
         if (this.mismatch){
             warning.show();
 
