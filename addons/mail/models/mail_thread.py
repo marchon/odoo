@@ -304,12 +304,12 @@ class MailThread(models.AbstractModel):
         that adds alias information. """
         model = self._context.get('empty_list_help_model')
         res_id = self._context.get('empty_list_help_id')
-        catchall_domain = self.env['ir.config_parameter'].sudo().get_param("mail.catchall.domain")
+        alias_domain = self.env.user.company_id.alias_domain
         document_name = self._context.get('empty_list_help_document_name', _('document'))
         nothing_here = not help
         alias = None
 
-        if catchall_domain and model and res_id:  # specific res_id -> find its alias (i.e. section_id specified)
+        if alias_domain and model and res_id:  # specific res_id -> find its alias (i.e. section_id specified)
             record = self.env[model].sudo().browse(res_id)
             # check that the alias effectively creates new records
             if record.alias_id and record.alias_id.alias_name and \
@@ -317,7 +317,7 @@ class MailThread(models.AbstractModel):
                     record.alias_id.alias_model_id.model == self._name and \
                     record.alias_id.alias_force_thread_id == 0:
                 alias = record.alias_id
-        if not alias and catchall_domain and model:  # no res_id or res_id not linked to an alias -> generic help message, take a generic alias of the model
+        if not alias and alias_domain and model:  # no res_id or res_id not linked to an alias -> generic help message, take a generic alias of the model
             Alias = self.env['mail.alias']
             aliases = Alias.search([
                 ("alias_parent_model_id.model", "=", model),
@@ -701,7 +701,7 @@ class MailThread(models.AbstractModel):
         alias of the document, if it exists. Override this method to implement
         a custom behavior about reply-to for generated emails. """
         model_name = self.env.context.get('thread_model') or self._name
-        alias_domain = self.env['ir.config_parameter'].sudo().get_param("mail.catchall.domain")
+        alias_domain = self.env.user.company_id.alias_domain
         res = dict.fromkeys(res_ids, False)
 
         # alias domain: check for aliases and catchall

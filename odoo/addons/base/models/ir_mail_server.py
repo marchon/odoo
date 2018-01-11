@@ -366,16 +366,16 @@ class IrMailServer(models.Model):
         The default bounce address is used to set the envelop address if no
         envelop address is provided in the message.  It is formed by properly
         joining the parameters "mail.bounce.alias" and
-        "mail.catchall.domain".
+        "alias_domain".
 
         If "mail.bounce.alias" is not set it defaults to "postmaster-odoo".
 
-        If "mail.catchall.domain" is not set, return None.
+        If "alias_domain" is not set, return None.
 
         '''
         get_param = self.env['ir.config_parameter'].sudo().get_param
         postmaster = get_param('mail.bounce.alias', default='postmaster-odoo')
-        domain = get_param('mail.catchall.domain')
+        domain = self.env.user.company_id.alias_domain
         if postmaster and domain:
             return '%s@%s' % (postmaster, domain)
 
