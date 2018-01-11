@@ -68,20 +68,13 @@ var FieldTimezoneMismatch = FieldSelection.extend({
      * @private
      */
     _renderTimezoneMismatch: function () {
-
-        var warning = this.$el.filter('.o_tz_warning');
-        if (!warning.length) {
-            var $span = $('<span class="fa fa-exclamation-triangle o_tz_warning"/>');
-            $span.insertAfter(this.$el);
-            $span.attr('title', _t("Timezone Mismatch : The timezone of your browser doesn't match the selected one. The time in Odoo is displayed according to your field timezone."));
-            this.$el = this.$el.add($span);
-            warning = $span;
-        }
-
-        var value = this.$el.first().val();
+        // we need to clean the warning to have maximum one alert
+        this.$el.last().filter('.o_tz_warning').remove();
+        this.$el = this.$el.first();
+        var value = this.$el.val();
 
         if (this.$option) {
-            this.$option.text(value);
+            this.$option.html(this.$option.html().split(' ')[0]);
         }
 
         var userOffset = this.recordData.tz_offset;
@@ -95,14 +88,15 @@ var FieldTimezoneMismatch = FieldSelection.extend({
         }
 
         if (this.mismatch){
-            warning.show();
+            var $span = $('<span class="fa fa-exclamation-triangle o_tz_warning"/>');
+            $span.insertAfter(this.$el);
+            $span.attr('title', _t("Timezone Mismatch : The timezone of your browser doesn't match the selected one. The time in Odoo is displayed according to your field timezone."));
+            this.$el = this.$el.add($span);
 
             this.$option = this.$('option').filter(function () {
                 return $(this).attr('value') === value;
             });
             this._renderDateTimeTimezone();
-        } else {
-            warning.hide();
         }
     },
 });
