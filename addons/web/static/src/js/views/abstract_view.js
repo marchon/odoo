@@ -89,6 +89,8 @@ var AbstractView = Class.extend({
             },
         };
 
+        this.modelParams = {};
+
         this.loadParams = {
             context: params.context,
             count: params.count || ((this.controllerParams.ids !== undefined) &&
@@ -166,7 +168,7 @@ var AbstractView = Class.extend({
     getModel: function (parent) {
         if (!this.model) {
             var Model = this.config.Model;
-            this.model = new Model(parent);
+            this.model = new Model(parent, this.modelParams);
         }
         return this.model;
     },

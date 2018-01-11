@@ -136,14 +136,17 @@ var x2ManyCommands = {
 var BasicModel = AbstractModel.extend({
     /**
      * @override
+     * @param {boolean} [params.invalidateCache=false] if true, invalidates the
+     *   data_manager's cache on create, update and delete operations
      */
-    init: function () {
+    init: function (parent, params) {
         // this mutex is necessary to make sure some operations are done
         // sequentially, for example, an onchange needs to be completed before a
         // save is performed.
         this.mutex = new concurrency.Mutex();
 
         this.localData = Object.create(null);
+        this.invalidateCache = params && params.invalidateCache || false;
         this._super.apply(this, arguments);
     },
 
@@ -247,6 +250,10 @@ var BasicModel = AbstractModel.extend({
                         record.count--;
                     }
                 });
+                // clear the data_manager's cache if requested
+                if (self.invalidateCache) {
+                    core.bus.trigger('clear_cache');
+                }
             });
     },
     /**
@@ -908,11 +915,16 @@ var BasicModel = AbstractModel.extend({
                         // Erase changes as they have been applied
                         record._changes = {};
 
+                        // Clear the data_manager's cache is requested
+                        if (self.invalidateCache) {
+                            core.bus.trigger('clear_cache');
+                        }
+
                         self.unfreezeOrder(record.id);
 
                         // Update the data directly or reload them
                         if (shouldReload) {
-                            self._fetchRecord(record).then(function (record) {
+                            self._fetchRecord(record).then(function () {
                                 def.resolve(changedFields);
                             });
                         } else {
@@ -1022,8 +1034,13 @@ var BasicModel = AbstractModel.extend({
                 method: 'write',
                 args: [resIDs, { active: value }],
             })
-            .then(this.reload.bind(this, parentID));
-
+            .then(function () {
+                // clear the data_manager's cache is requested
+                if (self.invalidateCache) {
+                    core.bus.trigger('clear_cache');
+                }
+                return self.reload(parentID);
+            });
     },
     /**
      * Toggle (open/close) a group in a grouped list, then fetches relevant

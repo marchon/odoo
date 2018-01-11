@@ -16,6 +16,7 @@
             <rng:optional><rng:attribute name="string"/></rng:optional>
             <rng:optional><rng:attribute name="duplicate"/></rng:optional>
             <rng:optional><rng:attribute name="import"/></rng:optional>
+            <rng:optional><rng:attribute name="invalidate_cache"/></rng:optional>
             <rng:optional><rng:attribute name="class"/></rng:optional>
             <rng:optional><rng:attribute name="colors"/></rng:optional>
             <rng:optional><rng:attribute name="fonts"/></rng:optional>

@@ -7,7 +7,6 @@ var core = require('web.core');
 var fieldRegistry = require('web.field_registry');
 var FormView = require('web.FormView');
 var pyeval = require('web.pyeval');
-var RainbowMan = require('web.RainbowMan');
 var testUtils = require('web.test_utils');
 var widgetRegistry = require('web.widget_registry');
 var Widget = require('web.Widget');
@@ -6308,5 +6307,99 @@ QUnit.module('Views', {
         form.destroy();
     });
 
+    QUnit.test('edition in form view with attribute invalidate_cache="1"', function (assert) {
+        assert.expect(4);
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form invalidate_cache="1">' +
+                    '<sheet>' +
+                        '<field name="display_name"/>' +
+                    '</sheet>' +
+                '</form>',
+            res_id: 1,
+            viewOptions: {
+                mode: 'edit',
+            },
+            mockRPC: function (route, args) {
+                if (args.method === 'write') {
+                    assert.step('write');
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+        core.bus.on('clear_cache', form, assert.step.bind(assert, 'clear_cache'));
+
+        form.$('.o_field_widget[name=display_name]').val('new value').trigger('input');
+        form.$buttons.find('.o_form_button_save').click();
+
+        assert.verifySteps(['write', 'clear_cache']);
+
+        form.destroy();
+    });
+
+    QUnit.test('creation in form view with attribute invalidate_cache="1"', function (assert) {
+        assert.expect(4);
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form invalidate_cache="1">' +
+                    '<sheet>' +
+                        '<field name="display_name"/>' +
+                    '</sheet>' +
+                '</form>',
+            mockRPC: function (route, args) {
+                if (args.method === 'create') {
+                    assert.step('create');
+                }
+                return this._super.apply(this, arguments);
+            },
+        });
+        core.bus.on('clear_cache', form, assert.step.bind(assert, 'clear_cache'));
+
+        form.$('.o_field_widget[name=display_name]').val('value').trigger('input');
+        form.$buttons.find('.o_form_button_save').click();
+
+        assert.verifySteps(['create', 'clear_cache']);
+
+        form.destroy();
+    });
+
+    QUnit.test('deletion in form view with attribute invalidate_cache="1"', function (assert) {
+        assert.expect(4);
+
+        var form = createView({
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form invalidate_cache="1">' +
+                    '<sheet>' +
+                        '<field name="display_name"/>' +
+                    '</sheet>' +
+                '</form>',
+            mockRPC: function (route, args) {
+                if (args.method === 'unlink') {
+                    assert.step('unlink');
+                }
+                return this._super.apply(this, arguments);
+            },
+            viewOptions: {
+                sidebar: true,
+            },
+        });
+        core.bus.on('clear_cache', form, assert.step.bind(assert, 'clear_cache'));
+
+        form.sidebar.$('a:contains(Delete)').click();
+        $('.modal .modal-footer .btn-primary').click(); // confirm
+
+        assert.verifySteps(['unlink', 'clear_cache']);
+
+        form.destroy();
+    });
 });
+
 });

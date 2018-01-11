@@ -22,8 +22,9 @@ var ServicesMixin = require('web.ServicesMixin');
 var AbstractModel = Class.extend(mixins.EventDispatcherMixin, ServicesMixin, {
     /**
      * @param {Widget} parent
+     * @param {Object} [params]
      */
-    init: function (parent) {
+    init: function (parent, params) {
         mixins.EventDispatcherMixin.init.call(this);
         this.setParent(parent);
     },

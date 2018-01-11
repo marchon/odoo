@@ -48,8 +48,10 @@ var BasicView = AbstractView.extend({
         this.loadParams.limit = parseInt(viewInfo.arch.attrs.limit, 10) || params.limit;
         this.loadParams.viewType = this.viewType;
         this.loadParams.parentID = params.parentID;
-        this.recordID = params.recordID;
 
+        this.modelParams.invalidateCache = !!JSON.parse(viewInfo.arch.attrs.invalidate_cache || 0);
+
+        this.recordID = params.recordID;
         this.model = params.model;
     },
 

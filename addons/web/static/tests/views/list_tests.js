@@ -2,6 +2,7 @@ odoo.define('web.list_tests', function (require) {
 "use strict";
 
 var config = require('web.config');
+var core = require('web.core');
 var basicFields = require('web.basic_fields');
 var FormView = require('web.FormView');
 var ListView = require('web.ListView');
@@ -2352,7 +2353,6 @@ QUnit.module('Views', {
         list.destroy();
     });
 
-
     QUnit.test('navigation with tab on a one2many list with create="0"', function (assert) {
         assert.expect(4);
 
@@ -3173,7 +3173,6 @@ QUnit.module('Views', {
         list.destroy();
     });
 
-
     QUnit.test('basic support for widgets', function (assert) {
         assert.expect(1);
 
@@ -3224,6 +3223,54 @@ QUnit.module('Views', {
         list.destroy();
     });
 
+    QUnit.test('list view with attribute invalidate_cache="1"', function (assert) {
+        assert.expect(8);
+
+        var list = createView({
+            View: ListView,
+            model: 'foo',
+            data: this.data,
+            arch: '<tree invalidate_cache="1" editable="top">' +
+                    '<field name="display_name"/>' +
+                '</tree>',
+            mockRPC: function (route, args) {
+                if (_.contains(['create', 'unlink', 'write'], args.method)) {
+                    assert.step(args.method);
+                }
+                return this._super.apply(this, arguments);
+            },
+            viewOptions: {
+                sidebar: true,
+            },
+        });
+        core.bus.on('clear_cache', list, assert.step.bind(assert, 'clear_cache'));
+
+        // create a new record
+        list.$buttons.find('.o_list_button_add').click();
+        list.$('.o_selected_row .o_field_widget').val('some value').trigger('input');
+        list.$buttons.find('.o_list_button_save').click();
+
+        // edit an existing record
+        list.$('.o_data_cell:first').click();
+        list.$('.o_selected_row .o_field_widget').val('new value').trigger('input');
+        list.$buttons.find('.o_list_button_save').click();
+
+        // delete a record
+        list.$('.o_data_row:first .o_list_record_selector input').click();
+        list.sidebar.$('a:contains(Delete)').click();
+        $('.modal .modal-footer .btn-primary').click(); // confirm
+
+        assert.verifySteps([
+            'create',
+            'clear_cache',
+            'write',
+            'clear_cache',
+            'unlink',
+            'clear_cache',
+        ]);
+
+        list.destroy();
+    });
 });
 
 });
