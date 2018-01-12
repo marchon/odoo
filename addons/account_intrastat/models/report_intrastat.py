@@ -3,7 +3,8 @@
 
 from odoo import fields, models
 
-class res_country(models.Model):
+
+class ResCountry(models.Model):
     _inherit = 'res.country'
 
     intrastat = fields.Boolean(string="Intrastat member")
@@ -21,4 +22,4 @@ class ReportIntrastatCode(models.Model):
 class ProductTemplate(models.Model):
     _inherit = "product.template"
 
-    intrastat_id = fields.Many2one('report.intrastat.code', string='Intrastat Code')
+    intrastat_id = fields.Many2one('report.intrastat.code', string='Commodity Code')

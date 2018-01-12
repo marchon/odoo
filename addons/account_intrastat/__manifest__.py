@@ -18,6 +18,7 @@ European Union.""",
         'security/ir.model.access.csv',
         'security/report_intrastat_security.xml',
         'views/report_intrastat_views.xml',
+        'views/product_views.xml',
     ],
     'tests': ['../account/test/account_minimal_test.xml'],
 }
