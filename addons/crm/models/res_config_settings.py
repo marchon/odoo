@@ -20,7 +20,7 @@ class ResConfigSettings(models.TransientModel):
             ('alias_parent_model_id.model', '=', 'crm.team'),
             ('alias_parent_thread_id', '=', False),
             ('alias_defaults', '=', '{}'),
-            ('company_id', '=', self.env.user.company_id.id)
+            ('company_id', '=', self.env.user.company_id.id or False)
         ], limit=1)
         return alias
 

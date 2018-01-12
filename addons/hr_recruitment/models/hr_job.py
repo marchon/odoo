@@ -25,7 +25,7 @@ class Job(models.Model):
     document_ids = fields.One2many('ir.attachment', compute='_compute_document_ids', string="Documents")
     documents_count = fields.Integer(compute='_compute_document_ids', string="Document Count")
     alias_id = fields.Many2one(
-        'mail.alias', "Alias", ondelete="restrict", required=True,
+        'mail.alias', "Alias", ondelete="restrict", required=True, domain=lambda self: ['|', ('company_id', '=', self.env.user.company_id.id), ('company_id', '=', False)],
         help="Email alias for this job position. New emails will automatically create new applicants for this job position.")
     color = fields.Integer("Color Index")
 

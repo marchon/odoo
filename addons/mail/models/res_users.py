@@ -18,9 +18,10 @@ class Users(models.Model):
     _name = 'res.users'
     _inherit = ['res.users']
 
-    alias_id = fields.Many2one('mail.alias', 'Alias', ondelete="set null", required=False,
-            help="Email address internally associated with this user. Incoming "\
-                 "emails will appear in the user's notifications.", copy=False, auto_join=True)
+    alias_id = fields.Many2one(
+        'mail.alias', 'Alias', ondelete="set null", required=False,
+        domain=lambda self: ['|', ('company_id', '=', self.env.user.company_id.id), ('company_id', '=', False)],
+        help="Email address internally associated with this user. Incoming emails will appear in the user's notifications.", copy=False, auto_join=True)
     alias_contact = fields.Selection([
         ('everyone', 'Everyone'),
         ('partners', 'Authenticated Partners'),
@@ -32,6 +33,7 @@ class Users(models.Model):
         help="Policy on how to handle Chatter notifications:\n"
              "- Handle by Emails: notifications are sent to your email address\n"
              "- Handle in Odoo: notifications appear in your Odoo Inbox")
+
     def __init__(self, pool, cr):
         """ Override of __init__ to add access rights on notification_email_send
             and alias fields. Access rights are disabled by default, but allowed

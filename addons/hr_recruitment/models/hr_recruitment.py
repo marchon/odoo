@@ -23,7 +23,7 @@ class RecruitmentSource(models.Model):
     source_id = fields.Many2one('utm.source', "Source", ondelete='cascade', required=True)
     email = fields.Char(related='alias_id.display_name', string="Email", readonly=True)
     job_id = fields.Many2one('hr.job', "Job ID")
-    alias_id = fields.Many2one('mail.alias', "Alias ID")
+    alias_id = fields.Many2one('mail.alias', "Alias ID", domain=lambda self: ['|', ('company_id', '=', self.env.user.company_id.id), ('company_id', '=', False)])
 
     @api.multi
     def create_alias(self):

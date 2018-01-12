@@ -204,7 +204,7 @@ class Project(models.Model):
                                domain=['|', ('stage_id.fold', '=', False), ('stage_id', '=', False)])
     color = fields.Integer(string='Color Index')
     user_id = fields.Many2one('res.users', string='Project Manager', default=lambda self: self.env.user, track_visibility="onchange")
-    alias_id = fields.Many2one('mail.alias', string='Alias', ondelete="restrict", required=True,
+    alias_id = fields.Many2one('mail.alias', string='Alias', ondelete="restrict", required=True, domain=lambda self: ['|', ('company_id', '=', self.env.user.company_id.id), ('company_id', '=', False)],
         help="Internal email associated with this project. Incoming emails are automatically synchronized "
              "with Tasks (or optionally Issues if the Issue Tracker module is installed).")
     privacy_visibility = fields.Selection([
