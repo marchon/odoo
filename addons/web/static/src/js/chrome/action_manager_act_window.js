@@ -161,7 +161,6 @@ ActionManager.include({
             className: 'o_act_window', // used to remove the padding in dialogs
             jsID: controllerID,
             viewType: viewType,
-            widget: controller,
         };
         Object.defineProperty(controller, 'title', {
             get: function () {
@@ -171,24 +170,24 @@ ActionManager.include({
         });
         this.controllers[controllerID] = controller;
 
-        // build the view options from different sources
-        viewOptions = _.extend({
-            action: action,
-            limit: action.limit,
-        }, action.flags, action.flags[viewType], viewOptions, action.env);
-        // pass the controllerID to the views as an hook for further communication
-        // with trigger_up (e.g. for 'env_updated' event)
-        viewOptions = _.extend(viewOptions, { controllerID: controllerID });
-
-        var viewDescr = _.findWhere(action.views, {type: viewType});
-        var view = new viewDescr.Widget(viewDescr.fieldsView, viewOptions);
         if (!options || !options.lazy) {
+            // build the view options from different sources
+            viewOptions = _.extend({
+                action: action,
+                limit: action.limit,
+            }, action.flags, action.flags[viewType], viewOptions, action.env);
+            // pass the controllerID to the views as an hook for further
+            // communication with trigger_up (e.g. for 'env_updated' event)
+            viewOptions = _.extend(viewOptions, { controllerID: controllerID });
+
+            var viewDescr = _.findWhere(action.views, {type: viewType});
+            var view = new viewDescr.Widget(viewDescr.fieldsView, viewOptions);
             var def = $.Deferred();
             action.controllers[viewType] = def;
             view.getController(this).then(function (widget) {
                 if (def.state() === 'rejected') {
-                    // the deferred has been rejected meanwhile, meaning that the
-                    // action has been removed, so simply destroy the widget
+                    // the deferred has been rejected meanwhile, meaning that
+                    // the action has been removed, so simply destroy the widget
                     widget.destroy();
                 } else {
                     // AAB: change this logic to stop using the properties mixin
@@ -207,7 +206,7 @@ ActionManager.include({
                 delete self.controllers[controllerID];
             });
         } else {
-            action.controllers[viewType] = $.when(controller);
+            action.controllers[viewType] = $.Deferred().resolve(controller);
         }
 
         return action.controllers[viewType];
@@ -236,6 +235,7 @@ ActionManager.include({
 
         return this._loadViews(action).then(function (fieldsViews) {
             var views = self._generateActionViews(action, fieldsViews);
+            action._views = action.views;  // save the initial attribute
             action.views = views;
             if (fieldsViews.search) {
                 action.searchFieldsView = fieldsViews.search;
@@ -307,8 +307,8 @@ ActionManager.include({
             modelName: action.res_model,
             ids: resID ? [resID] : undefined,
             currentId: resID || undefined,
-            domain: undefined,
-            context: action.context,
+            domain: [],
+            context: action.context || {},
             groupBy: actionGroupBy,
         };
     },
