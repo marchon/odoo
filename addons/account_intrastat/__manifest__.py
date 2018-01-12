@@ -12,13 +12,10 @@ This module gives the details of the goods traded between the countries of
 European Union.""",
     'depends': ['account'],
     'data': [
-        'data/report_intrastat_data.xml',
-        'report/report_intrastat_invoice_template.xml',
-        'report/report_intrastat_report.xml',
         'security/ir.model.access.csv',
-        'security/report_intrastat_security.xml',
-        'views/report_intrastat_views.xml',
+        'data/country_data.xml',
+        'views/intrastat_code_views.xml',
         'views/product_views.xml',
+        'views/country_views.xml',
     ],
-    'tests': ['../account/test/account_minimal_test.xml'],
 }
