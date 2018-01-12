@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="l10n_fr_pos_cert2_assets" inherit_id="point_of_sale.assets" name="l10n_fr_pos_cert2 assets">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/l10n_fr_pos_cert2/static/src/js/models.js"></script>
+            </xpath>
+        </template>
+    </data>
+</openerp>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-extend="XmlReceipt">
+        <t t-jquery="div:last" t-operation="append">
+            <div>Hash: <t t-esc='receipt.l10n_fr_hash'/></div>
+        </t>
+    </t>
+</templates>
