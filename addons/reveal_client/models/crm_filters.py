@@ -11,7 +11,6 @@ from odoo.addons.crm.models import crm_stage
 _logger = logging.getLogger(__name__)
 
 # TODO: replace it with our server's url
-#DEFAULT_ENDPOINT = 'http://192.168.1.150:8069/reveal'
 DEFAULT_ENDPOINT = 'http://localhost:8069/reveal'
 
 class CRMLeadRule(models.Model):
@@ -66,8 +65,14 @@ class CRMLeadRule(models.Model):
     # TODO: remove this method just for test
     @api.multi
     def test_rule(self):
-        self.process_reveal_request('/', "180.211.100.4")
-        # ip =   # "104.192.139.233"  # "180.211.100.4"  # "208.66.29.178"
+        return {
+            'name': 'action_test_rule',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'reveal.test.rule',
+            'type': 'ir.actions.act_window',
+            'target': 'new',
+        }
 
     @api.model
     def process_reveal_request(self, path, ip):
