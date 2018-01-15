@@ -4,7 +4,7 @@
 
 
 ===============
-Testing Modules
+Testing Odoo
 ===============
 
 Odoo provides support for testing modules using unittest.
@@ -90,3 +90,7 @@ As of Odoo 8, running tests outside of the install/update cycle is not
 supported.
 
 .. _unittest documentation: https://docs.python.org/2/library/unittest.html
+
+TODO
+
+- testing JS: tours/qunit tests async testing, in a sync way...

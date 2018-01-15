@@ -1,8 +1,23 @@
 :banner: banners/build_interface_ext.jpg
 
 =============================
-Building Interface Extensions
+Customizing the web client
 =============================
+
+TODO
+
+- Tutorial (long version, ...)
+    => links to overview/reference/cheatsheet
+    - creating a new JS view
+    - customizing an existing view (js_class)
+    - flickering => widget lifecycle...
+    - creating a new widget
+    - editing an existing widget
+    - creating a new field widget
+    - modifying an existing field widget
+    - client action
+    - self = this...
+    - something with deferred...
 
 .. highlight:: javascript
 

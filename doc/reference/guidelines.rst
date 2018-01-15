@@ -960,3 +960,7 @@ of the changes.
 
 .. note:: Use the long description to explain the *why* not the
           *what*, the *what* can be seen in the diff
+
+TODO
+    - coding guidelines linter
+    - JS: sections...

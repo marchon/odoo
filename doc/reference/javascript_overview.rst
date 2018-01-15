@@ -1,15 +1,27 @@
 :banner: banners/javascript.jpg
 
-.. highlight:: javascript
+====================
+Javascript Overview
+====================
 
-.. default-domain:: js
-
-==========
-Javascript
-==========
-
-.. automodule:: *
-    :members:
+- Overview (links to reference)
+    - js modules
+    - less/css qsm@odoo.com, assets bundle,
+        website style applies to invoices... don't do funny stuff
+    - extend/includes (when it should be used and when it should be avoided)+ various registries
+    - how to make rpc
+    - understanding async code with deferred
+    - overview main modules?
+        - session (get_session_info, ...)
+        - web.config
+    - views design
+    - registries...
+    - talk about external libs: $, _, Moment (locale, <bold>utc to server</bold>, ...), ...
+    - communication between components (trigger_up, direct call)
+    - class/widget
+    - core.bus
+    - component tree
+    - services
 
 =======
 Widgets

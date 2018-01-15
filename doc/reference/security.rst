@@ -100,3 +100,7 @@ access to the field:
 
 .. _foo: http://google.com
 .. _time module: https://docs.python.org/2/library/time.html
+
+
+TODO
+    - security: template, t-esc, t-raw, ?

@@ -1,0 +1,95 @@
+
+JS DOC Future state (???)
+=========================
+
+Sections
+---------------
+
+- Tutorial (long version, ...)
+    => links to overview/reference/cheatsheet
+    - creating a new JS view
+    - customizing an existing view (js_class)
+    - flickering => widget lifecycle...
+    - creating a new widget
+    - editing an existing widget
+    - creating a new field widget
+    - modifying an existing field widget
+    - client action
+    - self = this...
+    - something with deferred...
+
+- Customizing Odoo with JS: cheatsheet (short, link to tutorial/ref)
+    - creating a field widget => extend + registry
+    - modifying field widget => includes
+    - modifying a 'main' widget (homemenu) => includes
+    - creating a new JS view
+    - customizing an existing view (js_class)
+    - creating a new widget
+    - editing an existing widget
+    - creating a new field widget
+    - modifying an existing field widget
+    - client action
+
+- Overview (links to reference)
+    - js modules
+    - less/css qsm@odoo.com, assets bundle,
+        website style applies to invoices... don't do funny stuff
+    - extend/includes (when it should be used and when it should be avoided)+ various registries
+    - how to make rpc
+    - understanding async code with deferred
+    - overview main modules?
+        - session (get_session_info, ...)
+        - web.config
+    - views design
+    - registries...
+    - talk about external libs: $, _, Moment (locale, <bold>utc to server</bold>, ...), ...
+    - communication between components (trigger_up, direct call)
+    - class/widget
+    - core.bus
+    - component tree
+    - services
+
+- JS Reference
+    - js modules
+    - translation
+    - extend/includes (when it should be used and when it should be avoided)+ various registries
+    - how to make rpc : controller/method model
+    - view API
+    - history?
+    - direct access to: Class/Widget/AbstractField/...
+    - class/mixins: this._super, call arguments
+    - inheritance: extend/include/this._super
+    - services
+    - widget API lifecycle, appendTo, event binding, custom events, template, rendering, ...
+    - field widget API
+
+- Testing Modules
+    - testing JS: tours/qunit tests async testing, in a sync way...
+
+- Coding Guidelines
+    - coding guidelines linter
+    - JS: sections...
+
+- Security
+    - security: template, t-esc, t-raw, ?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
