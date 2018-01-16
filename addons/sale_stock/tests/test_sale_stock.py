@@ -25,7 +25,7 @@ class TestSaleStock(TestSale):
 
         # confirm our standard so, check the picking
         self.so.action_confirm()
-        self.assertTrue(self.so.picking_ids, 'Sale Stock: no picking created for "invoice on delivery" stockable products')
+        self.assertTrue(self.so.picking_ids, 'Sale Stock: no picking created for "invoice on delivery" storable products')
         # invoice on order
         self.so.action_invoice_create()
 
@@ -41,7 +41,7 @@ class TestSaleStock(TestSale):
         del_qties = [sol.qty_delivered for sol in self.so.order_line]
         del_qties_truth = [1.0 if sol.product_id.type in ['product', 'consu'] else 0.0 for sol in self.so.order_line]
         self.assertEqual(del_qties, del_qties_truth, 'Sale Stock: delivered quantities are wrong after partial delivery')
-        # invoice on delivery: only stockable products
+        # invoice on delivery: only storable products
         inv_id = self.so.action_invoice_create()
         inv_1 = inv_obj.browse(inv_id)
         self.assertTrue(all([il.product_id.invoice_policy == 'delivery' for il in inv_1.invoice_line_ids]),
@@ -87,7 +87,7 @@ class TestSaleStock(TestSale):
         self.so.action_confirm()
         self.so.order_line._compute_product_updatable()
         self.assertFalse(self.so.order_line[0].product_updatable)
-        self.assertTrue(self.so.picking_ids, 'Sale Stock: no picking created for "invoice on order" stockable products')
+        self.assertTrue(self.so.picking_ids, 'Sale Stock: no picking created for "invoice on order" storable products')
         # let's do an invoice for a deposit of 5%
         adv_wiz = self.env['sale.advance.payment.inv'].with_context(active_ids=[self.so.id]).create({
             'advance_payment_method': 'percentage',
@@ -138,7 +138,7 @@ class TestSaleStock(TestSale):
 
         # confirm our standard so, check the picking
         self.so.action_confirm()
-        self.assertTrue(self.so.picking_ids, 'Sale Stock: no picking created for "invoice on delivery" stockable products')
+        self.assertTrue(self.so.picking_ids, 'Sale Stock: no picking created for "invoice on delivery" storable products')
 
         # invoice in on delivery, nothing should be invoiced
         self.assertEqual(self.so.invoice_status, 'no', 'Sale Stock: so invoice_status should be "no" instead of "%s".' % self.so.invoice_status)
@@ -212,7 +212,7 @@ class TestSaleStock(TestSale):
 
         # confirm our standard so, check the picking
         self.so.action_confirm()
-        self.assertTrue(self.so.picking_ids, 'Sale Stock: no picking created for "invoice on delivery" stockable products')
+        self.assertTrue(self.so.picking_ids, 'Sale Stock: no picking created for "invoice on delivery" storable products')
 
         # invoice in on delivery, nothing should be invoiced
         self.assertEqual(self.so.invoice_status, 'no', 'Sale Stock: so invoice_status should be "nothing to invoice"')

@@ -8,7 +8,7 @@ class TestPacking(TransactionCase):
 
     def test_packing(self):
 
-        # Create a new stockable product
+        # Create a new storable product
 
         product1 = self.env['product.product'].create({
             'name': 'Nice product',

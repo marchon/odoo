@@ -13,7 +13,7 @@
                 <field name="lot_id" groups="stock.group_production_lot"/>
                 <field name="owner_id" groups="stock.group_tracking_owner"/>
                 <group expand='0' string='Filters'>
-                    <filter name="stockable" string="Stockable" domain="[('product_id.type', '=', 'product')]"/>
+                    <filter name="stockable" string="Storable" domain="[('product_id.type', '=', 'product')]"/>
                     <separator/>
                     <filter name='internal_loc' string="Internal Locations" domain="[('location_id.usage','=', 'internal')]"/>
                     <filter name='transit_loc' string="Transit Locations" domain="[('location_id.usage' ,'=', 'transit')]"/>

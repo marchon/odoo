@@ -3224,7 +3224,7 @@
     </record>
 
     <record id="pcg_6061" model="account.account.template">
-      <field name="name">Fournitures non stockables (eau, énergie...)</field>
+      <field name="name">Fournitures non storables (eau, énergie...)</field>
       <field name="code">6061</field>
       <field name="user_type_id" ref="account.data_account_type_expenses"/>
       <field name="chart_template_id" ref="l10n_fr_pcg_chart_template"/>

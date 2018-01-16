@@ -2039,7 +2039,7 @@
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>
   </record>
   <record id="pcg_61251" model="account.account.template">
-    <field name="name">Achats de fournitures non stockables (eau, électricité,,)</field>
+    <field name="name">Achats de fournitures non storables (eau, électricité,,)</field>
     <field name="code">61251</field>
     <field name="user_type_id" ref="account.data_account_type_expenses"/>
     <field name="chart_template_id" ref="l10n_kzc_temp_chart"/>

@@ -3965,31 +3965,31 @@
         <field name="chart_template_id" ref="syscohada_chart_template"/>
     </record>
     <record id="pcg_6051" model="account.account.template">
-        <field name="name">Fournitures non stockables -Eau</field>
+        <field name="name">Fournitures non storables -Eau</field>
         <field name="code">6051</field>
         <field name="user_type_id" ref="account.data_account_type_expenses"/>
         <field name="chart_template_id" ref="syscohada_chart_template"/>
     </record>
     <record id="pcg_6052" model="account.account.template">
-        <field name="name">Fournitures non stockables - Electricité</field>
+        <field name="name">Fournitures non storables - Electricité</field>
         <field name="code">6052</field>
         <field name="user_type_id" ref="account.data_account_type_expenses"/>
         <field name="chart_template_id" ref="syscohada_chart_template"/>
     </record>
     <record id="pcg_6053" model="account.account.template">
-        <field name="name">Fournitures non stockables – Autres énergies</field>
+        <field name="name">Fournitures non storables – Autres énergies</field>
         <field name="code">6053</field>
         <field name="user_type_id" ref="account.data_account_type_expenses"/>
         <field name="chart_template_id" ref="syscohada_chart_template"/>
     </record>
     <record id="pcg_6054" model="account.account.template">
-        <field name="name">Fournitures d'entretien non stockables</field>
+        <field name="name">Fournitures d'entretien non storables</field>
         <field name="code">6054</field>
         <field name="user_type_id" ref="account.data_account_type_expenses"/>
         <field name="chart_template_id" ref="syscohada_chart_template"/>
     </record>
     <record id="pcg_6055" model="account.account.template">
-        <field name="name">Fournitures de bureau non stockables</field>
+        <field name="name">Fournitures de bureau non storables</field>
         <field name="code">6055</field>
         <field name="user_type_id" ref="account.data_account_type_expenses"/>
         <field name="chart_template_id" ref="syscohada_chart_template"/>
