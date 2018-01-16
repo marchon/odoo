@@ -611,8 +611,9 @@ var LineRenderer = Widget.extend(FieldManagerMixin, {
     },
     /**
      * @private
+     * @param {input event} event
      */
-    _onFilterChange: function () {
+    _onFilterChange: function (event) {
         this.trigger_up('change_filter', {'data': _.str.strip($(event.target).val())});
     },
     /**
@@ -662,7 +663,7 @@ var LineRenderer = Widget.extend(FieldManagerMixin, {
      * @param {MouseEvent} event
      */
     _onSelectMoveLine: function (event) {
-        var $el = $(event.target)
+        var $el = $(event.target);
         this._destroyPopover($el);
         var moveLineId = $el.closest('.mv_line').data('line-id');
         this.trigger_up('add_proposition', {'data': moveLineId});
@@ -672,7 +673,7 @@ var LineRenderer = Widget.extend(FieldManagerMixin, {
      * @param {MouseEvent} event
      */
     _onSelectProposition: function (event) {
-        var $el = $(event.target)
+        var $el = $(event.target);
         this._destroyPopover($el);
         var moveLineId = $el.closest('.mv_line').data('line-id');
         this.trigger_up('remove_proposition', {'data': moveLineId});
