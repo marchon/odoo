@@ -138,7 +138,7 @@ TRANSLATED_ELEMENTS = {
     'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'del', 'dfn', 'em',
     'font', 'i', 'ins', 'kbd', 'keygen', 'mark', 'math', 'meter', 'output',
     'progress', 'q', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub',
-    'sup', 'time', 'u', 'var', 'wbr', 'text',
+    'sup', 'time', 'u', 'var', 'wbr', 'text', 'img',
 }
 
 # which attributes must be translated
@@ -252,6 +252,8 @@ def translate_xml_node(node, callback, parse, serialize):
             append_content(result, todo)
             result.tail = node.tail
             has_text = todo_has_text or nonspace(result.text) or nonspace(result.tail)
+            if node.tag == 'img':
+                has_text = True
             return (has_text, result)
 
         # translate the content of todo and append it to result
