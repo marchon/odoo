@@ -3,11 +3,13 @@
 
 import logging
 import uuid
+import requests
 
 from hashlib import md5
 from werkzeug import urls
 
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from odoo.tools.float_utils import float_compare
 from odoo.addons.payment_alipay.controllers.main import AlipayController
 from odoo.addons.payment.models.payment_acquirer import ValidationError
@@ -52,6 +54,38 @@ class PaymentAcquirer(models.Model):
         if environment == 'prod':
             return 'https://mapi.alipay.com/gateway.do'
         return 'https://openapi.alipaydev.com/gateway.do'
+
+    @api.multi
+    def test_alipay_credentials(self):
+        alipay_check_cred_values = ({
+            '_input_charset': 'utf-8',
+            'out_trade_no': self.get_trade_no(),
+            'partner': self.alipay_merchant_partner_id,
+            'subject': 'pro',
+            'total_fee': 1.0
+        })
+        if self.alipay_payment_method == 'standard_checkout':
+            alipay_check_cred_values.update({
+                'service': 'create_forex_trade',
+                'product_code': 'NEW_OVERSEAS_SELLER',
+                'currency': 'USD',
+            })
+        else:
+            alipay_check_cred_values.update({
+                'service': 'create_direct_pay_by_user',
+                'payment_type': 1,
+                'seller_email': self.alipay_seller_email,
+            })
+        sign = self.build_sign(alipay_check_cred_values)
+        alipay_check_cred_values.update({
+            'sign_type': 'MD5',
+            'sign': sign,
+        })
+        url = self.alipay_get_form_action_url()
+        resp = requests.post(url, alipay_check_cred_values)
+        if resp.url == url:
+            raise UserError(_("Credentials Test Failed!"))
+        raise UserError(_("Credentials Test Succeeded!"))
 
     @api.multi
     def alipay_compute_fees(self, amount, currency_id, country_id):

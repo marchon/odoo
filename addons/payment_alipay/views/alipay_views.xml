@@ -12,6 +12,9 @@
                     <field name="alipay_merchant_partner_id"/>
                     <field name="alipay_md5_signature_key"/>
                 </group>
+                <group attrs="{'invisible': [('provider', '!=', 'alipay')]}">
+                    <button name="test_alipay_credentials" type="object" string="Test Credentials" icon="fa-television"/>
+                </group>
             </xpath>
             <field name="payment_flow" position="replace">
                 <field name="payment_flow" attrs="{'invisible': [('provider', '=', 'alipay')]}"/>
