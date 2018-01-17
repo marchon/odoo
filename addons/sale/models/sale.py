@@ -288,9 +288,16 @@ class SaleOrder(models.Model):
         result = super(SaleOrder, self).create(vals)
         return result
 
+    @api.multi
     def write(self, values):
+        """ Override of private write method in order to generate activities
+        based in the invoice status. As the invoice status is a computed field
+        triggered notably when its lines and linked invoice status changes the
+        flow does not necessarily goes through write if the action was not done
+        on the SO itself hence overriding the _write to catch the computation
+        of invoice_status field. """
         pre_not_upselling = self.filtered(lambda order: order.invoice_status != 'upselling')
-        res = super(SaleOrder, self)._write(values)
+        res = super(SaleOrder, self).write(values)
         upselling = self.filtered(lambda order: order.invoice_status == 'upselling' and order in pre_not_upselling)
         for order in upselling:
             order.activity_schedule(
