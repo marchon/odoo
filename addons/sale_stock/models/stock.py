@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 
 from odoo.tools.float_utils import float_is_zero
 
@@ -59,7 +59,7 @@ class StockMove(models.Model):
             debit_val = None
             for res_line in res:
                 line_data = res_line[2]
-                if res_line['account_id'] == interim_output_account.id:
+                if line_data['account_id'] == interim_output_account.id:
                     debit_val = line_data['debit']
                     break
 
@@ -67,28 +67,32 @@ class StockMove(models.Model):
                 raise UserError(_("No debit valuation in interim account"))
 
             #TODO OCO Calcul du montant rectificatif à écrire
-            previous_stock_moves = self.env['stock.move'].search([('state', '=', 'done'), ('group_id', '=' , self.group_id)])
+            previous_stock_moves = self.env['stock.move'].search([('state', '=', 'done'), ('group_id', '=' , self.group_id.id), ('id', '!=', self.id)])
             previously_shipped_qty = sum(previous_stock_moves.mapped('product_qty'))
             sorted_invoice_move_lines = interim_output_invoice_move_lines.sorted(key=lambda x: x.date)
-            difference_with_invoice = 0.0
+            invoice_valuation = 0.0
             qty_to_treat = self.product_qty
+            import pdb; pdb.set_trace()
             for invoice_aml in sorted_invoice_move_lines:
 
-                invoice_aml_qty_left = 0
+                invoice_aml_qty_left = invoice_aml.quantity
+
                 if not float_is_zero(previously_shipped_qty, precision_rounding=self.product_id.uom_id.rounding):
-                    qty_to_sbustract = min(invoice_aml.quantity, previously_shipped_qty)
+                    qty_to_substract = min(invoice_aml.quantity, previously_shipped_qty)
                     previously_shipped_qty -= qty_to_substract
                     invoice_aml_qty_left = invoice_aml.quantity - qty_to_substract
 
                 if invoice_aml_qty_left:
                     treated_qty = min(qty_to_treat, invoice_aml_qty_left)
-                    difference_with_invoice += (invoice_aml.balance / invoice_aml.quantity) * treated_qty
+                    invoice_valuation += (invoice_aml.balance / invoice_aml.quantity) * treated_qty
                     qty_to_treat -= treated_qty
 
                 if float_is_zero(qty_to_treat, precision_rounding=self.product_id.uom_id.rounding):
                     break
 
             # TODO OCO génération des données d'aml supplémentaires
+
+            difference_with_invoice = debit_val + invoice_valuation
 
             if not self.company_id.currency_id.is_zero(difference_with_invoice):
                 balancing_output_line_vals = {
@@ -97,7 +101,7 @@ class StockMove(models.Model):
                     'quantity': qty,
                     'product_uom_id': self.product_id.uom_id.id,
                     'ref': self.picking_id.name,
-                    'partner_id': partner_id,
+                    'partner_id': self.partner_id.id,
                     'credit': difference_with_invoice > 0 and difference_with_invoice or 0,
                     'debit': difference_with_invoice < 0 and -difference_with_invoice or 0,
                     'account_id': interim_output_account.id,
@@ -109,7 +113,7 @@ class StockMove(models.Model):
                     'quantity': qty,
                     'product_uom_id': self.product_id.uom_id.id,
                     'ref': self.picking_id.name,
-                    'partner_id': partner_id,
+                    'partner_id': self.partner_id.id,
                     'credit': difference_with_invoice < 0 and -difference_with_invoice or 0,
                     'debit': difference_with_invoice > 0 and difference_with_invoice or 0,
                     'account_id': product_accounts['expense'].id,
