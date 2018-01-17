@@ -413,7 +413,7 @@ class HolidaysRequest(models.Model):
         if self.state == 'confirm' and self.manager_id.user_id:
             return self.manager_id.user_id
         elif self.department_id.manager_id.user_id:
-            return self.department_id.user_id
+            return self.department_id.manager_id.user_id
         return self.env.user
 
     def action_update_activities(self):
