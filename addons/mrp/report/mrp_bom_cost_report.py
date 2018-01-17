@@ -22,7 +22,8 @@ class MrpBomCost(models.AbstractModel):
 
     def get_bom_lines(self, bom_lines, product, qty, parent_line, level):
         lines = []
-        total = 0
+        boms = bom_lines.mapped('bom_id')
+        total = 0.0
         next_level = level + 1
         for bom_line in bom_lines:
             if bom_line._skip_bom_line(product):
@@ -54,9 +55,13 @@ class MrpBomCost(models.AbstractModel):
             if not parent_line:
                 total += total_price
             for child_line in bom_line.child_line_ids:
-                _, _lines = self.get_bom_lines(child_line, bom_line.product_id, line_quantity, bom_line, next_level)
+                _, _lines, _boms = self.get_bom_lines(child_line, bom_line.product_id, line_quantity, bom_line, next_level)
                 lines += _lines
-        return total, lines
+                boms += _boms
+        return total, lines, boms
+
+    def _operation_lines(self, boms):
+        return {}
 
     @api.multi
     def get_lines(self, boms):
@@ -66,16 +71,20 @@ class MrpBomCost(models.AbstractModel):
             if not products:
                 products = bom.product_tmpl_id.product_variant_ids
             for product in products:
-                total, lines = self.get_bom_lines(bom.bom_line_ids, product, bom.product_qty, False, 0)
+                total, lines, boms = self.get_bom_lines(bom.bom_line_ids, product, bom.product_qty, False, 0)
                 if lines:
-                    product_line = {'bom': bom, 'name': product.display_name, 'lines': [], 'total': 0.0,
-                                    'currency': self.env.user.company_id.currency_id,
-                                    'reference': bom.code,
-                                    'product_uom_qty': bom.product_qty,
-                                    'product_uom': bom.product_uom_id,
-                                    'id': product.id}
-                    product_line['lines'] = lines
-                    product_line['total'] = total
+                    product_line = {
+                        'bom': bom,
+                        'name': product.display_name,
+                        'lines': lines,
+                        'operations': self._operation_lines(boms),
+                        'total': total,
+                        'currency': self.env.user.company_id.currency_id,
+                        'reference': bom.code,
+                        'product_uom_qty': bom.product_qty,
+                        'product_uom': bom.product_uom_id,
+                        'id': product.id
+                    }
                     product_lines[product] = product_line
         return product_lines
 

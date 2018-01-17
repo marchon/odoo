@@ -38,7 +38,7 @@
                                 </strong>
                             </span>
                         </h4>
-                        <table class="table table-condensed">
+                        <table class="table table-condensed bom_cost_table">
                             <thead>
                                 <tr>
                                     <th colspan="3">Product</th>
