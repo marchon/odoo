@@ -263,8 +263,8 @@ class HolidaysAllocation(models.Model):
     # ------------------------------------------------------------
 
     def _get_responsible_for_approval(self):
-        if self.state == 'confirm' and self.manager_id.user_id:
-            return self.manager_id.user_id
+        if self.state == 'confirm':
+            return self.env.user
         elif self.department_id.manager_id.user_id:
             return self.department_id.user_id
         return self.env.user
@@ -273,7 +273,7 @@ class HolidaysAllocation(models.Model):
         self.filtered(lambda hol: hol.state == 'draft').activity_unlink(['hr_holidays.mail_act_leave_approval', 'hr_holidays.mail_act_leave_second_approval'])
         for holiday in self.filtered(lambda hol: hol.state == 'confirm'):
             self.activity_schedule(
-                'hr_holidays.mail_act_leave_approval', fields.Date.today(),
+                'hr_holidays.mail_act_leave_allocation_approval', fields.Date.today(),
                 user_id=holiday._get_responsible_for_approval().id)
         for holiday in self.filtered(lambda hol: hol.state == 'validate1'):
             holiday.activity_feedback(['hr_holidays.mail_act_leave_approval'])
