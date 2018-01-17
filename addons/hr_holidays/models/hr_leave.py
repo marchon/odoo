@@ -8,7 +8,7 @@ import math
 from datetime import timedelta, datetime, time
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError, AccessError, ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
 from odoo.tools.translate import _
 
@@ -50,7 +50,7 @@ class HolidaysRequest(models.Model):
     holiday_status_id = fields.Many2one("hr.leave.type", string="Leave Type", required=True, readonly=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
         domain="['&', ('valid', '=', True), ('employee_visibility', 'in', ['lr', 'both'])]",
-        default= lambda self: self.env['hr.leave.type'].search([], limit=1))
+        default=lambda self: self.env['hr.leave.type'].search([], limit=1))
     employee_id = fields.Many2one('hr.employee', string='Employee', index=True, readonly=True,
         states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]}, default=_default_employee, track_visibility='onchange')
     manager_id = fields.Many2one('hr.employee', related='employee_id.parent_id', string='Manager', readonly=True, store=True)
@@ -95,8 +95,8 @@ class HolidaysRequest(models.Model):
 
     method = fields.Selection(related='holiday_status_id.method', store=True, readonly=True)
 
-    date_from_am_pm = fields.Selection([('am', 'AM'), ('pm', 'PM')], default='am')
-    date_to_am_pm = fields.Selection([('am', 'AM'), ('pm', 'PM')], default='pm')
+    date_from_am_pm = fields.Selection([('am', 'Morning'), ('pm', 'Afternoon')], default='am')
+    date_to_am_pm = fields.Selection([('am', 'Morning'), ('pm', 'Afternoon')], default='pm')
 
     unit = fields.Selection([('half', 'Half Day'),
                              ('day', '1 Day'),
@@ -106,9 +106,14 @@ class HolidaysRequest(models.Model):
                                  ('period', 'Period')],
                                 default='day')
 
+    number_of_hours = fields.Float(
+        'Hours Allocation', copy=False, readonly=True, compute='_compute_number_of_hours',
+        states={'draft': [('readonly', False)], 'confirm': [('readonly', False)]},
+        help='Number of hours of the leave request according to your working schedule.')
+
     def _get_time_from_hour(self, hour, delta=(0, 0, 0)):
         h, m, s = math.floor(hour), math.floor(hour * 3600 // 60 % 60), math.floor(hour * 3600 % 60)
-        return time(hour=max(h+delta[0], 0), minute=max(m+delta[1], 0), second=max(s+delta[2], 0))
+        return time(hour=max(h + delta[0], 0), minute=max(m + delta[1], 0), second=max(s + delta[2], 0))
 
     def _calc_days_temp(self):
         is_set = self.date_from and self.date_to
@@ -144,8 +149,15 @@ class HolidaysRequest(models.Model):
                 hour_from = attendance_from.hour_from if self.date_from_am_pm == 'am' else attendance_from.hour_to
                 hour_to = attendance_to.hour_from if (self.date_from_am_pm if self.unit == 'half' else self.date_to_am_pm) == 'am' else attendance_to.hour_to
 
-                date_from = fields.Datetime.to_string(datetime.combine(first_day, self._get_time_from_hour(hour_from)))
-                date_to = fields.Datetime.to_string(datetime.combine(first_day if self.unit == 'half' else last_day, self._get_time_from_hour(hour_to, (-1, 0, 0))))
+                if self.date_from_am_pm != self.date_to_am_pm and self.unit == 'period':
+                    hour_from = self._get_time_from_hour(hour_from, (0, 0, 0) if self.date_from_am_pm == 'pm' else (-1, 0, 0))
+                    hour_to = self._get_time_from_hour(hour_to, (-1, 0, 0) if self.date_from_am_pm == 'pm' else (0, 0, 0))
+                else:
+                    hour_from = self._get_time_from_hour(hour_from)
+                    hour_to = self._get_time_from_hour(hour_to)
+
+                date_from = fields.Datetime.to_string(datetime.combine(first_day, hour_from))
+                date_to = fields.Datetime.to_string(datetime.combine(first_day if self.unit == 'half' else last_day, hour_to))
             else:
                 # For taking leaves in hours
                 date_from = self.date_from
@@ -184,11 +196,21 @@ class HolidaysRequest(models.Model):
     def _onchange_date_to_am_pm(self):
         self._calc_days_temp()
 
+    @api.onchange('holiday_status_id')
+    def _onchange_holiday_status_id(self):
+        self._calc_days_temp()
+
     @api.multi
     @api.depends('number_of_days_temp')
     def _compute_number_of_days(self):
         for holiday in self:
             holiday.number_of_days = -holiday.number_of_days_temp
+
+    @api.multi
+    @api.depends('number_of_days_temp')
+    def _compute_number_of_hours(self):
+        for holiday in self:
+            holiday.number_of_hours = holiday.number_of_days_temp * HOURS_PER_DAY
 
     @api.multi
     def _compute_can_reset(self):
@@ -326,7 +348,6 @@ class HolidaysRequest(models.Model):
     def _create_resource_leave(self):
         """ This method will create entry in resource calendar leave object at the time of holidays validated """
         for leave in self:
-            is_datetime = leave.method == 'hour' and leave.unit == 'period'
             if not leave.date_from_date:
                 leave.date_from_date = leave.date_from
                 leave.date_to_date = leave.date_to

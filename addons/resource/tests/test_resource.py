@@ -536,12 +536,12 @@ class TestResourceMixin(TestResourceCommon):
         res = self.test.get_work_days_count(
             to_naive_utc(Datetime.from_string('2013-02-12 06:00:00'), self.env.user),
             to_naive_utc(Datetime.from_string('2013-02-22 23:00:00'), self.env.user))
-        self.assertEqual(res, 3.75)  # generic leaves, 3 hours
+        self.assertEqual(res, 3.625)  # generic leaves, 3 hours
 
         res = self.test.get_work_days_count(
             to_naive_utc(Datetime.from_string('2013-02-12 06:00:00'), self.env.user),
             to_naive_utc(Datetime.from_string('2013-02-22 20:00:00'), self.env.user))
-        self.assertEqual(res, 3.5)  # last day is truncated of 3 hours on 12)
+        self.assertEqual(res, 3.375)  # last day is truncated of 3 hours on 12)
 
         self.env['resource.calendar.leaves'].create({
             'name': 'Timezoned Leaves',
@@ -554,7 +554,7 @@ class TestResourceMixin(TestResourceCommon):
         res = self.test.get_work_days_count(
             to_naive_utc(Datetime.from_string('2013-02-12 06:00:00'), self.env.user),
             to_naive_utc(Datetime.from_string('2013-02-22 20:00:00'), self.env.user))
-        self.assertEqual(res, 2.5)  # one day is on leave and last day is truncated of 3 hours on 12)
+        self.assertEqual(res, 2.375)  # one day is on leave and last day is truncated of 3 hours on 12)
 
     def test_work_days_count_timezones_ultra(self):
         # user in timezone UTC+4 is attached to the resource and create leaves

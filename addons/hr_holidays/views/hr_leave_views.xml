@@ -145,8 +145,11 @@
                                 </div>
                               </div>
                             </div>
-                            <div>
-                                <field name="number_of_days_temp" class="oe_inline"/> day(s)
+                            <div attrs="{'invisible': [('method', '=', 'hour')]}">
+                                <field name="number_of_days_temp" class="oe_inline" attrs="{'readonly': [('method', '!=', 'hour')]}"/> day(s)
+                            </div>
+                            <div attrs="{'invisible': [('method', '!=', 'hour')]}">
+                                <field name="number_of_hours" class="oe_inline"/> hour(s)
                             </div>
                         </div>
                     </group>
