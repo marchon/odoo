@@ -77,7 +77,7 @@ class AccountInvoice(models.Model):
                 ]
         return []
 
-    def _get_related_stock_moves(self): #TODO OCO à overrider
+    def _get_related_stock_moves(self):
         """ To be overridden for customer invoices and vendor bills in order to
         return the stock moves related to this invoice.
         """
@@ -121,7 +121,7 @@ class AccountInvoice(models.Model):
                         product_stock_moves = self.env['stock.move'].search([('id','in',invoice_stock_moves.ids), ('product_id','=',product.id)])
 
                         for valuation_line in product_stock_moves.mapped('account_move_ids.line_ids'):
-                            if valuation_line.account_id == product_interim_account and not valuation_line.reconciled:#TODO OCO filtered
+                            if valuation_line.account_id == product_interim_account and not valuation_line.reconciled:
                                 to_reconcile += valuation_line
 
                         if to_reconcile:
