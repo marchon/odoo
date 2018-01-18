@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <template>
     <t t-name="website_sale.product_catalog">
-        <div class="row product_grid o_not_editable" contenteditable="false">
+        <div class="row products_container o_not_editable" contenteditable="false">
             <t t-if="!widget.products.length">
                 <div class="form-group text-center mt16">
                     <div class="text-center text-muted oe_product">
@@ -25,31 +25,33 @@
                     <t t-call="website_sale.carousel"/>
                 </t>
                 <div class="col-md-12 text-center mt16" role="group">
-                    <a t-if="widget._getProducts().length > 1 &amp;&amp; widget.config.device.isMobile" class="fa fa-chevron-left btn btn-default" t-attf-href="##{widget.carouselId}" data-slide="prev"></a>
+                    <a t-if="widget._getCarouselProducts().length > 1 &amp;&amp; widget.isMobile" class="fa fa-chevron-left btn btn-default" t-attf-href="##{widget.carouselID}" data-slide="prev"></a>
                     <a class="btn btn-default o_btn_all_products" href="/shop/">View All Products</a>
-                    <a t-if="widget._getProducts().length > 1 &amp;&amp; widget.config.device.isMobile" class="fa fa-chevron-right btn btn-default" t-attf-href="##{widget.carouselId}"
+                    <a t-if="widget._getCarouselProducts().length > 1 &amp;&amp; widget.isMobile" class="fa fa-chevron-right btn btn-default" t-attf-href="##{widget.carouselID}"
                     data-slide="next"></a>
                 </div>
             </t>
         </div>
     </t>
     <div t-name="website_sale.carousel" class="o-product-catalog-slider">
-        <div t-attf-id="#{widget.carouselId}" class="carousel slide mt48" data-ride="carousel" data-interval="false">
+        <div t-attf-id="#{widget.carouselID}" class="carousel slide mt48" data-ride="carousel" data-interval="false">
             <div class="carousel-inner">
                 <t t-set="size" t-value="widget.size"/>
-                <t t-foreach="widget._getProducts()" t-as="products">
+                <t t-foreach="widget._getCarouselProducts()" t-as="products">
                     <div t-att-class="'item ' + (products_index ==  0 ? 'active' : '')">
                         <t t-call="website_sale.product_cell"/>
                     </div>
                 </t>
             </div>
         </div>
-        <a t-if="widget._getProducts().length > 1 &amp;&amp; !widget.config.device.isMobile" class="o_control left fa fa-chevron-left btn btn-default" t-attf-href="##{widget.carouselId}" data-slide="prev"></a>
-        <a t-if="widget._getProducts().length > 1 &amp;&amp; !widget.config.device.isMobile" class="o_control right fa fa-chevron-right btn btn-default" t-attf-href="##{widget.carouselId}" data-slide="next"></a>
+        <t t-if="widget._getCarouselProducts().length > 1 &amp;&amp; !widget.isMobile">
+            <a class="o_control left fa fa-chevron-left btn btn-default" t-attf-href="##{widget.carouselID}" data-slide="prev"></a>
+            <a class="o_control right fa fa-chevron-right btn btn-default" t-attf-href="##{widget.carouselID}" data-slide="next"></a>
+        </t>
     </div>
     <t t-name="website_sale.product_cell">
         <t t-foreach="products" t-as="product">
-            <div t-attf-class="col-md-#{size} o_product_item" t-att-data-product-id="product.id">
+            <div t-attf-class="col-md-#{size} col-sm-#{size} o_product_item" t-att-data-product-id="product.id">
                 <div class="o_product_wrapper mb8">
                     <div class="o_product_image">
                         <a t-attf-href="/shop/product/#{product.id}">

@@ -182,6 +182,17 @@ options.registry.product_catalog = options.Class.extend({
         });
     },
     /**
+     * Get product ids.
+     *
+     * @private
+     * @returns {Array} Contains product ids.
+     */
+    _getProductIds: function () {
+        return _.map(this.$target.find('.o_product_item'), function (el) {
+            return $(el).data('product-id');
+        });
+    },
+    /**
      * Select products manually.
      *
      * @private
@@ -208,7 +219,7 @@ options.registry.product_catalog = options.Class.extend({
                     {text: _t('Discard'), close: true}
                 ]
             });
-            dialog.$content.find('[name="selection"]').val(self.productCatalog._getProductIds());
+            dialog.$content.find('[name="selection"]').val(self._getProductIds());
             dialog.$content.find('[name="selection"]').select2({
                 width: '100%',
                 multiple: true,
@@ -277,10 +288,10 @@ options.registry.product_catalog = options.Class.extend({
         });
         var options = _.pick(this.productCatalogData, 'catalog_type', 'product_selection', 'product_ids', 'sort_by', 'x', 'y', 'category_id');
         this.productCatalog = new productCatalog.ProductCatalog(options);
-        this.$target.find('.product_grid').remove();
+        this.$target.find('.products_container').remove();
         this.productCatalog.appendTo(this.$target.find('.container')).then(function () {
             if (self.$target.attr('data-sortby') !== 'reorder_products') {
-                self.$target.attr('data-productids', self.productCatalog._getProductIds());
+                self.$target.attr('data-productids', self._getProductIds());
             }
             self.trigger_up('cover_update');
         });

@@ -1034,23 +1034,17 @@ class WebsiteSale(http.Controller):
             phone_code=country.phone_code
         )
 
-    @http.route(['/get_product_catalog_details'], type='json', auth='public', website=True)
+    @http.route('/get_product_catalog_details', type='json', auth='public', website=True)
     def get_product_catalog_details(self, domain, sortby, limit=None):
         ProductTemplate = request.env['product.template']
-        productDetails = []
+        product_details = []
         pricelist = request.website.get_current_pricelist()
-        if domain:
-            domain = [tuple(domain)]
-        domain += [('website_published', '=', True)]
-        order = ''
-        if sortby:
-            order = '%s %s' % (sortby['name'], sortby['asc'] and 'ASC' or 'DESC')
-        products = ProductTemplate.search(domain, order=order, limit=limit)
-        products_available = False
-        if not(products):
-            products_available = True if ProductTemplate.search_count([]) else False
+        products = ProductTemplate.search(domain, order=sortby, limit=limit)
+        products_available = True
+        if not products:
+            products_available = bool(ProductTemplate.search_count([]))
         for product in products:
-            productDetails.append({
+            product_details.append({
                 'id': product.id,
                 'name': product.name,
                 'description_sale': product.description_sale,
@@ -1062,5 +1056,8 @@ class WebsiteSale(http.Controller):
                 'currency_decimal_places': pricelist.currency_id.decimal_places,
                 'rating': product.rating_get_stats(),
             })
-        is_rating_active = request.env.ref('website_sale.product_comment').active
-        return {'products': productDetails, 'is_rating_active': is_rating_active, 'products_available': products_available}
+        return {
+            'products': product_details,
+            'is_rating_active': request.env.ref('website_sale.product_comment').active,
+            'products_available': products_available
+        }
