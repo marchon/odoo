@@ -43,6 +43,8 @@ def _message_post_helper(res_model='', res_id=None, message='', token='', nosubs
                     raise NotFound()
         else:
             raise Forbidden()
+    elif request.env.user.has_group('base.group_portal'):
+        record = record.sudo()
     kw.pop('csrf_token', None)
     kw.pop('attachment_ids', None)
     return record.with_context(mail_create_nosubscribe=nosubscribe).message_post(body=message,
