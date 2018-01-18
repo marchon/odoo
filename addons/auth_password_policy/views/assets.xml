@@ -1,0 +1,8 @@
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend"
+              name="Password Policy Assets">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/auth_password_policy/static/src/js/password_field.js"></script>
+        </xpath>
+    </template>
+</odoo>
