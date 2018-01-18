@@ -26,7 +26,6 @@ class PurchaseReport(models.Model):
     product_id = fields.Many2one('product.product', 'Product', readonly=True)
     picking_type_id = fields.Many2one('stock.warehouse', 'Warehouse', readonly=True)
     partner_id = fields.Many2one('res.partner', 'Vendor', readonly=True)
-    date_approve = fields.Date('Date Approved', readonly=True)
     product_uom = fields.Many2one('product.uom', 'Reference Unit of Measure', required=True)
     company_id = fields.Many2one('res.company', 'Company', readonly=True)
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True)
@@ -58,7 +57,6 @@ class PurchaseReport(models.Model):
                     min(l.id) as id,
                     s.date_order as date_order,
                     s.state,
-                    s.date_approve,
                     s.dest_address_id,
                     spt.warehouse_id as picking_type_id,
                     s.partner_id as partner_id,
@@ -71,7 +69,6 @@ class PurchaseReport(models.Model):
                     s.currency_id,
                     t.uom_id as product_uom,
                     sum(l.product_qty/u.factor*u2.factor) as unit_quantity,
-                    extract(epoch from age(s.date_approve,s.date_order))/(24*60*60)::decimal(16,2) as delay,
                     extract(epoch from age(l.date_planned,s.date_order))/(24*60*60)::decimal(16,2) as delay_pass,
                     count(*) as nbr_lines,
                     sum(l.price_unit / COALESCE(cr.rate, 1.0) * l.product_qty)::decimal(16,2) as price_total,
@@ -104,7 +101,6 @@ class PurchaseReport(models.Model):
                     u.factor,
                     s.currency_id,
                     l.price_unit,
-                    s.date_approve,
                     l.date_planned,
                     l.product_uom,
                     s.dest_address_id,

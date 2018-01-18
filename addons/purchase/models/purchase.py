@@ -112,7 +112,6 @@ class PurchaseOrder(models.Model):
              "delivery order sent by your vendor.")
     date_order = fields.Datetime('Order Date', required=True, states=READONLY_STATES, index=True, copy=False, default=fields.Datetime.now,\
         help="Depicts the date where the Quotation should be validated and converted into a purchase order.")
-    date_approve = fields.Date('Approval Date', readonly=1, index=True, copy=False)
     partner_id = fields.Many2one('res.partner', string='Vendor', required=True, states=READONLY_STATES, change_default=True, track_visibility='always')
     dest_address_id = fields.Many2one('res.partner', string='Drop Ship Address', states=READONLY_STATES,\
         help="Put an address if you want to deliver directly from the vendor to the customer. "\
