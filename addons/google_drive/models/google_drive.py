@@ -7,6 +7,7 @@ import re
 import requests
 import werkzeug.urls
 
+from odoo.tools import pycompat
 from odoo import api, fields, models
 from odoo.exceptions import RedirectWarning, UserError
 from odoo.tools.safe_eval import safe_eval
@@ -154,7 +155,7 @@ class GoogleDrive(models.Model):
           :return: the config id and config name
         '''
         # TO DO in master: fix my signature and my model
-        if isinstance(res_model, basestring):
+        if isinstance(res_model, pycompat.string_types):
             res_model = self.env['ir.model'].search([('model', '=', res_model)]).id
         if not res_id:
             raise UserError(_("Creating google drive may only be done by one at a time."))
