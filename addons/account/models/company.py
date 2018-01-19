@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 import calendar
 
 from odoo import fields, models, api, _
@@ -74,32 +74,42 @@ Best Regards,'''))
         return last_day > last_day_of_month and last_day_of_month or last_day
 
     @api.multi
-    def compute_fiscalyear_dates(self, date):
-        """ Computes the start and end dates of the fiscalyear_from where the given 'date' belongs to
-            @param date: a datetime object
-            @returns: a dictionary with date_from and date_to
-        """
-        self = self[0]
-        initial_date = date
-        date_str = date.strftime(DEFAULT_SERVER_DATE_FORMAT)
+    def compute_fiscalyear_dates(self, current_date):
+        '''Computes the start and end dates of the fiscal year where the given 'date' belongs to.
+
+        :param current_date: A datetime.date/datetime.datetime object.
+        :return: A dictionary containing:
+            * date_from
+            * date_to
+            * [Optionally] record: The fiscal year record.
+        '''
+        self.ensure_one()
+        date_str = current_date.strftime(DEFAULT_SERVER_DATE_FORMAT)
+
+        # Compatibility with datetime.date and datetime.datetime
+        if isinstance(current_date, date):
+            current_date = datetime(current_date.year, current_date.month, current_date.day)
+
+        def resolve_february(company, year):
+            # This method is useful because:
+            # - Take care about leap year.
+            # - Avoid 'out of range' error from datetime.
+            # - Avoid trouble with hours/minutes/seconds/milliseconds caused by using 'replace'.
+            month = company.fiscalyear_last_month
+            last_day_month = calendar.monthrange(year, month)[1]
+            day = min(company.fiscalyear_last_day, last_day_month)
+            return datetime(year, month, day)
 
         # Compute initial date_from/date_to
-        last_month = self.fiscalyear_last_month
-        last_day = self.fiscalyear_last_day
+        date_to = resolve_february(self, current_date.year)
+        date_from = date_to
 
-        if (date.month < last_month or (date.month == last_month and date.day <= last_day)):
-            date = date.replace(month=last_month, day=last_day)
+        if current_date > date_to:
+            date_to = resolve_february(self, date_to.year + 1)
         else:
-            if last_month == 2 and last_day == 29 and (date.year + 1) % 4 != 0:
-                date = date.replace(month=last_month, day=28, year=date.year + 1)
-            else:
-                date = date.replace(month=last_month, day=last_day, year=date.year + 1)
-        date_to = date
-        date_from = date + timedelta(days=1)
-        if date_from.month == 2 and date_from.day == 29:
-            date_from = date_from.replace(day=28, year=date_from.year - 1)
-        else:
-            date_from = date_from.replace(year=date_from.year - 1)
+            date_from = resolve_february(self, date_from.year - 1)
+
+        date_from += timedelta(days=1)
 
         # Search for a fiscal year record as a lower bound.
         fiscalyear_from = self.env['account.fiscal.year'].search([
@@ -112,8 +122,8 @@ Best Regards,'''))
             fy_date_to = datetime.strptime(fiscalyear_from.date_end, DEFAULT_SERVER_DATE_FORMAT)
 
             # Check if the date is part of an existing fiscal year record.
-            if fy_date_to >= initial_date:
-                return {'date_from': fy_date_from, 'date_to': fy_date_to}
+            if fy_date_to >= current_date:
+                return {'date_from': fy_date_from, 'date_to': fy_date_to, 'record': fiscalyear_from}
 
             # Check if the date_from must be updated.
             if fy_date_to > date_from:
@@ -126,7 +136,7 @@ Best Regards,'''))
         ], order='date_end', limit=1)
 
         if fiscalyear_to:
-            fy_date_from = datetime.strptime(fiscalyear_from.date_start, DEFAULT_SERVER_DATE_FORMAT)
+            fy_date_from = datetime.strptime(fiscalyear_to.date_start, DEFAULT_SERVER_DATE_FORMAT)
 
             if fy_date_from < date_to:
                 date_to = fy_date_from - timedelta(days=1)
