@@ -19,10 +19,11 @@ class TestBankStatementReconciliation(AccountingTestCase):
         st_line = self.create_statement_line(100)
 
         # exact amount match
-        rec_prop = self.reconciliation_widget._get_statement_line_reconciliation_proposition(st_line)
+        rec_prop = self.reconciliation_widget.get_bank_statement_line_data(st_line.ids)
+        prop = rec_prop[0]['reconciliation_proposition']
 
-        self.assertEqual(len(rec_prop), 1)
-        self.assertEqual(rec_prop[0].id, rcv_mv_line.id)
+        self.assertEqual(len(prop), 1)
+        self.assertEqual(prop[0].id, rcv_mv_line.id)
 
     def test_full_reconcile(self):
         rcv_mv_line = self.create_invoice(100)
