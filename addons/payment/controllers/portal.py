@@ -25,6 +25,9 @@ class WebsitePayment(http.Controller):
 
     @http.route(['/website_payment/pay'], type='http', auth='public', website=True)
     def pay(self, reference='', amount=False, currency_id=None, acquirer_id=None, **kw):
+        # TODO: remove return when payment is implemented with refactored payments, i.e. use of
+        # payment.payment_tokens_list in the template.
+        return request.render('website.404')
         env = request.env
         user = env.user.sudo()
 
