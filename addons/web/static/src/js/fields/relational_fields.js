@@ -2203,7 +2203,15 @@ var FieldRadio = FieldSelection.extend({
      * @private
      */
     _setValues: function () {
-        if (this.field.type === 'selection') {
+        var selection = this.field.selection;
+        if (this.field.type === 'selection' && this.attrs.visibility) {
+            // FixMe, evaluate context based on attrs context value
+            var visibility = this.record.context.visibility || this.attrs.visibility
+            var restriction = visibility.split(",");
+            this.values = _.filter(selection, function (val) {
+                return _.contains(restriction, val[0]) || val[0] === self.value;
+            });
+        } else if (this.field.type === 'selection') {
             this.values = this.field.selection || [];
         } else if (this.field.type === 'many2one') {
             this.values = _.map(this.record.specialData[this.name], function (val) {
