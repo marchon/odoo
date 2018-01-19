@@ -23,6 +23,8 @@ class AccountMove(models.Model):
     def _get_new_hash(self, secure_seq_number):
         """ Returns the hash to write on journal entries when they get posted"""
         self.ensure_one()
+        if secure_seq_number == '1':
+            return self._compute_hash('')
         #get the only one exact previous move in the securisation sequence
         prev_move = self.search([('state', '=', 'posted'),
                                  ('company_id', '=', self.company_id.id),
