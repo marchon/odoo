@@ -33,6 +33,7 @@
                         <field name="name"/>
                         <field name="type"/>
                         <field name="date"/>
+                        <field name="company_id"/>
                      </group>
                      <notebook>
                         <page string="Server &amp; Login">

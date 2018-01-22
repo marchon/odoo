@@ -55,6 +55,7 @@ class FetchmailServer(models.Model):
     message_ids = fields.One2many('mail.mail', 'fetchmail_server_id', string='Messages', readonly=True)
     configuration = fields.Text('Configuration', readonly=True)
     script = fields.Char(readonly=True, default='/mail/static/scripts/openerp_mailgate.py')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.user.company_id)
 
     @api.onchange('type', 'is_ssl', 'object_id')
     def onchange_server_type(self):
@@ -176,7 +177,7 @@ class FetchmailServer(models.Model):
                         result, data = imap_server.fetch(num, '(RFC822)')
                         imap_server.store(num, '-FLAGS', '\\Seen')
                         try:
-                            res_id = MailThread.with_context(**additionnal_context).message_process(server.object_id.model, data[0][1], save_original=server.original, strip_attachments=(not server.attach))
+                            res_id = MailThread.with_context(**additionnal_context).message_process(server.object_id.model, data[0][1], save_original=server.original, strip_attachments=(not server.attach), server=server)
                         except Exception:
                             _logger.info('Failed to process mail from %s server %s.', server.type, server.name, exc_info=True)
                             failed += 1
@@ -207,7 +208,7 @@ class FetchmailServer(models.Model):
                             message = (b'\n').join(messages)
                             res_id = None
                             try:
-                                res_id = MailThread.with_context(**additionnal_context).message_process(server.object_id.model, message, save_original=server.original, strip_attachments=(not server.attach))
+                                res_id = MailThread.with_context(**additionnal_context).message_process(server.object_id.model, message, save_original=server.original, strip_attachments=(not server.attach), server=server)
                                 pop_server.dele(num)
                             except Exception:
                                 _logger.info('Failed to process mail from %s server %s.', server.type, server.name, exc_info=True)

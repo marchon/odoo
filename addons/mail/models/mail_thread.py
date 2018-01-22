@@ -1142,7 +1142,7 @@ class MailThread(models.AbstractModel):
         )
 
     @api.model
-    def message_route_process(self, message, message_dict, routes):
+    def message_route_process(self, message, message_dict, routes, server=None):
         self = self.with_context(attachments_mime_plainxml=True) # import XML attachments as text
         # postpone setting message_dict.partner_ids after message_post, to avoid double notifications
         original_partner_ids = message_dict.pop('partner_ids', [])
@@ -1183,7 +1183,7 @@ class MailThread(models.AbstractModel):
                     partner_ids = [(4, parent_message.author_id.id)]
             else:
                 subtype = 'mail.mt_comment'
-            new_msg = thread.message_post(subtype=subtype, partner_ids=partner_ids, **message_dict)
+            new_msg = thread.message_post(subtype=subtype, partner_ids=partner_ids, server=server, **message_dict)
 
             if original_partner_ids:
                 # postponed after message_post, because this is an external message and we don't want to create
@@ -1194,7 +1194,7 @@ class MailThread(models.AbstractModel):
     @api.model
     def message_process(self, model, message, custom_values=None,
                         save_original=False, strip_attachments=False,
-                        thread_id=None):
+                        thread_id=None, server=None):
         """ Process an incoming RFC2822 email message, relying on
             ``mail.message.parse()`` for the parsing operation,
             and ``message_route()`` to figure out the target model.
@@ -1255,7 +1255,7 @@ class MailThread(models.AbstractModel):
 
         # find possible routes for the message
         routes = self.message_route(msg_txt, msg, model, thread_id, custom_values)
-        thread_id = self.message_route_process(msg_txt, msg, routes)
+        thread_id = self.message_route_process(msg_txt, msg, routes, server=server)
         return thread_id
 
     @api.model
@@ -1755,7 +1755,7 @@ class MailThread(models.AbstractModel):
     def message_post(self, body='', subject=None,
                      message_type='notification', subtype=None,
                      parent_id=False, attachments=None, content_subtype='html',
-                     notif_layout=False, **kwargs):
+                     notif_layout=False, server=None, **kwargs):
         """ Post a new message in an existing thread, returning the new
             mail.message ID.
             :param int thread_id: thread ID to post into, or list with one ID;
@@ -1868,7 +1868,8 @@ class MailThread(models.AbstractModel):
             'subtype_id': subtype_id,
             'partner_ids': [(4, pid) for pid in partner_ids],
         })
-
+        if server:
+            values.update({'mail_server_id':  self.env['ir.mail_server'].search([('company_id', '=', server.company_id.id)], limit=1).id or self.env['ir.mail_server'].search([('company_id', '=', False)], limit=1).id})
         # 3. Attachments
         #   - HACK TDE FIXME: Chatter: attachments linked to the document (not done JS-side), load the message
         attachment_ids = self._message_post_process_attachments(attachments, kwargs.pop('attachment_ids', []), values)
