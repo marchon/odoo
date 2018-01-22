@@ -9,27 +9,22 @@ class SaleOrder(models.Model):
     """Add several date fields to Sales Orders, computed or user-entered"""
     _inherit = 'sale.order'
 
-    commitment_date = fields.Datetime(compute='_compute_commitment_date', string='Commitment Date', store=True,
-                                      help="Date by which the products are sure to be delivered. This is "
-                                           "a date that you can promise to the customer, based on the "
-                                           "Product Lead Times and shipping policy.")
-    requested_date = fields.Datetime('Requested Date', readonly=True, states={'draft': [('readonly', False)],
-                                     'sent': [('readonly', False)]}, copy=False,
-                                     help="Date by which the customer has requested the items to be "
-                                          "delivered.\n"
-                                          "When this Order gets confirmed, the Delivery Order's "
-                                          "expected date will be computed based on this date and the "
-                                          "Company's Security Delay.\n"
-                                          "Leave this field empty if you want the Delivery Order to be "
-                                          "processed as soon as possible. In that case the expected "
-                                          "date will be computed using the default method: based on "
-                                          "the Product Lead Times and the Company's Security Delay.")
-    effective_date = fields.Date(compute='_compute_effective_date', string='Effective Date', store=True,
-                                 help="Completion date of the first delivery order.")
+    expected_date = fields.Datetime(compute='_compute_expected_date',
+        string='Expected Date', store=True, oldname='commitment_date',
+        help="Delivery date you can promise to the customer, computed from "
+             "product lead times and from the shipping policy of the order.")
+    commitment_date = fields.Datetime('Commitment Date',
+        states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
+        copy=False, oldname='requested_date', readonly=True,
+        help="This is the delivery date promised to the customer. If set, the delivery order "
+             "will be scheduled based on this date rather than product lead times.")
+    effective_date = fields.Date(compute='_compute_effective_date',
+        string='Effective Date', store=True,
+        help="Completion date of the first delivery order.")
 
     @api.depends('order_line.customer_lead', 'confirmation_date', 'picking_policy', 'order_line.state')
-    def _compute_commitment_date(self):
-        """Compute the commitment date"""
+    def _compute_expected_date(self):
+        """Compute the expected date"""
         for order in self:
             dates_list = []
             confirm_date = fields.Datetime.from_string(order.confirmation_date or fields.Datetime.now())
@@ -37,8 +32,8 @@ class SaleOrder(models.Model):
                 dt = confirm_date + timedelta(days=line.customer_lead or 0.0)
                 dates_list.append(dt)
             if dates_list:
-                commit_date = min(dates_list) if order.picking_policy == 'direct' else max(dates_list)
-                order.commitment_date = fields.Datetime.to_string(commit_date)
+                expected_date = min(dates_list) if order.picking_policy == 'direct' else max(dates_list)
+                order.expected_date = fields.Datetime.to_string(expected_date)
 
     @api.depends('picking_ids.date_done')
     def _compute_effective_date(self):
@@ -47,14 +42,14 @@ class SaleOrder(models.Model):
             dates_list = pickings.mapped('date_done')
             order.effective_date = dates_list and min(dates_list)
 
-    @api.onchange('requested_date')
-    def onchange_requested_date(self):
-        """Warn if the requested dates is sooner than the commitment date"""
-        if (self.requested_date and self.commitment_date and self.requested_date < self.commitment_date):
+    @api.onchange('commitment_date')
+    def onchange_commitment_date(self):
+        """Warn if the commitment dates is sooner than the expected date"""
+        if (self.commitment_date and self.expected_date and self.commitment_date < self.expected_date):
             return {'warning': {
-                'title': _('Requested date is too soon!'),
-                'message': _("The date requested by the customer is "
-                             "sooner than the commitment date. You may be "
+                'title': _('Commitment date is too soon!'),
+                'message': _("The date committed by the customer is "
+                             "sooner than the expected date. You may be "
                              "unable to honor the customer's request.")
                 }
             }
@@ -66,8 +61,8 @@ class SaleOrderLine(models.Model):
     @api.multi
     def _prepare_procurement_values(self, group_id):
         vals = super(SaleOrderLine, self)._prepare_procurement_values(group_id=group_id)
-        for line in self.filtered("order_id.requested_date"):
-            date_planned = fields.Datetime.from_string(line.order_id.requested_date) - timedelta(days=line.order_id.company_id.security_lead)
+        for line in self.filtered("order_id.commitment_date"):
+            date_planned = fields.Datetime.from_string(line.order_id.commitment_date) - timedelta(days=line.order_id.company_id.security_lead)
             vals.update({
                 'date_planned': fields.Datetime.to_string(date_planned),
             })
