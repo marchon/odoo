@@ -7,6 +7,9 @@ var rpc = require('web.rpc');
 
 var Broadcast = Widget.extend({
     template: 'broadcast.main',
+    events: {
+        'click h3': '_onSendCall',
+    },
 
     mediaConfig: {
         audio: true,
@@ -18,47 +21,31 @@ var Broadcast = Widget.extend({
          {'url': 'stun:stun.l.google.com:19302'}]
     },
 
-    init: function (parent) {
-        this._super(parent);
-        this.isCaller = true;
-    },
     start: function () {
-        bus.start_polling();
-        bus.on('broadcast.desc', this, function(r){ console.log(r); });
-        this.run();
-    },
-    run: function () {
-        this._startPeerConnection();
-        this._startMedia();
-    },
-    // run start(true) to initiate a call
-    _startPeerConnection: function () {
-        this.peerConnection = new RTCPeerConnection(_.pick(this.peerConfig, ['audio', 'video']));
-        this.peerConnection.onicecandidate = this._onPeerConnectionCandidate.bind(this);
-        this.peerConnection.ontrack = this._onPeerConnectionTrack.bind(this);
-    },
-    _startMedia: function () {
         var self = this;
-        // get the local stream, show it in the local video element and send it
-        navigator.mediaDevices.getUserMedia(this.mediaConfig)
-            .then(function (stream) {
-                if (self.mediaConfig.preview) {
-                    if (self.mediaConfig.video) {
-                        self._onAddVideo(stream);
-                    } else {
-                        self._onAddAudio(stream);
-                    }
+        bus.start_polling();
+        this.__onNodifications = function (notifications) {
+            _.each(notifications, function (notification) {
+                if (notification[0][1] === "broadcast.call") {
+                    self._onReceiveCall(JSON.parse(notification[1]));
                 }
-                if (self.peerConnection) {
-                    self._onMediaStreamBrodcast(stream);
-                }
-            })
-            .catch(function (err) { console.error(err); });
+            });
+        };
+        bus.on('notification', this, this.__onNodifications);
     },
+    destroy: function () {
+        this._super();
+        bus.off('notification', this, this.__onNodifications);
+    },
+
+    //--------------------------------------------------------------------------
+    // Private
+    //--------------------------------------------------------------------------
+
     _onAddVideo: function (stream) {
         var video = document.createElement('video');
         video.autoplay = true;
-        $(video).appendTo(this.$el);
+        $(video).appendTo(this.$('.o_video'));
 
         if ('srcObject' in video) {
             return (video.srcObject = stream);
@@ -102,27 +89,21 @@ var Broadcast = Widget.extend({
 
         function gotDescription(desc) {
             pc.setLocalDescription(desc);
-            self._sendPeerDescription(desc);
+            rpc.query({
+                route: '/broadcast/call',
+                params: {partner_id: 6, sdp: JSON.stringify(desc)}
+            });
         }
     },
-    _sendPeerDescription: function (desc) {
-        //console.log('>>>>>', desc);
-
-        
-        rpc.query({
-            route: '/longpolling/send',
-            params: {channel: 'broadcast.desc', message: JSON.stringify(desc)}
-        });
-
-        // var self = this;
-        // return rpc.query({
-        //     route: '/broadcast/sendPeerDescription',
-        //     params: {desc: desc}
-        // }).then(function(result){
-        //     console.log(result);
-        // });
-        //signalingChannel.send(JSON.stringify({ "sdp": desc }));
+    _startPeerConnection: function () {
+        this.peerConnection = new RTCPeerConnection(this.peerConfig);
+        this.peerConnection.onicecandidate = this._onPeerConnectionCandidate.bind(this);
+        this.peerConnection.ontrack = this._onPeerConnectionTrack.bind(this);
     },
+
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
 
     // send any ice candidates to the other peer
     _onPeerConnectionCandidate: function (evt) {
@@ -134,24 +115,52 @@ var Broadcast = Widget.extend({
         console.warn(evt.stream);
         //this._onAddVideo(evt.stream);
     },
+
     /**
      * When the offer arrives, this function is triggered, and given our "video-offer" message
      *
      * returns: {Promise}
      */
-    _onVideoOfferMsg: function (evt) {
-        if (!this.peerConnection) {
-            this.isCaller = false;
+    _onReceiveCall: function (sdp) {
+        var self = this;
+        var def;
+
+        console.log('_onReceiveCall', sdp);
+
+        if (sdp.type === "offer") {
             this._startPeerConnection();
+            var description = new RTCSessionDescription(sdp);
+            def = this.peerConnection.setRemoteDescription(description);
+        } else {
+            var candidate = new RTCIceCandidate(signal.candidate);
+            def = this.peerConnection.addIceCandidate(candidate);
         }
-        var signal = JSON.parse(evt.data);
-        if (signal.sdp) {
-            var desc = new RTCSessionDescription(msg.sdp);
-            myPeerConnection.setRemoteDescription(desc);
-        }
-        else {
-            this.peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
-        }
+
+        def.then(function () {
+            return navigator.mediaDevices.getUserMedia(self.mediaConfig);
+        }).then(function(stream) {
+            self._onAddVideo(stream);
+            return self.peerConnection.addStream(stream);
+        });
+    },
+    _onSendCall: function () {
+        var self = this;
+        this.isCaller = true;
+        this._startPeerConnection();
+        // get the local stream, show it in the local video element and send it
+
+        navigator.mediaDevices.getUserMedia(this.mediaConfig).then(function (stream) {
+            if (self.mediaConfig.preview) {
+                if (self.mediaConfig.video) {
+                    //self._onAddVideo(stream);
+                } else {
+                    self._onAddAudio(stream);
+                }
+            }
+            if (self.peerConnection) {
+                self._onMediaStreamBrodcast(stream);
+            }
+        });
     },
 });
 

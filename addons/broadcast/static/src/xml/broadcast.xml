@@ -2,7 +2,10 @@
 <templates>
 
     <t t-name="broadcast.main">
-        <div class="o_broadcast"></div>
+        <div class="o_broadcast">
+        	<h3>call</h3>
+        	<div class="o_video"></div>
+        </div>
     </t>
 
 </templates>
