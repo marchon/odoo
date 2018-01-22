@@ -1,8 +1,8 @@
 :banner: banners/module.jpg
 
-=======
-Modules
-=======
+================
+Module Manifests
+================
 
 
 
