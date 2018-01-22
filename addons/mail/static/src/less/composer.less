@@ -27,7 +27,7 @@
     }
 
     .o_composer {
-        [contenteditable=true]:empty:before {
+        .o_composer_input[contenteditable=true]:empty:before {
             content: attr(placeholder);
             opacity: 0.75;
         }
@@ -67,15 +67,15 @@
     }
 
    .o_mail_emoji_container {
-    padding: 0 @o-mail-chatter-gap @o-mail-chatter-gap 0;
-    border: 1px solid @gray-lighter-dark;
-    background-color: @gray-lighter;
+        padding: 0 @o-mail-chatter-gap @o-mail-chatter-gap 0;
+        border: 1px solid @gray-lighter-dark;
+        background-color: @gray-lighter;
 
-    .o_mail_emoji {
-        margin: @o-mail-chatter-gap 0 0 @o-mail-chatter-gap;
-        cursor: pointer; // only in the popover
+        .o_mail_emoji {
+            margin: @o-mail-chatter-gap 0 0 @o-mail-chatter-gap;
+            cursor: pointer; // only in the popover
+        }
     }
-}
 
     // Both inline and not-inline design. Mini-composer disabled.
     &:not(.o_chat_mini_composer) {
@@ -148,7 +148,7 @@
                 border-right-width: 0;
             }
             .o_mail_emoji_container {
-                text-align: left;
+                text-align: right;
                 border-width: 1px;
             }
             .o_composer_input {

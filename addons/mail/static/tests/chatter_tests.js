@@ -636,7 +636,7 @@ QUnit.test('chatter: post a message and switch in edit mode', function (assert) 
 
     // send a message
     form.$('.o_chatter_button_new_message').click();
-    form.$('.oe_chatter .o_composer_text_field:first()').val("My first message");
+    form.$('.oe_chatter .o_composer_text_field:first()').text("My first message");
     form.$('.oe_chatter .o_composer_button_send').click();
     assert.strictEqual(form.$('.o_thread_message').length, 1, "thread should contain a message");
     assert.ok(form.$('.o_thread_message:first() .o_thread_message_core').text().indexOf('My first message') >= 0,

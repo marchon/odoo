@@ -8,7 +8,6 @@ var utils = require('mail.utils');
 var config = require('web.config');
 var core = require('web.core');
 var data = require('web.data');
-var dom = require('web.dom');
 var session = require('web.session');
 var Widget = require('web.Widget');
 
@@ -22,7 +21,6 @@ var MENTION_CHANNEL_DELIMITER = '#';
 var MENTION_CANNED_RESPONSE_DELIMITER = ':';
 var MENTION_COMMAND_DELIMITER = '/';
 
-var nodeID = 1;
 // The MentionManager allows the Composer to register listeners. For each
 // listener, it detects if the user is currently typing a mention (starting by a
 // given delimiter). If so, if fetches mention suggestions and renders them. On
@@ -221,6 +219,8 @@ var MentionManager = Widget.extend({
     // Private functions
     /**
      * Returns the matches (as RexExp.exec does) for the mention in the input text
+     *
+     * @private
      * @param {String} input_text: the text to search matches
      * @param {Object} listener: the listener for which we want to find a match
      * @returns {Object[]} matches in the same format as RexExp.exec()
@@ -244,8 +244,9 @@ var MentionManager = Widget.extend({
         }
         return result;
     },
-    /*
+    /**
      * Get cursor position in contenteditable div with it's inner html content.
+     *
      * @private
      * @return a current cursor position
     */
@@ -256,12 +257,12 @@ var MentionManager = Widget.extend({
             var rangeCount = 0;
             var childNodes = selectedObj.anchorNode.parentNode.childNodes;
             for (var i = 0; i < childNodes.length; i++) {
-                if (childNodes[i] == selectedObj.anchorNode) {
+                if (childNodes[i] === selectedObj.anchorNode) {
                     break;
                 }
                 if (childNodes[i].outerHTML)
                     rangeCount += childNodes[i].outerHTML.length;
-                else if (childNodes[i].nodeType == 3) {
+                else if (childNodes[i].nodeType === 3) {
                     rangeCount += childNodes[i].textContent.length;
                 }
             }
@@ -302,20 +303,18 @@ var MentionManager = Widget.extend({
         }
     },
     /*
-     * Set cusros postion after mention is added.
+     * Set cursor position after mention is added.
      * @private
      * @paran {int} node - id of childnode to set cursor position after it.
     */
-    _setCursorPostition: function (node) {
-        this.composer.$input.each(function (index, elem) {
-            var range = document.createRange();
-            var sel = window.getSelection();
-            range.setStart(document.getElementById(node).nextSibling, 1);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-            elem.focus();
-        });
+    _setCursorPosition: function (nodeID) {
+        var range = document.createRange();
+        var selection = window.getSelection();
+        range.setStart(document.getElementById(nodeID).nextSibling, 1);
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        this.composer.$input.focus();
     },
     _validate_selection: function (selection, inputMentions) {
         var validated_selection = [];
@@ -328,27 +327,33 @@ var MentionManager = Widget.extend({
         return validated_selection;
     },
 
+    //--------------------------------------------------------------------------
     // Handlers
-    /*
-     * after click on mention item it set to a contenteditable div with it's new cursor postion
+    //--------------------------------------------------------------------------
+
+    /**
+     * after click on mention item it set to a contenteditable div with it's new
+     * cursor postion
+     *
      * @private
-     * @param {KeyboardEvent} event - to get a current selected mention from list and eventlistner.
+     * @param {KeyboardEvent} event - to get a current selected mention from
+     *   list and eventlistener.
      */
     _onClickMentionItem: function (event) {
         event.preventDefault();
 
         var textInput = this.composer.$input.html();
         var id = $(event.currentTarget).data('id');
-        var selected_suggestion = _.find(_.flatten(this.get('mention_suggestions')), function (s) {
+        var selectedSuggestion = _.find(_.flatten(this.get('mention_suggestions')), function (s) {
             return s.id === id;
         });
-        var substitution = selected_suggestion.substitution;
+        var substitution = selectedSuggestion.substitution;
         if (!substitution) { // no substitution string given, so use the mention name instead
             // replace white spaces with non-breaking spaces to facilitate mentions detection in text
-            selected_suggestion.name = selected_suggestion.name.replace(/ /g, NON_BREAKING_SPACE);
-            substitution = _.escape(this.active_listener.delimiter + selected_suggestion.name);
+            selectedSuggestion.name = selectedSuggestion.name.replace(/ /g, NON_BREAKING_SPACE);
+            substitution = _.escape(this.active_listener.delimiter + selectedSuggestion.name);
         }
-        var get_mention_index = function (matches, cursorPosition) {
+        var getMentionIndex = function (matches, cursorPosition) {
             for (var i=0; i<matches.length; i++) {
                 if (cursorPosition <= matches[i].index) {
                     return i;
@@ -361,20 +366,20 @@ var MentionManager = Widget.extend({
         if (this.active_listener.selection.length) {
             // get mention matches (ordered by index in the text)
             var matches = this._get_match(textInput, this.active_listener);
-            var index = get_mention_index(matches, this._getSelectionPositions());
-            this.active_listener.selection.splice(index, 0, selected_suggestion);
+            var index = getMentionIndex(matches, this._getSelectionPositions());
+            this.active_listener.selection.splice(index, 0, selectedSuggestion);
         } else {
-            this.active_listener.selection.push(selected_suggestion);
+            this.active_listener.selection.push(selectedSuggestion);
         }
 
         // update input text, and reset dropdown
         var cursorPosition = this._getSelectionPositions();
         var textLeft = textInput.substring(0, cursorPosition-(this.mention_word.length+1));
         var textRight = textInput.substring(cursorPosition, textInput.length);
+        var nodeID = _.uniqueId('node');
         var newTextInput = textLeft + "<a id="+ nodeID+">" + substitution + "</a> " + textRight;
         this.composer.$input.html(newTextInput);
-        this._setCursorPostition(nodeID);
-        nodeID += 1;
+        this._setCursorPosition(nodeID);
         this.set('mention_suggestions', []);
     },
 
@@ -563,10 +568,14 @@ var BasicComposer = Widget.extend(chat_mixin, {
     should_send: function (event) {
         return !event.shiftKey;
     },
-    /*
+    /**
      * _onKeydown event is triggered when is key is pressed
-     * on UP and DOWN arrow is pressed then event prevents it's defaulf behaviour if mention manager is open else it break it.
-     * on ENTER key is pressed and mention manager is open then event prevents it's default behaviour else check if ControlKey is pressed or not if yes then it send a message
+     *      - on UP and DOWN arrow is pressed then event prevents it's default
+     *              behaviour if mention manager is open else it break it.
+     *      - on ENTER key is pressed and mention manager is open then event
+     *              prevents it's default behaviour else check if ControlKey is
+     *              pressed or not if yes then it send a message
+     *
      * @private
      * @param {KeyboardEvent} event
     */
@@ -594,11 +603,12 @@ var BasicComposer = Widget.extend(chat_mixin, {
         }
     },
 
-    /*
+    /**
      * _onKeyup event is triggered when key is released.
      * on ESCAP key it close the mention suggestion dropdown menu.
      * on ENTER key it selects that mention and add to a content editable div.
      * on UP or DOWN key it highlights previous or next mention respectively.
+     *
      * @private
      * @param {KeyboardEvent} event
     */
@@ -807,9 +817,11 @@ var BasicComposer = Widget.extend(chat_mixin, {
     },
 
     // Others
-    /*
+    /**
      * used to check if contenteditable div is empty or not
-     * @return - it returns length of attachment and trim content of input box tp check for empty.
+     *
+     * @return - it returns length of attachment and trim content of input box
+     * tp check for empty.
     */
     is_empty: function () {
         return !this.$input.text().trim() && !this.$('.o_attachments').children().length;
@@ -895,20 +907,22 @@ var BasicComposer = Widget.extend(chat_mixin, {
     /**
      * set cursor position at the end in input box
      *
+     * @todo move that kind of code in a utility file. Maybe dom.js
+     *
      * @private
      * @param {Element} el
      */
     _placeCaretAtEnd: function (el) {
         el.focus();
-        if (typeof window.getSelection != "undefined"
-                && typeof document.createRange != "undefined") {
+        if (typeof window.getSelection !== "undefined"
+                && typeof document.createRange !== "undefined") {
             var range = document.createRange();
             range.selectNodeContents(el);
             range.collapse(false);
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
-        } else if (typeof document.body.createTextRange != "undefined") {
+        } else if (typeof document.body.createTextRange !== "undefined") {
             var textRange = document.body.createTextRange();
             textRange.moveToElementText(el);
             textRange.collapse(false);
