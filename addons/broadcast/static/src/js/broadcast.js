@@ -8,7 +8,7 @@ var rpc = require('web.rpc');
 var Broadcast = Widget.extend({
     template: 'broadcast.main',
     events: {
-        'click h3': '_onSendCall',
+        'click .o_audio,.o_video': '_onSendCall',
     },
 
     mediaConfig: {
@@ -21,13 +21,24 @@ var Broadcast = Widget.extend({
          {'url': 'stun:stun.l.google.com:19302'}]
     },
 
+    init: function (parent) {
+        this.partner_id = $('.o_user_menu').text().indexOf('Admin') !== -1 ? 6 : 3;
+        $(window).on('beforeunload', this.destroy.bind(this));
+        return this._super(parent);
+    },
     start: function () {
         var self = this;
         bus.start_polling();
         this.__onNodifications = function (notifications) {
             _.each(notifications, function (notification) {
                 if (notification[0][1] === "broadcast.call") {
-                    self._onReceiveCall(JSON.parse(notification[1]));
+                    var data = JSON.parse(notification[1]);
+                    if (data.type === 'call') {
+                        self.type = 'answer';
+                        self._onReceiveCall(data.sdp);
+                    } else if (data.partner_id === self.partner_id) {
+                        self._onDisconnectCall();
+                    }
                 }
             });
         };
@@ -36,30 +47,87 @@ var Broadcast = Widget.extend({
     destroy: function () {
         this._super();
         bus.off('notification', this, this.__onNodifications);
+        if (!this.peerConnection) {
+            return;
+        }
+        if (this.media === 'video') {
+            var video = this.$('video')[0];
+            if (video && video.srcObject) {
+                video.srcObject.getTracks().forEach(function (track) {
+                    track.stop();
+                });
+                video.srcObject = null;
+            }
+        }
+        this.peerConnection.close();
+        rpc.query({
+            route: '/broadcast/disconnect',
+            params: {partner_id: self.partner_id}
+        });
     },
 
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
 
-    _onAddVideo: function (stream) {
-        var video = document.createElement('video');
-        video.autoplay = true;
-        $(video).appendTo(this.$('.o_video'));
-
-        if ('srcObject' in video) {
-            return (video.srcObject = stream);
-        } else if ('mozSrcObject' in video) {
-            return (video.mozSrcObject = stream);
-        } else if ('createObjectURL' in URL) {
-            try {
-                // deprecated
-                return (video.src = URL.createObjectURL(stream));
-            } catch (e) {}
+    _startPeerConnection: function () {
+        var self = this;
+        if (this.peerConnection) {
+            return;
         }
-        console.error('createObjectURL/srcObject both are not supported.');
+        this.defPeerConnection = new Promise(function (resolve, reject) {
+          resolve();
+        });
+
+        this.peerConnection = new RTCPeerConnection(this.peerConfig);
+        this.peerConnection.onicecandidate = this._onPeerConnectionCandidate.bind(this);
+        this.peerConnection.onaddstream = this._onPeerConnectionStream.bind(this);
+        this.peerConnection.onremovestream = function (event) {
+            console.log(event.type, event);
+        };
+        this.peerConnection.oniceconnectionstatechange = function (event) {
+            if (self.isDestroyed()) {
+                return;
+            }
+            switch(this.iceConnectionState) {
+                case "closed":
+                case "failed":
+                case "disconnected": self.destroy();
+                break;
+            }
+        };
+        this.peerConnection.onicegatheringstatechange = function (event) {
+            console.log(event.type, event);
+        };
+        this.peerConnection.onsignalingstatechange = function (event) {
+            console.log(event.type, event);
+        };
+        this.peerConnection.onnegotiationneeded = function (event) {
+            console.log(event.type, event);
+        };
     },
-    _onAddAudio: function (stream) {
+    _onAddMedia: function (media, stream) {
+        console.log('_onAddMedia', stream);
+        if (media === 'video') {
+            var video = document.createElement('video');
+            video.autoplay = true;
+            $(video).appendTo(this.$('.o_video'));
+
+            if ('srcObject' in video) {
+                return (video.srcObject = stream);
+            } else if ('mozSrcObject' in video) {
+                return (video.mozSrcObject = stream);
+            } else if ('createObjectURL' in URL) {
+                try {
+                    // deprecated
+                    return (video.src = URL.createObjectURL(stream));
+                } catch (e) {}
+            }
+            console.error('createObjectURL/srcObject both are not supported.');
+        }
+
+        // audio only
+
         var AudioContext = window.AudioContext || window.webkitAudioContext;
         var audioContext = new AudioContext();
 
@@ -70,35 +138,38 @@ var Broadcast = Widget.extend({
         // or any other node for processing!
         mediaStreamSource.connect(audioContext.destination);
     },
-    // send video
-    _onMediaStreamBrodcast: function (stream) {
+    _shareMedia: function (media) {
         var self = this;
-        var pc = this.peerConnection;
+        var pc = self.peerConnection;
+        var mediaConfig = _.pick(this.mediaConfig, media === 'video' ? ['video', 'audio'] : ['audio']);
 
-        pc.addStream(stream);
-
-        if (this.isCaller) {
-            pc.createOffer()
-                .then(gotDescription)
-                .catch(function (err) { console.error(err); });
-        } else {
-            pc.createAnswer()
-                .then(gotDescription)
-                .catch(function (err) { console.error(err); });
-        }
-
-        function gotDescription(desc) {
-            pc.setLocalDescription(desc);
-            rpc.query({
-                route: '/broadcast/call',
-                params: {partner_id: 6, sdp: JSON.stringify(desc)}
-            });
-        }
-    },
-    _startPeerConnection: function () {
-        this.peerConnection = new RTCPeerConnection(this.peerConfig);
-        this.peerConnection.onicecandidate = this._onPeerConnectionCandidate.bind(this);
-        this.peerConnection.ontrack = this._onPeerConnectionTrack.bind(this);
+        navigator.mediaDevices.getUserMedia(mediaConfig)
+            .then(function (stream) {
+                if (self.mediaConfig.preview) {
+                    self._onAddMedia(media, stream);
+                }
+                pc.addStream(stream);
+            })
+            .then(function (desc) {
+                if (self.type === 'offer') {
+                    return pc.createOffer();
+                } else {
+                    return pc.createAnswer();
+                }
+            })
+            .then(function (desc) {
+                return pc.setLocalDescription(desc);
+            })
+            .then(function () {
+                return rpc.query({
+                    route: '/broadcast/call',
+                    params: {
+                        partner_id: self.partner_id,
+                        sdp: pc.localDescription
+                    }
+                });
+            })
+            .catch(function (err) { console.error(err); });
     },
 
     //--------------------------------------------------------------------------
@@ -111,9 +182,9 @@ var Broadcast = Widget.extend({
         //signalingChannel.send(JSON.stringify({ "candidate": evt.candidate }));
     },
     // once remote stream arrives, show it in the remote video element
-    _onPeerConnectionTrack: function (evt) {
-        console.warn(evt.stream);
-        //this._onAddVideo(evt.stream);
+    _onPeerConnectionStream: function (evt) {
+        var media = evt.target.remoteDescription.sdp.indexOf('video') === -1 ? 'audio' : 'video';
+        this._onAddMedia(media, evt.stream);
     },
 
     /**
@@ -121,46 +192,41 @@ var Broadcast = Widget.extend({
      *
      * returns: {Promise}
      */
-    _onReceiveCall: function (sdp) {
-        var self = this;
-        var def;
+    _onReceiveCall: function (desc) {
+        this._startPeerConnection();
+        if (desc.type === "offer") {
+            var description = new RTCSessionDescription(desc);
+            this.defPeerConnection = this.peerConnection.setRemoteDescription(description);
 
-        console.log('_onReceiveCall', sdp);
-
-        if (sdp.type === "offer") {
-            this._startPeerConnection();
-            var description = new RTCSessionDescription(sdp);
-            def = this.peerConnection.setRemoteDescription(description);
         } else {
-            var candidate = new RTCIceCandidate(signal.candidate);
-            def = this.peerConnection.addIceCandidate(candidate);
+            var candidate = new RTCIceCandidate(desc);
+            this.defPeerConnection = this.peerConnection.addIceCandidate(candidate);
         }
+    },
+    _onSendCall: function (event) {
+        var self = this;
+        var media = $(event.target).hasClass('o_audio') ? 'audio' : 'video';
 
-        def.then(function () {
-            return navigator.mediaDevices.getUserMedia(self.mediaConfig);
-        }).then(function(stream) {
-            self._onAddVideo(stream);
-            return self.peerConnection.addStream(stream);
+        if (!this.type) {
+            this.type = 'offer';
+        }
+        if (!self.mediaConfig[media]) {
+            throw 'Not available';
+        }
+        // if (this.media === media) {
+        //     return;
+        // }
+        // if (this.media) {
+        //     throw 'close current media';
+        // }
+        this.media = media;
+        this._startPeerConnection();
+        this.defPeerConnection.then(function () {
+            self._shareMedia(media);
         });
     },
-    _onSendCall: function () {
-        var self = this;
-        this.isCaller = true;
-        this._startPeerConnection();
-        // get the local stream, show it in the local video element and send it
-
-        navigator.mediaDevices.getUserMedia(this.mediaConfig).then(function (stream) {
-            if (self.mediaConfig.preview) {
-                if (self.mediaConfig.video) {
-                    //self._onAddVideo(stream);
-                } else {
-                    self._onAddAudio(stream);
-                }
-            }
-            if (self.peerConnection) {
-                self._onMediaStreamBrodcast(stream);
-            }
-        });
+    _onDisconnectCall: function () {
+        this.destroy();
     },
 });
 

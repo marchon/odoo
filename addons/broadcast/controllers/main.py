@@ -2,6 +2,7 @@
 
 from odoo.addons.bus.controllers.main import BusController
 from odoo.http import request, route
+import json
 
 
 class BroadcastController(BusController):
@@ -9,7 +10,22 @@ class BroadcastController(BusController):
     @route('/broadcast/call', type="json", auth="user")
     def broadcast_call(self, partner_id, sdp, **kwargs):
         user_ids = request.env['res.partner'].browse(partner_id).user_ids
-        request.env['bus.bus'].sendone((request.db, 'broadcast.call', user_ids.id), sdp)
+        request.env['bus.bus'].sendone((request.db, 'broadcast.call', user_ids.id), json.dumps({
+            'partner_id': request.env.user.partner_id.id,
+            'user_id': request.uid,
+            'type': 'call',
+            'sdp': sdp,
+        }))
+        return True
+
+    @route('/broadcast/disconnect', type="json", auth="user")
+    def broadcast_disconnect(self, partner_id, **kwargs):
+        user_ids = request.env['res.partner'].browse(partner_id).user_ids
+        request.env['bus.bus'].sendone((request.db, 'broadcast.call', user_ids.id), json.dumps({
+            'partner_id': request.env.user.partner_id.id,
+            'user_id': request.uid,
+            'type': 'disconnect',
+        }))
         return True
 
     # --------------------------
