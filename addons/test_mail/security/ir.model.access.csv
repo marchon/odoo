@@ -10,3 +10,7 @@ access_mail_test_full_portal,mail.test.full.portal,model_mail_test_full,base.gro
 access_mail_test_full_user,mail.test.full.user,model_mail_test_full,base.group_user,1,1,1,1
 access_mail_test_portal,mail.test.portal,model_mail_test,base.group_portal,1,1,0,0
 access_mail_test_user,mail.test.user,model_mail_test,base.group_user,1,1,1,1
+access_mail_partner_oncreate_test,mail.partner.oncreate.test,model_mail_partner_oncreate_test,base.group_system,1,1,1,1
+access_mail_partner_oncreate_test,mail.partner.oncreate.test,model_mail_partner_oncreate_test,base.group_user,0,0,0,0
+access_mail_partner_onreply_test,mail.partner.onreply.test,model_mail_partner_onreply_test,base.group_system,1,1,1,1
+access_mail_partner_onreply_test,mail.partner.onreply.test,model_mail_partner_onreply_test,base.group_user,0,0,0,0

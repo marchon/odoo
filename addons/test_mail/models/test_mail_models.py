@@ -112,3 +112,25 @@ class MailModel(models.Model):
     def _value_pc(self):
         for record in self:
             record.value_pc = float(record.value) / 100
+
+
+class MailTestPartnerOnUpdate(models.Model):
+    _name = 'mail.partner.onreply.test'
+    _inherit = ['mail.partner.mixin','mail.thread']
+    
+    value = fields.Integer()
+    value2 = fields.Integer()
+
+    def message_partner_update_condition(self):
+        return [('value', '!=', 5),('value2', '=', 7)]
+
+    # Keep default message_subscription_strategy
+    
+class MailTestPartnerOnCreate(models.Model):
+    _name = 'mail.partner.oncreate.test'
+    _inherit = ['mail.partner.mixin','mail.thread']
+
+    #Set strategy on create
+    def message_subscription_strategy(self,msg):
+        return self.ON_CREATE_STRATEGY
+
