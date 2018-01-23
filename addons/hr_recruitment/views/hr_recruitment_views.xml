@@ -364,7 +364,6 @@
         <field name="view_mode">tree,form,kanban,calendar</field>
         <field name="view_id" ref="hr_applicant_view_tree_activity"/>
         <field name="context">{'search_default_activities_my': 1}</field>
-        <field name="domain">[('activity_date_deadline', '!=', False)]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 No scheduled activities for the moment
