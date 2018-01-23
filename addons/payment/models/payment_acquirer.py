@@ -207,6 +207,7 @@ class PaymentAcquirer(models.Model):
         account_vals = self.env['account.journal']._prepare_liquidity_account(
             self.name, self.company_id, None, 'transfer')
         account_vals['user_type_id'] = self.env.ref('account.data_account_type_current_assets').id
+        account_vals['reconcile'] = True
         account = self.env['account.account'].create(account_vals)
         return {
             'name': self.name,
