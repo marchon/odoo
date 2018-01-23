@@ -88,10 +88,12 @@ var AbstractView = Class.extend({
         // instantiates another FormView (unlike kanban or list subviews for
         // which only a Renderer is instantiated)
         if (typeof viewInfo.arch === 'string') {
-            this._processFieldsView(viewInfo);
+            this.fieldsView = this._processFieldsView(viewInfo);
+        } else {
+            this.fieldsView = viewInfo;
         }
-        this.fields = viewInfo.viewFields;
-        this.arch = viewInfo.arch;
+        this.fields = this.fieldsView.viewFields;
+        this.arch = this.fieldsView.arch;
 
         this.rendererParams = {
             arch: this.arch,
@@ -243,14 +245,15 @@ var AbstractView = Class.extend({
         return model.load(this.loadParams);
     },
     /**
-     * Processes a fieldsView in place. In particular, parses its arch.
+     * Processes a fieldsView. In particular, parses its arch.
      *
      * @private
-     * @param {Object} fv
-     * @param {string} fv.arch
+     * @param {Object} fieldsView
+     * @param {string} fieldsView.arch
      * @returns {Object} the processed fieldsView
      */
-    _processFieldsView: function (fv) {
+    _processFieldsView: function (fieldsView) {
+        var fv = _.extend({}, fieldsView);
         var doc = $.parseXML(fv.arch).documentElement;
         var stripWhitespaces = doc.nodeName.toLowerCase() !== 'kanban';
         fv.arch = utils.xml_to_json(doc, stripWhitespaces);

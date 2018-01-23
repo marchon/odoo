@@ -3,6 +3,7 @@ odoo.define('web.DataManager', function (require) {
 
 var core = require('web.core');
 var rpc = require('web.rpc');
+var utils = require('web.utils');
 
 return core.Class.extend({
     init: function () {
@@ -96,6 +97,10 @@ return core.Class.extend({
                 model: model,
                 method: 'load_views',
             }).then(function (result) {
+                // Freeze the fields dict as it will be shared between views and
+                // no one should edit it
+                utils.deepFreeze(result.fields);
+
                 // Insert views them into the fields_views cache
                 _.each(views_descr, function (view_descr) {
                     var toolbar = options.toolbar && view_descr[1] !== 'search';

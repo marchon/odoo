@@ -40,7 +40,7 @@ var BasicView = AbstractView.extend({
         this._super.apply(this, arguments);
 
         this.fieldsInfo = {};
-        this.fieldsInfo[this.viewType] = viewInfo.fieldsInfo[this.viewType];
+        this.fieldsInfo[this.viewType] = this.fieldsView.fieldsInfo[this.viewType];
 
         this.rendererParams.viewType = this.viewType;
 
@@ -364,20 +364,20 @@ var BasicView = AbstractView.extend({
      *
      * @override
      * @private
-     * @param {Object} fv
-     * @param {string} fv.arch
-     * @param {Object} fv.fields
+     * @param {Object} fieldsView
+     * @param {string} fieldsView.arch
+     * @param {Object} fieldsView.fields
      * @param {string} [viewType] by default, this.viewType
+     * @returns {Object} the processed fieldsView with extra key 'fieldsInfo'
      */
-    _processFieldsView: function (fv, viewType) {
-        this._super.apply(this, arguments);
+    _processFieldsView: function (fieldsView, viewType) {
+        var fv = this._super.apply(this, arguments);
 
         viewType = viewType || this.viewType;
         var viewFields = this._processFields(viewType, fv.arch, fv.viewFields);
         fv.fieldsInfo = {};
         fv.fieldsInfo[viewType] = viewFields;
         fv.type = viewType;
-        // utils.deepFreeze(fv.fields);
 
         return fv;
     },
