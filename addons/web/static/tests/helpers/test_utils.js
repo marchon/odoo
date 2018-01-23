@@ -707,6 +707,7 @@ return $.when(
         createParent: createParent,
         createView: createView,
         dragAndDrop: dragAndDrop,
+        fieldsViewGet: fieldsViewGet,
         intercept: intercept,
         observe: observe,
         patch: patch,

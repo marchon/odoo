@@ -304,7 +304,7 @@ var MockServer = Class.extend({
             arch: processedArch,
             fields: _.pick(fields, _.keys(fieldNodes)),
             model: model,
-            type: arch.tag === 'tree' ? 'list' : arch.tag,
+            type: doc.tagName === 'tree' ? 'list' : doc.tagName,
         };
     },
     /**
