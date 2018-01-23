@@ -23,7 +23,7 @@ class TestBankStatementReconciliation(AccountingTestCase):
         prop = rec_prop[0]['reconciliation_proposition']
 
         self.assertEqual(len(prop), 1)
-        self.assertEqual(prop[0].id, rcv_mv_line.id)
+        self.assertEqual(prop[0]['id'], rcv_mv_line.id)
 
     def test_full_reconcile(self):
         rcv_mv_line = self.create_invoice(100)
