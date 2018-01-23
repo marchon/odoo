@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="account.view_account_payment_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//button[@name='post']" position="attributes">
-                    <attribute name="attrs">{'invisible': [('payment_transaction_capture', '=', True)]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|', ('state', '!=', 'draft'), ('payment_transaction_capture', '=', True)]}</attribute>
                 </xpath>
                 <xpath expr="//header" position="inside">
                     <button type="object" name="action_capture"
