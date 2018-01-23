@@ -116,6 +116,7 @@ def charge(env, key, account_token, credit, description=None, credit_template=No
         transaction.credit = credit
         yield transaction
     except Exception as e:
+        _logger.exception("Error during IAP transation")
         params = {
             'token': transaction_token,
             'key': key,
