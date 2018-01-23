@@ -680,7 +680,7 @@ class PaymentTransaction(models.Model):
 
         amount = vals.get('amount')
         payment_type = 'inbound' if amount > 0 else 'outbound'
-        invoice_ids = vals.get('invoice_ids') and vals.pop('invoice_ids') or []
+        invoice_ids = vals.get('invoice_ids')
         return {
             'amount': amount,
             'partner_id': vals.get('partner_id'),
@@ -750,6 +750,11 @@ class PaymentTransaction(models.Model):
 
         if not values.get('reference'):
             values['reference'] = self._compute_reference(values)
+
+        # The invoice_ids fields is declared on account.payment.
+        # Then, no need to write this value again.
+        if 'invoice_ids' in values:
+            values.pop('invoice_ids')
 
         # Default value of reference is
         tx = super(PaymentTransaction, self).create(values)
