@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
-    payment_tx_id = fields.Many2one('payment.transaction', string='Last Transaction')
+    payment_tx_id = fields.Many2one('payment.transaction', string='Last Transaction', copy=False)
 
     @api.multi
     def _log_transaction_invoice_update_message(self, transaction):

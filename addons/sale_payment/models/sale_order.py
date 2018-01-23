@@ -11,7 +11,7 @@ class SaleOrder(models.Model):
     payment_ids = fields.Many2many('account.payment', 'account_payment_sale_order_rel', 'sale_order_id', 'account_payment_id',
                                    string='Payments', readonly=True)
     payment_ids_nbr = fields.Integer(string='# of Payments', compute='_compute_payment_ids_nbr')
-    payment_tx_id = fields.Many2one('payment.transaction', string='Last Transaction')
+    payment_tx_id = fields.Many2one('payment.transaction', string='Last Transaction', copy=False)
 
     @api.depends('payment_ids')
     def _compute_payment_ids_nbr(self):

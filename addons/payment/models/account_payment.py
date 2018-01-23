@@ -16,7 +16,7 @@ class AccountPayment(models.Model):
                                                     string='Transaction Capture')
     payment_transaction_pending = fields.Boolean(related='payment_transaction_id.pending',
                                                     string='Transaction Pending')
-    refund_payment_id = fields.Many2one('account.payment', string='Payment to Refund')
+    refund_payment_id = fields.Many2one('account.payment', string='Payment to Refund', copy=False)
 
     @api.depends('payment_transaction_ids')
     def _compute_payment_transaction_id(self):
