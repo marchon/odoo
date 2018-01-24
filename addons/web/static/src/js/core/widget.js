@@ -4,6 +4,7 @@ odoo.define('web.Widget', function (require) {
 var ajax = require('web.ajax');
 var core = require('web.core');
 var mixins = require('web.mixins');
+var concurrency = require('web.concurrency');
 var ServicesMixin = require('web.ServicesMixin');
 
 /**
@@ -119,16 +120,16 @@ var Widget = core.Class.extend(mixins.PropertiesMixin, ServicesMixin, {
             var defs = _.map(this.xmlDependencies, function (xmlPath) {
                 return ajax.loadXML(xmlPath, core.qweb);
             });
-            return $.when.apply($, defs);
+            return concurrency.when.apply($, defs);
         }
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Method called after rendering. Mostly used to bind actions, perform
      * asynchronous calls, etc...
      *
      * By convention, this method should return an object that can be passed to
-     * $.when() to inform the caller when this widget has been initialized.
+     * concurrency.when() to inform the caller when this widget has been initialized.
      *
      * Note that, for historic reasons, many widgets still do work in the start
      * method that would be more suited to the willStart method.
@@ -136,7 +137,7 @@ var Widget = core.Class.extend(mixins.PropertiesMixin, ServicesMixin, {
      * @returns {Deferred}
      */
     start: function () {
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Destroys the current widget, also destroys all its children before

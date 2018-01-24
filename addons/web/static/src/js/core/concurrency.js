@@ -18,6 +18,8 @@ odoo.define('web.concurrency', function (require) {
 var Class = require('web.Class');
 
 return {
+    Deferred: odooPromises.Deferred,
+    when: odooPromises.when,
     /**
      * The jquery implementation for $.when has a (most of the time) useful
      * property: it is synchronous, if the deferred is resolved immediately.

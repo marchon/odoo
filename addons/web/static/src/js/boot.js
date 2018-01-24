@@ -230,7 +230,7 @@
                     job.error = e;
                 }
                 if (!job.error) {
-                    $.when(job_exec).then(
+                    odooPromises.when(job_exec).then(
                         function (data) {
                             services[job.name] = data;
                             def.resolve();
@@ -277,7 +277,7 @@
     var log_when_loaded = function () {
         _.delay(function () {
             var len = job_deferred.length;
-            $.when.apply($, job_deferred).then(function () {
+            odooPromises.when.apply(odooPromises, job_deferred).then(function () {
                 if (len === job_deferred.length) {
                     odoo.log();
                 } else {
