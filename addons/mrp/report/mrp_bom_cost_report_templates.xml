@@ -2,19 +2,19 @@
 <odoo>
     <template id="mrp_bom_cost_report">
         <t t-call="web.html_container">
-            <div class="form-horizontal mt32" t-if="print_mode == 'html' and len(bom_prodcuts.keys()) > 1" >
+            <div class="form-horizontal mt32" t-if="print_mode == 'html' and len(bom_products.keys()) > 1" >
                 <div class="form-group">
                     <label for="product_select" class="col-sm-3 control-label">Select Product Variant:</label>
                     <div class="col-sm-9">
                         <select class="form-control" id="product_select">
-                            <t t-foreach="bom_prodcuts.keys()" t-as="variant">
+                            <t t-foreach="bom_products.keys()" t-as="variant">
                                 <option t-att-value="variant.id"><t t-esc="variant.display_name"/></option>
                             </t>
                         </select>
                     </div>
                 </div>
             </div>
-            <t t-foreach="bom_prodcuts" t-as="product">
+            <t t-foreach="bom_products" t-as="product">
                 <t t-set="line" t-value="product_value"/>
                 <t t-call="web.internal_layout">
                     <div t-attf-class="page variant_#{product.id}">
@@ -82,6 +82,45 @@
                                     <th t-att-colspan="'6' if request.env.user.user_has_groups('product.group_uom') else '5'" class="text-left">Total Cost of Components</th>
                                     <th class="text-right">
                                         <span t-esc="line['total']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <t t-set="operations" t-value="line['operations']"/>
+                        <table class="table table-condensed bom_operation_table" t-if="operations['lines']">
+                            <thead>
+                                <tr>
+                                    <th colspan="3">Operation</th>
+                                    <th class="col-sm-2">Work Center
+                                    </th>
+                                    <th class="col-sm-2 text-left">
+                                        Duration</th>
+                                    <th class="col-sm-2 text-right">Cost per Hour</th>
+                                    <th class="col-sm-2 text-right">Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="operations['lines']" t-as="operation">
+                                    <td colspan="3">
+                                        <span t-esc="operation.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="operation.workcenter_id.name"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="operation.time_cycle/60.0"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="operation.workcenter_id.costs_hour" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-esc="operation.workcenter_id.costs_hour*operation.time_cycle/60.0" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th t-att-colspan="6" class="text-left">Total Cost of Operations</th>
+                                    <th class="text-right">
+                                        <span t-esc="operations['total']" t-options='{"widget": "monetary", "display_currency": currency}'/>
                                     </th>
                                 </tr>
                             </tbody>

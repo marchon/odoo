@@ -61,7 +61,12 @@ class MrpBomCost(models.AbstractModel):
         return total, lines, boms
 
     def _operation_lines(self, boms):
-        return {}
+        lines = boms.mapped('routing_id.operation_ids')
+        operations = {
+            'lines': lines,
+            'total': sum(lines.mapped(lambda l: l.workcenter_id.costs_hour*(l.time_cycle/60)))
+        }
+        return operations
 
     @api.multi
     def get_lines(self, boms):
@@ -91,6 +96,6 @@ class MrpBomCost(models.AbstractModel):
     @api.model
     def get_report_values(self, docids, data=None):
         boms = self.env['mrp.bom'].browse(docids)
-        bom_prodcuts = self.get_lines(boms)
+        bom_products = self.get_lines(boms)
         print_mode = self.env.context.get('print_mode')
-        return {'bom_prodcuts': bom_prodcuts, 'print_mode': print_mode}
+        return {'bom_products': bom_products, 'print_mode': print_mode}
