@@ -29,6 +29,7 @@
                             <field name="lead_for"/>
                             <field name="country_ids" widget="many2many_tags"/>
                             <field name="regex_url"/>
+                            <field name="calculate_credits"/>
                         </group>
                     </group>
                     <notebook>
@@ -45,6 +46,7 @@
                                     <field name="preferred_role_id"/>
                                     <field name="other_role_ids" widget="many2many_tags" options="{'color_field': 'color'}" attrs="{'invisible': [('preferred_role_id','=', False)]}"/>
                                     <field name="seniority_id"/>
+                                    <field name="extra_contacts"/>
                                 </group>
                             </group>
                         </page>

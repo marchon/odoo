@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="reveal_ip" groups="base.group_no_one" attrs="{'invisible': [('reveal_ip', '=', False)]}"/>
+                <field name="iap_credits" groups="base.group_no_one" attrs="{'invisible': [('reveal_ip', '=', False)]}"/>
             </xpath>
         </field>
     </record>
@@ -17,6 +18,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='tag_ids']" position="after">
                 <field name="reveal_ip" groups="base.group_no_one" attrs="{'invisible': [('reveal_ip', '=', False)]}"/>
+                <field name="iap_credits" groups="base.group_no_one" attrs="{'invisible': [('reveal_ip', '=', False)]}"/>
             </xpath>
         </field>
     </record>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="lead_message_template">
+        <t t-foreach="people_data" t-as="people">
+            <p>
+                <t t-esc="people['full_name']"/>, <t t-esc="people['title']"/> - <a t-attf-href="mailto:{{people['email']}}" target="_top"><t t-esc="people['email']"/></a>  <t t-esc="people['phone'] or ''"/>
+            </p>
+        </t>
+        <p t-if="tech">
+            Tags : <t t-esc="tech"/>
+        </p>
+        <p t-if="timezone">
+            Timezone :  <t t-esc="timezone"/>
+            <a t-attf-href="https://www.timeanddate.com/worldclock/{{timezone_link}}">
+                (Time Now)
+            </a>
+        </p>
+        <p t-if="twitter or facebook or linkedin or crunchbase">
+            Social Network :
+            <a t-if="twitter" style="margin: 5px;" t-attf-href="http://www.twitter.com/{{twitter}}">Twitter</a>
+            <a t-if="facebook" style="margin: 5px;" t-attf-href="http://www.facebook.com/{{facebook}}">Facebook</a>
+            <a t-if="linkedin" style="margin: 5px;" t-attf-href="https://www.linkedin.com/{{linkedin}}">Linkedin</a>
+            <a t-if="crunchbase" style="margin: 5px;" t-attf-href="https://www.crunchbase.com/{{crunchbase}}">Crunchbase</a>
+        </p>
+    </template>
+</odoo>

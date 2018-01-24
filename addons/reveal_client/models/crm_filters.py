@@ -3,6 +3,7 @@
 
 import logging
 import re
+import math
 
 from odoo import api, fields, models
 from odoo.addons.iap import jsonrpc, InsufficientCreditError
@@ -34,6 +35,9 @@ class CRMLeadRule(models.Model):
     preferred_role_id = fields.Many2one('reveal.people.role', string="Preferred Role")
     other_role_ids = fields.Many2many('reveal.people.role', string="Other Roles")
     seniority_id = fields.Many2one('reveal.people.seniority', string="Seniority")
+    extra_contacts = fields.Integer(string="Extra Contacts")
+
+    calculate_credits = fields.Integer(compute='_credit_count', string="Credit Used", readonly=True)
 
     # Lead / Opportunity Data
     lead_for = fields.Selection([('companies', 'Companies'), ('people', 'People')], string='Generate Leads For', required=True, default="people")
@@ -61,6 +65,17 @@ class CRMLeadRule(models.Model):
         action = self.env.ref('crm.crm_lead_all_leads').read()[0]
         action['domain'] = [('id', 'in', self.lead_ids.ids)]
         return action
+
+    @api.multi
+    @api.depends('extra_contacts')
+    @api.onchange('extra_contacts', 'lead_for')
+    def _credit_count(self):
+        credit = 1 
+        if self.lead_for == 'people':
+            credit += 1
+            if self.extra_contacts:
+                credit += self.extra_contacts
+        self.calculate_credits = credit
 
     # TODO: remove this method just for test
     @api.multi
@@ -112,7 +127,8 @@ class CRMLeadRule(models.Model):
                 data.update({
                     'preferred_role': rule.preferred_role_id and rule.preferred_role_id.name or '',
                     'other_roles': rule.other_role_ids.mapped('name'),
-                    'seniority': rule.seniority_id and rule.seniority_id.name or ''
+                    'seniority': rule.seniority_id and rule.seniority_id.name or '',
+                    'extra_contacts': rule.extra_contacts
                 })
             rule_data.append(data)
         return rule_data
@@ -144,65 +160,81 @@ class CRMLeadRule(models.Model):
             'user_id': rule.user_id.id,
             'stage_id': rule.stage_id.id,
             'reveal_ip': ip,
-            'reveal_rule_id': rule.id
+            'reveal_rule_id': rule.id,
+            'referred': 'Website Visitor'
         }
         lead_data.update(self._lead_data_from_result(result, rule.suffix))
-        self.env['crm.lead'].create(lead_data)
+        lead = self.env['crm.lead'].create(lead_data)
+        lead.message_post_with_view('reveal_client.lead_message_template', values=self._get_data_for_log_message(result))
+
+    def _get_data_for_log_message(self, result):
+        reveal_data = result['reveal_data']
+        people_data = result.get('people_data')
+
+        return {
+            'twitter': reveal_data['twitter'],
+            'facebook': reveal_data['facebook'],
+            'linkedin': reveal_data['linkedin'],
+            'crunchbase': reveal_data['crunchbase'],
+            'timezone': reveal_data['timezone'],
+            'timezone_link': reveal_data['timezone'].lower().replace('_','-'),
+            'tech': ' , '.join(reveal_data['tech']),
+            'people_data': people_data[1:]
+        }
 
     def _lead_data_from_result(self, result, suffix):
         reveal_data = result['reveal_data']
         people_data = result.get('people_data')
-        other_peoples = result.get('other_peoples_data')
-        name = reveal_data['company_info']['name']
+        name = reveal_data['name']
         if suffix:
-            name = name + ' - ' + suffix
+            name += ' - ' + suffix
         data = {
             'name': name,
-            'partner_name': reveal_data['company_info']['name'],
-            'phone': reveal_data['contact_details']['phone'],
-            'website': reveal_data['company_info']['domain'],
-            'street': reveal_data['company_address']['location'],
-            'city': reveal_data['company_address']['city'],
-            'zip': reveal_data['company_address']['postal_code'],
-            'country_id': self._find_country_id(reveal_data['company_address']['country_code']),
-            'state_id': self._find_state_id(reveal_data['company_address']),
-            'description': self._get_lead_description(reveal_data, other_peoples),
+            'iap_credits': result['credit'],
+            'partner_name': reveal_data['name'],
+            'phone': reveal_data['phone'],
+            'website': reveal_data['domain'],
+            'street': reveal_data['location'],
+            'city': reveal_data['city'],
+            'zip': reveal_data['postal_code'],
+            'country_id': self._find_country_id(reveal_data['country_code']),
+            'state_id': self._find_state_id(reveal_data),
+            'description': self._get_lead_description(reveal_data),
         }
-
         if people_data:
             data.update({
-                'contact_name': people_data['full_name'],
-                'email_from': people_data['email'],
-                'function': people_data['role'],
+                'contact_name': people_data[0]['full_name'],
+                'email_from': people_data[0]['email'],
+                'function': people_data[0]['role'],
             })
+
         return data
 
-    def _get_lead_description(self, reveal_data, other_peoples):
-
-        def get_header(header, text):
-            header = header * (len(text) + 5)
-            return "\n%s\n%s\n%s\n" % (header, text, header)
+    def _get_lead_description(self, reveal_data):
 
         description = ""
-        for heading in reveal_data:
-            description += get_header('=', heading.replace('_', ' ').title())
 
-            for rd in reveal_data[heading]:
-                d = reveal_data[heading][rd]
-                if type(d) == list:
-                    d = ", ".join(d)
-                description += "%s : %s \n" % (rd.replace('_', ' ').title(), d)
+        print_rules = ['website_title','sector', 'legal_name', 'twitter_bio', 'twitter_followers', 'twitter_location']
+        numbers = ['raised', 'market_cap', 'employees', 'estimated_annual_revenue']
+        for key in print_rules:
+            if reveal_data[key]:
+                description += "%s : %s \n" % ( key.replace('_', ' ').title(), reveal_data[key])
 
-        if other_peoples:
-            description += get_header('=', 'People Information')
-            for op in other_peoples:
-                description += get_header('--', op['full_name'])
+        millnames = ['', ' K', ' M', ' B', 'T']
+        def millify(n):
+            try:
+                n = float(n)
+                millidx = max(0, min(len(millnames) - 1,int(math.floor(0 if n == 0 else math.log10(abs(n)) / 3))))
+                return '{:.0f}{}'.format(n / 10**(3 * millidx), millnames[millidx])
+            except Exception as e:
+                return n
 
-                for k in op:
-                    if k != 'full_name':
-                        description += "%s : %s \n" % (k.replace('_', ' ').title(), op[k])
+        for key in numbers:
+            if reveal_data[key]:
+                description += "%s : %s \n" % (key.replace('_', ' ').title(), millify(reveal_data[key]))
 
         return description
+
 
     def _find_country_id(self, country_code):
         return self.env['res.country'].search([['code', '=ilike', country_code]]).id
