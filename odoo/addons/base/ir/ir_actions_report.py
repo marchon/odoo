@@ -303,6 +303,9 @@ class IrActionsReport(models.Model):
 
         # Retrieve bodies
         for node in root.xpath(match_klass.format('article')):
+            fake_outline = etree.Element('h1', style='font-size:0px')
+            fake_outline.text = 'page_break'
+            node.insert(0, fake_outline)
             body = layout.render(dict(subst=False, body=lxml.html.tostring(node), base_url=base_url))
             bodies.append(body)
             oemodelnode = node.find(".//*[@data-oe-model='%s']" % self.model)
@@ -519,9 +522,8 @@ class IrActionsReport(models.Model):
                     # we look on the pdf structure using pypdf to compute the outlines_pages that is
                     # an array like [0, 3, 5] that means a new document start at page 0, 3 and 5.
                     reader = PdfFileReader(pdf_content_stream)
-                    outlines_pages = sorted(
-                        [outline.getObject()[0] for outline in reader.trailer['/Root']['/Dests'].values()])
-                    assert len(outlines_pages) == len(res_ids)
+                    outlines = [outline.getObject()[0] for outline in reader.trailer['/Root']['/Dests'].values()]
+                    outlines_pages = sorted(set(outlines))
                     for i, num in enumerate(outlines_pages):
                         to = outlines_pages[i + 1] if i + 1 < len(outlines_pages) else reader.numPages
                         attachment_writer = PdfFileWriter()
