@@ -1038,23 +1038,25 @@ class WebsiteSale(http.Controller):
     def get_product_catalog_details(self, domain, sortby, limit=None):
         ProductTemplate = request.env['product.template']
         product_details = []
-        pricelist = request.website.get_current_pricelist()
         products = ProductTemplate.search(domain, order=sortby, limit=limit)
-        products_available = True
-        if not products:
+        if products:
+            products_available = True
+            currency_id = request.website.get_current_pricelist().currency_id
+            for product in products:
+                product_details.append({
+                    'id': product.id,
+                    'name': product.name,
+                    'description_sale': '<br/>'.join((product.description_sale or '').split('\n')),  # Replace \n with <br/>
+                    'price': tools.misc.formatLang(request.env, product.website_price, currency_obj=currency_id),
+                    'product_variant_id': product.product_variant_id.id,
+                    'product_variant_count': product.product_variant_count,
+                    'rating': product.rating_get_stats(),
+                })
+        else:
             products_available = bool(ProductTemplate.search_count([]))
-        for product in products:
-            product_details.append({
-                'id': product.id,
-                'name': product.name,
-                'description_sale': '<br/>'.join(product.description_sale.split('\n')),  # Replace \n with <br/>
-                'price': tools.misc.formatLang(request.env, product.website_price, currency_obj=pricelist.currency_id),
-                'product_variant_id': product.product_variant_id.id,
-                'product_variant_count': product.product_variant_count,
-                'rating': product.rating_get_stats(),
-            })
         return {
             'products': product_details,
             'is_rating_active': request.env.ref('website_sale.product_comment').active,
-            'products_available': products_available
+            'products_available': products_available,
+            'is_sales_manager': request.env.user.has_group('sales_team.group_sale_manager')
         }

@@ -5,7 +5,6 @@ var base = require('web_editor.base');
 var config = require('web.config');
 var core = require('web.core');
 var rpc = require('web.rpc');
-var utils = require('web.utils');
 var Widget = require('web.Widget');
 
 var QWeb = core.qweb;
@@ -17,24 +16,21 @@ var ProductCatalog = Widget.extend({
         '/website_rating/static/src/xml/website_mail.xml'
     ],
     /**
-     * Initialize options which are needed to render widget
-     *
      * @override
      * @param {Object} options
      */
     init: function (options) {
         this._super.apply(this, arguments);
         this.options = options;
-        this.isRating = false;
+        this.isRatingActive = false;
         this.isMobile = config.device.isMobile;
         this.size = this.options.catalog_type === 'grid' ? 12 / this.options.x : 12 / (config.device.size_class + 1);
         this.carouselID = _.uniqueId('product-catalog-carousel-');
     },
     /**
-     * Fetch product details.
+     * Fetch product details
      *
      * @override
-     * @returns {Deferred}
      */
     willStart: function () {
         var self = this;
@@ -47,24 +43,23 @@ var ProductCatalog = Widget.extend({
             }
         }).then(function (result) {
             self.products = result.products;
-            self.isRating = result.is_rating_active;
-            self.products_available = result.products_available;
+            self.isRatingActive = result.is_rating_active;
+            self.productsAvailable = result.products_available;
+            self.isSalesManager = result.is_sales_manager;
             if (self.options.sort_by === 'reorder_products') {
                 self._reorderingProducts();
             }
         });
         return $.when(this._super.apply(this, arguments), def);
     },
-
     /**
-     * If rating option is enable then display rating.
+     * If rating option is enable then display rating
      *
      * @override
-     * @returns {Deferred}
      */
     start: function () {
         this.$el.closest('.s_product_catalog').toggleClass('o_empty_catalog', !this.products.length);
-        if (this.isRating) {
+        if (this.isRatingActive) {
             this._renderRating();
         }
         return this._super.apply(this, arguments);
@@ -95,8 +90,8 @@ var ProductCatalog = Widget.extend({
         if (this.options.product_selection == 'category') {
             return [['public_categ_ids', 'child_of', [parseInt(this.options.category_id)]], ['website_published', '=', true]];
         } else if (this.options.product_selection == 'manual') {
-            var productIDS = this.options.product_ids.split(',').map(Number);
-            return [['id', 'in', productIDS], ['website_published', '=', true]];
+            var productIDs = this.options.product_ids.split(',').map(Number);
+            return [['id', 'in', productIDs], ['website_published', '=', true]];
         } else {
             return [['website_published', '=', true]];
         }

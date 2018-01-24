@@ -5,9 +5,9 @@
             <t t-if="!widget.products.length">
                 <div class="form-group text-center mt16">
                     <div class="text-center text-muted oe_product">
-                        <t t-if="!widget.products_available">
+                        <t t-if="!widget.productsAvailable">
                             <h3 class="css_editable_display">No product defined.</h3>
-                            <p groups="sales_team.group_sale_manager">Click <i>'New'</i> in the top-right corner to create your first product.</p>
+                            <p t-if="widget.isSalesManager">Click <i>'New'</i> in the top-right corner to create your first product.</p>
                         </t>
                         <t t-else="">
                             <h3 class="css_editable_display">No products are publish yet.</h3>
