@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import http, _
+import base64
+import re
+import werkzeug.wrappers
+
+from odoo import http, modules, _
+from odoo.addons.web.controllers.main import binary_content
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 from odoo.exceptions import AccessError
 from odoo.http import request
@@ -113,9 +118,38 @@ class PortalAccount(CustomerPortal):
             return request.redirect('/my')
 
         values = self._invoice_get_page_view_values(invoice_sudo, access_token, **kw)
+        filename = re.sub(r"[^\w\s]", '_', invoice_sudo._get_printed_report_name())
+        values['filename'] = '%s.%s' % (filename, 'pdf') if filename else ''
         return request.render("account.portal_invoice_page", values)
 
-    @http.route(['/my/invoices/pdf/<int:invoice_id>'], type='http', auth="public", website=True)
+    @http.route('/my/invoices/customer/avatar/<int:invoice_id>/<string:access_token>', type='http', auth="public", website=True)
+    def portal_my_invoice_customer_avatar(self, invoice_id, access_token, **kw):
+        try:
+            invoice_sudo = self._invoice_check_access(invoice_id, access_token)
+        except AccessError:
+            return werkzeug.wrappers.Response(status=304)
+
+        status, headers, content = binary_content(model='res.partner', id=invoice_sudo.partner_id.id, field='image_medium', default_mimetype='image/png', env=request.env(user=invoice_sudo.env.user))
+
+        if not content:
+            img_path = modules.get_module_resource('web', 'static/src/img', 'placeholder.png')
+            with open(img_path, 'rb') as f:
+                image = f.read()
+            content = base64.b64encode(image)
+
+        if status == 304:
+            return werkzeug.wrappers.Response(status=304)
+
+        image_base64 = base64.b64decode(content)
+        headers.append(('Content-Length', len(image_base64)))
+        response = request.make_response(image_base64, headers)
+        response.status = str(status)
+        return response
+
+    @http.route([
+        '/my/invoices/pdf/<int:invoice_id>',
+        '/my/invoices/pdf/<int:invoice_id>/<string:access_token>',
+    ], type='http', auth="public", website=True)
     def portal_my_invoice_report(self, invoice_id, access_token=None, **kw):
         try:
             invoice_sudo = self._invoice_check_access(invoice_id, access_token)
