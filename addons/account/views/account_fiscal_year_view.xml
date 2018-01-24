@@ -11,7 +11,8 @@
                     Click here to create a new fiscal year.
                 </p>
                 <p>
-                    If all your fiscal years are 12 months period, this is not needed.
+                    If all your fiscal years last 12 months, this is not needed.
+                    Just define the end of your fiscal year in the accounting settings.
                 </p>
             </field>
         </record>
