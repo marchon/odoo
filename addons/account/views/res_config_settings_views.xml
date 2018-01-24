@@ -231,7 +231,7 @@
                                     <label string="SEPA Direct Debit (SDD)" for="module_account_sepa"/>
                                     <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." groups="base.group_multi_company"/>
                                     <div class="text-muted">
-                                        Collect customer payments in one-click using Euro SEPA Service.
+                                        Collect customer payments in one-click using Euro SEPA Service
                                     </div>
                                 </div>
                             </div>
@@ -259,7 +259,7 @@
                                     <label string="SEPA Credit Transfer (SCT)" for="module_account_sepa"/>
                                     <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." groups="base.group_multi_company"/>
                                     <div class="text-muted">
-                                        Pay your bills in one-click using Euro SEPA service
+                                        Pay your bills in one-click using Euro SEPA Service
                                     </div>
                                 </div>
                             </div>
