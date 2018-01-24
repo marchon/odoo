@@ -410,6 +410,10 @@
         <t t-call-assets="web.assets_common" t-css="false"/>
         <t t-call-assets="web.assets_backend" t-css="false"/>
 
+        <script type="text/javascript">
+            jQuery.extend(odooPromises); // to have synchronous tests (clearer tests but wrong envirenement)
+        </script>
+
         <!-- add lazy-loaded libs to make tests synchronous -->
         <link rel="stylesheet" href="/web/static/lib/fullcalendar/css/fullcalendar.css"/>
         <script type="text/javascript" src="/web/static/lib/fullcalendar/js/fullcalendar.js"></script>

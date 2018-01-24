@@ -51,7 +51,7 @@
         remaining_jobs: jobs,
 
         __DEBUG__: {
-            didLogInfo: $.Deferred(),
+            didLogInfo: odooPromises.Deferred(),
             get_dependencies: function (name, transitive) {
                 var deps = name instanceof Array ? name: [name],
                     changed;
@@ -221,7 +221,7 @@
                 var require = make_require(job);
 
                 var job_exec;
-                var def = $.Deferred();
+                var def = odooPromises.Deferred();
                 try {
                     job_exec = job.factory.call(null, require);
                     jobs.splice(jobs.indexOf(job), 1);
@@ -230,7 +230,7 @@
                     job.error = e;
                 }
                 if (!job.error) {
-                    $.when(job_exec).then(
+                    odooPromises.when(job_exec).then(
                         function (data) {
                             services[job.name] = data;
                             def.resolve();
@@ -277,7 +277,7 @@
     var log_when_loaded = function () {
         _.delay(function () {
             var len = job_deferred.length;
-            $.when.apply($, job_deferred).then(function () {
+            odooPromises.when.apply(odooPromises, job_deferred).then(function () {
                 if (len === job_deferred.length) {
                     odoo.log();
                 } else {

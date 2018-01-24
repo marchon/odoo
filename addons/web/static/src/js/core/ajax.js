@@ -13,7 +13,7 @@ function genericJsonRpc (fct_name, params, fct) {
         id: Math.floor(Math.random() * 1000 * 1000 * 1000)
     };
     var xhr = fct(data);
-    var result = xhr.pipe(function(result) {
+    var result = xhr.then(function(result) {
         core.bus.trigger('rpc:result', data, result);
         if (result.error !== undefined) {
             if (result.error.data.arguments[0] !== "bus.Bus not available in test mode") {

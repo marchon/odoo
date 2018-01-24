@@ -18,11 +18,13 @@ odoo.define('web.concurrency', function (require) {
 var Class = require('web.Class');
 
 return {
+    Deferred: odooPromises.Deferred,
+    when: odooPromises.when,
     /**
-     * The jquery implementation for $.when has a (most of the time) useful
+     * The jquery implementation for odooPromises.when has a (most of the time) useful
      * property: it is synchronous, if the deferred is resolved immediately.
      *
-     * This means that when we execute $.when(def), then all registered
+     * This means that when we execute odooPromises.when(def), then all registered
      * callbacks will be executed before the next line is executed.  This is
      * useful quite often, but in some rare cases, we might want to force an
      * async behavior. This is the purpose of this function, which simply adds a
@@ -32,8 +34,8 @@ return {
      */
     asyncWhen: function () {
         var async = false;
-        var def = $.Deferred();
-        $.when.apply($, arguments).done(function() {
+        var def = odooPromises.Deferred();
+        odooPromises.when.apply($, arguments).done(function() {
             var args = arguments;
             var action = function() {
                 def.resolve.apply(def, args);
@@ -64,7 +66,7 @@ return {
      * @return {Deferred}
      */
     delay: function (wait) {
-        var def = $.Deferred();
+        var def = odooPromises.Deferred();
         setTimeout(def.resolve, wait);
         return def;
     },
@@ -99,7 +101,7 @@ return {
          * @returns {Deferred}
          */
         add: function (deferred) {
-            var res = $.Deferred();
+            var res = odooPromises.Deferred();
 
             var self = this, seq = this.lsn++;
             deferred.done(function () {
@@ -159,7 +161,7 @@ return {
          */
         add: function (deferred) {
             if (this.current_def) { this.current_def.reject(); }
-            var res = $.Deferred();
+            var res = odooPromises.Deferred();
             deferred.then(res.resolve, res.reject);
             this.current_def = res;
             return res.promise();
@@ -200,7 +202,7 @@ return {
      */
     Mutex: Class.extend({
         init: function () {
-            this.def = $.Deferred().resolve();
+            this.def = odooPromises.Deferred().resolve();
         },
         /**
          * Add a computation to the queue, it will be executed as soon as the
@@ -211,9 +213,9 @@ return {
          */
         exec: function (action) {
             var current = this.def;
-            var next = this.def = $.Deferred();
+            var next = this.def = odooPromises.Deferred();
             return current.then(function() {
-                return $.when(action()).always(function() {
+                return odooPromises.when(action()).always(function() {
                     next.resolve();
                 });
             });
@@ -228,7 +230,7 @@ return {
      * @returns {Deferred}
      */
     rejectAfter: function (target_def, reference_def) {
-        var res = $.Deferred();
+        var res = odooPromises.Deferred();
         target_def.then(res.resolve, res.reject);
         reference_def.always(res.reject);
         return res.promise();

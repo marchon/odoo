@@ -133,7 +133,7 @@ var ChatterComposer = composer.BasicComposer.extend({
         }
 
         // for unknown names + incomplete partners -> open popup - cancel = remove from recipients
-        $.when(def).pipe(function (result) {
+        $.when(def).then(function (result) {
             result = result || [];
             var emails_deferred = [];
             var recipient_popups = result.concat(recipients_to_check);
@@ -180,7 +180,7 @@ var ChatterComposer = composer.BasicComposer.extend({
                             args: [[self.context.default_res_id], new_names_to_find, true],
                         });
                 }
-                $.when(def).pipe(function (result) {
+                $.when(def).then(function (result) {
                     result = result || [];
                     var recipient_popups = result.concat(recipients_to_check);
                     _.each(recipient_popups, function (partner_info) {
@@ -188,7 +188,7 @@ var ChatterComposer = composer.BasicComposer.extend({
                             recipient_ids.push(partner_info.partner_id);
                         }
                     });
-                }).pipe(function () {
+                }).then(function () {
                     check_done.resolve(recipient_ids);
                 });
             });
