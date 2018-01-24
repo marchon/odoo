@@ -15,7 +15,7 @@ var Broadcast = Widget.extend({
     mediaConfig: {
         audio: true,
         video: { width: 400, height: 300 },
-        preview: false,
+        preview: true,
     },
     peerConfig: {iceServers: [
         {url: 'stun:stun.l.google.com:19302'},
@@ -26,9 +26,13 @@ var Broadcast = Widget.extend({
         {url: 'stun:stun.services.mozilla.com'}
     ]},
 
-    init: function (parent) {
-        this.partner_id = $('.o_user_menu').text().indexOf('Admin') !== -1 ? 6 : 3;
+    init: function (parent, partner_id) {
+        this.partner_id = partner_id;
         $(window).on('beforeunload', this.destroy.bind(this));
+        this.local = {};
+        this.remote = {};
+        this.localStream = new MediaStream();
+        this.remoteStream = new MediaStream();
         return this._super(parent);
     },
     start: function () {
@@ -72,66 +76,91 @@ var Broadcast = Widget.extend({
     // Private
     //--------------------------------------------------------------------------
 
-    _endCall: function () {
+    _endCall: function (type, media) {
         if (!this.peerConnection) {
             return;
         }
 
+        if (type !== 'remote') {
+            this._endLocalCall();
+        }
+        if (type !== 'local') {
+            this._endRemoteCall();
+        }
+
+        if (!_.isEmpty(this.remote) || !_.isEmpty(this.local)) {
+            return;
+        }
+
+        this.peerConnection.close();
+        this.peerConnection = null;
+    },
+    _endLocalCall: function () {
+        var self = this;
         rpc.query({
             route: '/broadcast/disconnect',
             params: {partner_id: this.partner_id}
         });
 
-        this.localMedia = null;
-        this.peerConnection.close();
-        this.peerConnection = null;
-
-        // videoCallButton.removeAttribute("disabled");
-        // endCallButton.setAttribute("disabled", true);
-
-        if (this.localVideoStream) {
-            this.localVideoStream.getTracks().forEach(function (track) {
-                track.stop();
-            });
-            this.localVideoStream = null;
-        }
-        if (this.localVideo) {
-            this.localVideo.pause();
-            this.localVideo.src = "";
-            $(this.localVideo).remove();
-            this.localVideo = null;
-        }
-        if (this.remoteVideo) {
-            this.remoteVideo.pause();
-            this.remoteVideo.src = "";
-            $(this.remoteVideo).remove();
-            this.remoteVideo = null;
-        }
-        this.$('.fa.o_audio.active,.fa.o_video.active').removeClass('active');
-    },
-    _prepareCall: function () {
-        var self = this;
-        if (this.peerConnection) {
-            return this.peerConnection;
-        }
-        this.defPeerConnection = new Promise(function (resolve, reject) {
-          resolve();
+        this.localStream.getTracks().forEach(function (track) {
+            track.stop();
+            self.localStream.removeTrack(track);
         });
 
+        var video = this.remote.video;
+        if (video && video !== true) {
+            video.pause();
+            video.src = "";
+            $(video).remove();
+        }
+        delete this.local.video;
+
+        this.$('.fa.o_audio.active,.fa.o_video.active').removeClass('active');
+    },
+    _endRemoteCall: function () {
+        var self = this;
+        this.remoteStream.getTracks().forEach(function (track) {
+            track.stop();
+            self.remoteStream.removeTrack(track);
+        });
+
+        var video = this.remote.video;
+        if (video && video !== true) {
+            video.pause();
+            video.src = "";
+            $(video).remove();
+        }
+        delete this.remote.video;
+    },
+    _prepareCall: function (kill) {
+        var self = this;
+        if (this.peerConnection) {
+            if (kill) {
+                this.peerConnection.close();
+                this.peerConnection = null;
+            } else {
+                return this.peerConnection;
+            }
+        }
+
         var pc = this.peerConnection = new RTCPeerConnection(this.peerConfig);
+
+        pc.addStream(this.localStream);
+
         pc.onicecandidate = this._onIceCandidate.bind(this);
         pc.onaddstream = this._onAddStream.bind(this);
         pc.onremovestream = function (event) {
             console.log(event.type);
         };
         pc.oniceconnectionstatechange = function (event) {
+            console.log(event);
             if (self.isDestroyed()) {
                 return;
             }
             switch(this.iceConnectionState) {
                 case "closed":
                 case "failed":
-                case "disconnected": self._endCall();
+                case "disconnected": self._endCall('remote');
             }
         };
         pc.onicegatheringstatechange = function (event) {
@@ -146,96 +175,75 @@ var Broadcast = Widget.extend({
         return pc;
     },
     _addVideo: function (stream, video) {
-        if (!video) {
+        if (!video || video === true) {
             video = document.createElement('video');
             $(video).appendTo(this.$('div'));
         }
 
-        console.log(video);
-
         (function () {
             if ('srcObject' in video) {
-                video.srcObject = stream;
+                try {
+                    video.srcObject = stream;
+                } catch(e) {}
+            }
+            if ('mozSrcObject' in video) {
+                try {
+                   video.mozSrcObject = stream;
+                } catch(e) {}
             }
             if ('createObjectURL' in URL) {
                 video.src = URL.createObjectURL(stream);
             }
-            if ('mozSrcObject' in video) {
-                video.mozSrcObject = stream;
-            }
         })();
         video.autoplay = true;
-        video.controls = true;
         video.play();
         return video;
     },
-    _addAudio: function (stream) {
-        console.log("");
-        console.log(new Error().stack);
-        console.log("");
+    _addAudio: function (stream, audio) {
+        if (!audio || audio === true) {
+            audio = document.createElement('video');
+        }
 
-        var AudioContext = window.AudioContext || window.webkitAudioContext;
-        var audioContext = new AudioContext();
-
-        // Create an AudioNode from the stream
-        var mediaStreamSource = audioContext.createMediaStreamSource(stream);
-
-        // Connect it to destination to hear yourself
-        // or any other node for processing!
-        mediaStreamSource.connect(audioContext.destination);
-
-        return audioContext;
+        (function () {
+            if ('srcObject' in audio) {
+                try {
+                    audio.srcObject = stream;
+                } catch(e) {}
+            }
+            if ('mozSrcObject' in audio) {
+                try {
+                   audio.mozSrcObject = stream;
+                } catch(e) {}
+            }
+            if ('createObjectURL' in URL) {
+                audio.src = URL.createObjectURL(stream);
+            }
+        })();
+        audio.autoplay = true;
+        audio.play();
+        return audio;
     },
     _createAndSendDescription: function (type) {
         var self = this;
         var pc = this.peerConnection;
-        return (type === 'offer' ? pc.createOffer() : pc.createAnswer())
+        return (type === 'offer' ? pc.createOffer() : pc.createAnswer(pc.remoteDescription))
             .then(function (description) {
-                var desc = new RTCSessionDescription(description);
-                return pc.setLocalDescription(new RTCSessionDescription(desc))
+                return pc.setLocalDescription(new RTCSessionDescription(description))
                     .then(function () {
                         return rpc.query({
                             route: '/broadcast/call',
                             params: {
                                 type: 'call',
                                 partner_id: self.partner_id,
-                                media: self.localMedia,
-                                desc: desc
+                                desc: description
                             }
                         });
                     });
             })
-            .catch(function (err) { console.error(err); });
-    },
-    _call: function (type, media) {
-        var self = this;
-        var pc = this._prepareCall();
-
-        if (!this.mediaConfig[media]) {
-            throw 'Not available';
-        }
-        if (this.localMedia === media) {
-            return;
-        }
-        if (this.localMedia) {
-            throw 'close current media';
-        }
-        this.localMedia = media;
-
-        var mediaConfig = _.pick(this.mediaConfig, media === 'video' ? ['video', 'audio'] : ['audio']);
-        navigator.mediaDevices.getUserMedia(mediaConfig)
-            .then(function (stream) {
-                self.localVideoStream = stream;
-                if (self.mediaConfig.preview) {
-                    if (media === 'video') {
-                        self.localVideo = self._addVideo(stream);
-                    } else {
-                        self.localAudio = self._addAudio(stream);
-                    }
-                }
-                pc.addStream(stream);
-            })
-            .then(this._createAndSendDescription.bind(this, type));
+            .catch(function (err) {
+                console.error(err);
+                self._endCall();
+            });
     },
 
     //--------------------------------------------------------------------------
@@ -245,6 +253,9 @@ var Broadcast = Widget.extend({
     // send any ice candidates to the other peer
     _onIceCandidate: function (event) {
         var self = this;
+
+        console.log('_onIceCandidate', event);
+
         if (!event.candidate) {
             return;
         }
@@ -252,7 +263,6 @@ var Broadcast = Widget.extend({
             route: '/broadcast/call',
             params: {
                 partner_id: self.partner_id,
-                media: self.localMedia,
                 type: 'candidate',
                 candidate: event.candidate
             }
@@ -260,10 +270,22 @@ var Broadcast = Widget.extend({
     },
     // once remote stream arrives, show it in the remote video element
     _onAddStream: function (evt) {
-        if (this.remoteMedia === 'video') {
-            this.remoteVideo = this._addVideo(evt.stream, this.remoteVideo);
-        } else if (this.remoteMedia === 'audio') {
-            this.remoteAudio = this._addAudio(evt.stream, this.remoteAudio);
+        var self = this;
+        var tracks = evt.stream.getTracks();
+        tracks.forEach(function(track) {
+            self.remoteStream.addTrack(track);
+        });
+        var medias = _.pluck(tracks, 'kind');
+
+        console.log('_onAddStream', medias);
+
+        if (medias.indexOf('video') !== -1) {
+            if (this.remote.audio) {
+                this.remote.audio.stop();
+            }
+            this.remote.video = this._addVideo(evt.stream, this.remote.video);
+        } else if (medias.indexOf('audio') !== -1) {
+            this.remote.audio = this._addAudio(evt.stream, this.remote.audio);
         }
     },
     /**
@@ -272,15 +294,16 @@ var Broadcast = Widget.extend({
      * returns: {Promise}
      */
     _onCall: function (data) {
-        var pc = this._prepareCall();
-        this.remoteMedia = data.media;
-
-        console.log('_onCall', this.remoteMedia, data);
+        var self = this;
+        var pc = this._prepareCall(data.desc && data.desc.type === 'offer');
 
         if (data.desc && data.desc.sdp) {
             console.log("Received SDP from remote peer.");
             var session = new RTCSessionDescription(data.desc);
-            pc.setRemoteDescription(session);
+            var promise = pc.setRemoteDescription(session);
+            if (data.desc.type === 'offer') {
+                promise.then(this._createAndSendDescription.bind(this, 'answer'));
+            }
         } else if (data.candidate) {
             console.log("Received ICECandidate from remote peer.");
             var candidate = new RTCIceCandidate(data.candidate);
@@ -289,22 +312,50 @@ var Broadcast = Widget.extend({
     },
     _onEnd: function (data) {
         console.log("Received 'close call' signal from remote peer.");
-        this._endCall();
+        this._endCall('remote');
     },
     _onOpenMedia: function (event) {
-        var type = this.peerConnection ? 'answer' : 'offer';
+        var self = this;
+        var pc = this._prepareCall(true);
+
         var media = $(event.target).addClass('active').hasClass('o_audio') ? 'audio' : 'video';
-        this._call(type, media);
+
+        this.local[media] = true;
+
+        var mediaConfig = _.pick(this.mediaConfig, media === 'video' ? ['video', 'audio'] : ['audio']);
+        var promise = navigator.mediaDevices.getUserMedia(mediaConfig);
+        promise.then(function (stream) {
+                if (self.mediaConfig.preview) {
+                    if (media === 'video') {
+                        self.local.video = self._addVideo(stream);
+                    } else {
+                        self.local.audio = self._addAudio(stream);
+                    }
+                }
+                stream.getTracks().forEach(function(track) {
+                    self.localStream.addTrack(track);
+                });
+            });
+
+        promise.then(this._createAndSendDescription.bind(this, 'offer'));
     },
     _onCloseMedia: function (event) {
         var media = $(event.target).addClass('active').hasClass('o_audio') ? 'audio' : 'video';
-        this._endCall();
+        this._endCall('local', media);
     },
 });
 
 (function autoAdd() {
     if ($('.o_home_menu').size()) {
-        new Broadcast().prependTo($('.o_home_menu'));
+        if ($('.o_user_menu').text().indexOf('aaa') !== -1)
+        {
+        new Broadcast(this, 3).prependTo($('.o_home_menu'));
+        new Broadcast(this, 6).prependTo($('.o_home_menu'));
+
+        } else {
+            new Broadcast(this, $('.o_user_menu').text().indexOf('Admin') !== -1 ? 6 : 3).prependTo($('.o_home_menu'));
+            new Broadcast(this, 45).prependTo($('.o_home_menu'));
+        }
     } else {
         setTimeout(autoAdd, 500);
     }
