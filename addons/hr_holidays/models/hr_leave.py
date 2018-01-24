@@ -77,6 +77,7 @@ class HolidaysRequest(models.Model):
         help='This area is automaticly filled by the user who validate the leave with second level (If Leave type need second validation)')
     double_validation = fields.Boolean('Apply Double Validation', related='holiday_status_id.double_validation')
     can_reset = fields.Boolean('Can reset', compute='_compute_can_reset')
+    can_approve = fields.Boolean('Can Aproove', compute='_compute_can_approve')
 
     _sql_constraints = [
         ('type_value', "CHECK( (holiday_type='employee' AND employee_id IS NOT NULL) or (holiday_type='category' AND category_id IS NOT NULL) or (holiday_type='department' AND department_id IS NOT NULL) )",
@@ -101,6 +102,17 @@ class HolidaysRequest(models.Model):
         for holiday in self:
             if group_hr_manager in user.groups_id or holiday.employee_id and holiday.employee_id.user_id == user:
                 holiday.can_reset = True
+
+    @api.depends('employee_id', 'department_id')
+    def _compute_can_approve(self):
+        """ User can not approve a leave request if it is its own leave request
+             or if he is an Hr Manager.
+        """
+        if self.user_has_groups('hr_holidays.group_hr_holidays_user'):
+            for holiday in self:
+                if (self.user_has_groups('hr_holidays.group_hr_holidays_manager') and not holiday.employee_id.parent_id and not holiday.department_id.manager_id) \
+                   or (holiday.employee_id.user_id.id != self.env.uid):
+                    holiday.can_approve = True
 
     @api.onchange('holiday_type')
     def _onchange_type(self):
