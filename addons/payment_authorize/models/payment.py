@@ -157,7 +157,7 @@ class TxAuthorize(models.Model):
             error_msg = _('Authorize: received data with missing reference (%s) or trans_id (%s) or fingerprint (%s)') % (reference, trans_id, fingerprint)
             _logger.info(error_msg)
             raise ValidationError(error_msg)
-        tx = self.search([('reference', '=', reference)])
+        tx = self.browse(trans_id)
         if not tx or len(tx) > 1:
             error_msg = 'Authorize: received data for reference %s' % (reference)
             if not tx:
@@ -275,7 +275,6 @@ class TxAuthorize(models.Model):
         status_code = int(tree.get('x_response_code', '0'))
         if status_code == self._authorize_valid_tx_status:
             if tree.get('x_type').lower() in ['auth_capture', 'prior_auth_capture']:
-                init_state = self.state
                 self.write({
                     'acquirer_reference': tree.get('x_trans_id'),
                     'payment_date': fields.Datetime.now(),
