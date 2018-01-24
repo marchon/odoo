@@ -153,10 +153,27 @@
                   <field name="name"/>
                   <field name="state"/>
                   <field name="summary"/>
+                  <field name="website"/>
                   <templates>
                     <t t-name="kanban-box">
                       <div class="oe_module_vignette oe_kanban_global_click">
                         <t t-set="installed" t-value="record.state.raw_value == 'installed'"/>
+                        <div t-if="state=='installed' or record.website.raw_value" class="o_kanban_manage_button_section">
+                            <a class="o_kanban_manage_toggle_button" href="#"><i class="fa fa-ellipsis-v" /></a>
+                        </div>
+                        <div class="o_kanban_card_manage_pane">
+                            <div class="o_kanban_card_manage_section">
+                                <div t-if="record.website.raw_value">
+                                    <a t-att-href="record.website.raw_value" target="_blank">Discover</a>
+                                </div>
+                                <div t-if="installed">
+                                    <a name="button_immediate_upgrade" type="object">Upgrade</a>
+                                </div>
+                                <div t-if="installed">
+                                    <a name="button_uninstall_wizard" type="object">Uninstall</a>
+                                </div>
+                            </div>
+                        </div>
                         <img t-attf-src="#{record.icon.value}" class="oe_module_icon"/>
                         <div class="oe_module_desc" t-att-title="record.shortdesc.value">
                           <h4 class="o_kanban_record_title"><field name="shortdesc"/></h4>
@@ -167,6 +184,7 @@
                             <code groups="base.group_no_one"><small><field name="name"/></small></code>
                             <button type="object" class="btn btn-primary pull-right btn-sm" name="button_immediate_install" states="uninstalled">Install</button>
                             <span t-if="installed" class="pull-right text-muted mr8">Installed</span>
+                            <button attrs="{'invisible':[('state','not in','to remove')]}" type="object" class="btn btn-primary pull-right btn-sm" name="button_uninstall_cancel">Cancel UnInstall</button>
                           </div>
                         </div>
                       </div>
