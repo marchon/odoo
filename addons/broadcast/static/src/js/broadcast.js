@@ -8,18 +8,23 @@ var rpc = require('web.rpc');
 var Broadcast = Widget.extend({
     template: 'broadcast.main',
     events: {
-        'click .o_audio,.o_video': '_onSendCall',
+        'click .fa.o_audio:not(.active),.fa.o_video:not(.active)': '_onOpenMedia',
+        'click .fa.o_audio.active,.fa.o_video.active': '_onCloseMedia',
     },
 
     mediaConfig: {
         audio: true,
         video: { width: 400, height: 300 },
-        preview: true,
+        preview: false,
     },
-    peerConfig: {'iceServers': 
-        [{'url': 'stun:stun.services.mozilla.com'}, 
-         {'url': 'stun:stun.l.google.com:19302'}]
-    },
+    peerConfig: {iceServers: [
+        {url: 'stun:stun.l.google.com:19302'},
+        {url: 'stun:stun1.l.google.com:19302'},
+        {url: 'stun:stun2.l.google.com:19302'},
+        {url: 'stun:stun3.l.google.com:19302'},
+        {url: 'stun:stun4.l.google.com:19302'},
+        {url: 'stun:stun.services.mozilla.com'}
+    ]},
 
     init: function (parent) {
         this.partner_id = $('.o_user_menu').text().indexOf('Admin') !== -1 ? 6 : 3;
@@ -30,14 +35,27 @@ var Broadcast = Widget.extend({
         var self = this;
         bus.start_polling();
         this.__onNodifications = function (notifications) {
-            _.each(notifications, function (notification) {
-                if (notification[0][1] === "broadcast.call") {
-                    var data = JSON.parse(notification[1]);
-                    if (data.type === 'call') {
-                        self.type = 'answer';
-                        self._onReceiveCall(data.sdp);
-                    } else if (data.partner_id === self.partner_id) {
-                        self._onDisconnectCall();
+            notifications = _.filter(notifications, function (notification) {
+                return notification[0][1] === "broadcast";
+            });
+            var broadcasts = _.map(notifications, function (notification) {
+                return JSON.parse(notification[1]);
+            });
+            broadcasts = _.filter(broadcasts, function (broadcast) {
+                return broadcast.partner_id === self.partner_id;
+            });
+            var index = _.findIndex(broadcasts, {type: 'call'});
+            if (index !== -1) {
+                broadcasts.splice(index+1);
+            }
+
+            broadcasts.reverse();
+            _.each(broadcasts, function (broadcast) {
+                if (broadcast) {
+                    if (broadcast.type === 'disconnect') {
+                        self._onEnd();
+                    } else {
+                        self._onCall(broadcast);
                     }
                 }
             });
@@ -47,86 +65,114 @@ var Broadcast = Widget.extend({
     destroy: function () {
         this._super();
         bus.off('notification', this, this.__onNodifications);
-        if (!this.peerConnection) {
-            return;
-        }
-        if (this.media === 'video') {
-            var video = this.$('video')[0];
-            if (video && video.srcObject) {
-                video.srcObject.getTracks().forEach(function (track) {
-                    track.stop();
-                });
-                video.srcObject = null;
-            }
-        }
-        this.peerConnection.close();
-        rpc.query({
-            route: '/broadcast/disconnect',
-            params: {partner_id: self.partner_id}
-        });
+        this._endCall();
     },
 
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
 
-    _startPeerConnection: function () {
+    _endCall: function () {
+        if (!this.peerConnection) {
+            return;
+        }
+
+        rpc.query({
+            route: '/broadcast/disconnect',
+            params: {partner_id: this.partner_id}
+        });
+
+        this.localMedia = null;
+        this.peerConnection.close();
+        this.peerConnection = null;
+
+        // videoCallButton.removeAttribute("disabled");
+        // endCallButton.setAttribute("disabled", true);
+
+        if (this.localVideoStream) {
+            this.localVideoStream.getTracks().forEach(function (track) {
+                track.stop();
+            });
+            this.localVideoStream = null;
+        }
+        if (this.localVideo) {
+            this.localVideo.pause();
+            this.localVideo.src = "";
+            $(this.localVideo).remove();
+            this.localVideo = null;
+        }
+        if (this.remoteVideo) {
+            this.remoteVideo.pause();
+            this.remoteVideo.src = "";
+            $(this.remoteVideo).remove();
+            this.remoteVideo = null;
+        }
+        this.$('.fa.o_audio.active,.fa.o_video.active').removeClass('active');
+    },
+    _prepareCall: function () {
         var self = this;
         if (this.peerConnection) {
-            return;
+            return this.peerConnection;
         }
         this.defPeerConnection = new Promise(function (resolve, reject) {
           resolve();
         });
 
-        this.peerConnection = new RTCPeerConnection(this.peerConfig);
-        this.peerConnection.onicecandidate = this._onPeerConnectionCandidate.bind(this);
-        this.peerConnection.onaddstream = this._onPeerConnectionStream.bind(this);
-        this.peerConnection.onremovestream = function (event) {
-            console.log(event.type, event);
+        var pc = this.peerConnection = new RTCPeerConnection(this.peerConfig);
+        pc.onicecandidate = this._onIceCandidate.bind(this);
+        pc.onaddstream = this._onAddStream.bind(this);
+        pc.onremovestream = function (event) {
+            console.log(event.type);
         };
-        this.peerConnection.oniceconnectionstatechange = function (event) {
+        pc.oniceconnectionstatechange = function (event) {
             if (self.isDestroyed()) {
                 return;
             }
             switch(this.iceConnectionState) {
                 case "closed":
                 case "failed":
-                case "disconnected": self.destroy();
-                break;
+                case "disconnected": self._endCall();
             }
         };
-        this.peerConnection.onicegatheringstatechange = function (event) {
-            console.log(event.type, event);
+        pc.onicegatheringstatechange = function (event) {
+            console.log(event.type);
         };
-        this.peerConnection.onsignalingstatechange = function (event) {
-            console.log(event.type, event);
+        pc.onsignalingstatechange = function (event) {
+            console.log(event.type);
         };
-        this.peerConnection.onnegotiationneeded = function (event) {
-            console.log(event.type, event);
+        pc.onnegotiationneeded = function (event) {
+            console.log(event.type);
         };
+        return pc;
     },
-    _onAddMedia: function (media, stream) {
-        console.log('_onAddMedia', stream);
-        if (media === 'video') {
-            var video = document.createElement('video');
-            video.autoplay = true;
-            $(video).appendTo(this.$('.o_video'));
-
-            if ('srcObject' in video) {
-                return (video.srcObject = stream);
-            } else if ('mozSrcObject' in video) {
-                return (video.mozSrcObject = stream);
-            } else if ('createObjectURL' in URL) {
-                try {
-                    // deprecated
-                    return (video.src = URL.createObjectURL(stream));
-                } catch (e) {}
-            }
-            console.error('createObjectURL/srcObject both are not supported.');
+    _addVideo: function (stream, video) {
+        if (!video) {
+            video = document.createElement('video');
+            $(video).appendTo(this.$('div'));
         }
 
-        // audio only
+        console.log(video);
+
+        (function () {
+            if ('srcObject' in video) {
+                video.srcObject = stream;
+            }
+            if ('createObjectURL' in URL) {
+                video.src = URL.createObjectURL(stream);
+            }
+            if ('mozSrcObject' in video) {
+                video.mozSrcObject = stream;
+            }
+        })();
+        video.autoplay = true;
+        video.controls = true;
+        video.play();
+        return video;
+    },
+    _addAudio: function (stream) {
+        console.log("");
+        console.log(new Error().stack);
+        console.log("");
 
         var AudioContext = window.AudioContext || window.webkitAudioContext;
         var audioContext = new AudioContext();
@@ -137,39 +183,59 @@ var Broadcast = Widget.extend({
         // Connect it to destination to hear yourself
         // or any other node for processing!
         mediaStreamSource.connect(audioContext.destination);
-    },
-    _shareMedia: function (media) {
-        var self = this;
-        var pc = self.peerConnection;
-        var mediaConfig = _.pick(this.mediaConfig, media === 'video' ? ['video', 'audio'] : ['audio']);
 
+        return audioContext;
+    },
+    _createAndSendDescription: function (type) {
+        var self = this;
+        var pc = this.peerConnection;
+        return (type === 'offer' ? pc.createOffer() : pc.createAnswer())
+            .then(function (description) {
+                var desc = new RTCSessionDescription(description);
+                return pc.setLocalDescription(new RTCSessionDescription(desc))
+                    .then(function () {
+                        return rpc.query({
+                            route: '/broadcast/call',
+                            params: {
+                                type: 'call',
+                                partner_id: self.partner_id,
+                                media: self.localMedia,
+                                desc: desc
+                            }
+                        });
+                    });
+            })
+            .catch(function (err) { console.error(err); });
+    },
+    _call: function (type, media) {
+        var self = this;
+        var pc = this._prepareCall();
+
+        if (!this.mediaConfig[media]) {
+            throw 'Not available';
+        }
+        if (this.localMedia === media) {
+            return;
+        }
+        if (this.localMedia) {
+            throw 'close current media';
+        }
+        this.localMedia = media;
+
+        var mediaConfig = _.pick(this.mediaConfig, media === 'video' ? ['video', 'audio'] : ['audio']);
         navigator.mediaDevices.getUserMedia(mediaConfig)
             .then(function (stream) {
+                self.localVideoStream = stream;
                 if (self.mediaConfig.preview) {
-                    self._onAddMedia(media, stream);
+                    if (media === 'video') {
+                        self.localVideo = self._addVideo(stream);
+                    } else {
+                        self.localAudio = self._addAudio(stream);
+                    }
                 }
                 pc.addStream(stream);
             })
-            .then(function (desc) {
-                if (self.type === 'offer') {
-                    return pc.createOffer();
-                } else {
-                    return pc.createAnswer();
-                }
-            })
-            .then(function (desc) {
-                return pc.setLocalDescription(desc);
-            })
-            .then(function () {
-                return rpc.query({
-                    route: '/broadcast/call',
-                    params: {
-                        partner_id: self.partner_id,
-                        sdp: pc.localDescription
-                    }
-                });
-            })
-            .catch(function (err) { console.error(err); });
+            .then(this._createAndSendDescription.bind(this, type));
     },
 
     //--------------------------------------------------------------------------
@@ -177,56 +243,62 @@ var Broadcast = Widget.extend({
     //--------------------------------------------------------------------------
 
     // send any ice candidates to the other peer
-    _onPeerConnectionCandidate: function (evt) {
-        //console.log(evt.candidate);
-        //signalingChannel.send(JSON.stringify({ "candidate": evt.candidate }));
+    _onIceCandidate: function (event) {
+        var self = this;
+        if (!event.candidate) {
+            return;
+        }
+        return rpc.query({
+            route: '/broadcast/call',
+            params: {
+                partner_id: self.partner_id,
+                media: self.localMedia,
+                type: 'candidate',
+                candidate: event.candidate
+            }
+        });
     },
     // once remote stream arrives, show it in the remote video element
-    _onPeerConnectionStream: function (evt) {
-        var media = evt.target.remoteDescription.sdp.indexOf('video') === -1 ? 'audio' : 'video';
-        this._onAddMedia(media, evt.stream);
+    _onAddStream: function (evt) {
+        if (this.remoteMedia === 'video') {
+            this.remoteVideo = this._addVideo(evt.stream, this.remoteVideo);
+        } else if (this.remoteMedia === 'audio') {
+            this.remoteAudio = this._addAudio(evt.stream, this.remoteAudio);
+        }
     },
-
     /**
      * When the offer arrives, this function is triggered, and given our "video-offer" message
      *
      * returns: {Promise}
      */
-    _onReceiveCall: function (desc) {
-        this._startPeerConnection();
-        if (desc.type === "offer") {
-            var description = new RTCSessionDescription(desc);
-            this.defPeerConnection = this.peerConnection.setRemoteDescription(description);
+    _onCall: function (data) {
+        var pc = this._prepareCall();
+        this.remoteMedia = data.media;
 
-        } else {
-            var candidate = new RTCIceCandidate(desc);
-            this.defPeerConnection = this.peerConnection.addIceCandidate(candidate);
+        console.log('_onCall', this.remoteMedia, data);
+
+        if (data.desc && data.desc.sdp) {
+            console.log("Received SDP from remote peer.");
+            var session = new RTCSessionDescription(data.desc);
+            pc.setRemoteDescription(session);
+        } else if (data.candidate) {
+            console.log("Received ICECandidate from remote peer.");
+            var candidate = new RTCIceCandidate(data.candidate);
+            pc.addIceCandidate(candidate);
         }
     },
-    _onSendCall: function (event) {
-        var self = this;
-        var media = $(event.target).hasClass('o_audio') ? 'audio' : 'video';
-
-        if (!this.type) {
-            this.type = 'offer';
-        }
-        if (!self.mediaConfig[media]) {
-            throw 'Not available';
-        }
-        // if (this.media === media) {
-        //     return;
-        // }
-        // if (this.media) {
-        //     throw 'close current media';
-        // }
-        this.media = media;
-        this._startPeerConnection();
-        this.defPeerConnection.then(function () {
-            self._shareMedia(media);
-        });
+    _onEnd: function (data) {
+        console.log("Received 'close call' signal from remote peer.");
+        this._endCall();
     },
-    _onDisconnectCall: function () {
-        this.destroy();
+    _onOpenMedia: function (event) {
+        var type = this.peerConnection ? 'answer' : 'offer';
+        var media = $(event.target).addClass('active').hasClass('o_audio') ? 'audio' : 'video';
+        this._call(type, media);
+    },
+    _onCloseMedia: function (event) {
+        var media = $(event.target).addClass('active').hasClass('o_audio') ? 'audio' : 'video';
+        this._endCall();
     },
 });
 

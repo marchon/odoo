@@ -3,6 +3,7 @@
         <template id="assets_backend" inherit_id="web.assets_backend">
             <xpath expr="." position="inside">
                 <script type="text/javascript" src="/broadcast/static/src/js/broadcast.js"></script>
+                <link href="/broadcast/static/src/less/broadcast.less" rel="stylesheet" type="text/less"/>
             </xpath>
         </template>
 <!-- 
