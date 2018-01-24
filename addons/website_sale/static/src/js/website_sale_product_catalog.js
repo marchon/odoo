@@ -75,39 +75,6 @@ var ProductCatalog = Widget.extend({
     //--------------------------------------------------------------------------
 
     /**
-     * formating currency for the website sale display
-     *
-     * @private
-     * @param {float|false} value that should be formatted.
-     * @param {string} currency_symbol.
-     * @param {string} position should be either before or after.
-     * @param {integer} currency_decimal_places the number of digits that should be used,
-     *   instead of the default digits precision in the field.
-     * @returns {string} Returns a string representing a float and currency symbol.
-     */
-    _formatCurrencyValue: function (value, currency_symbol, position, currency_decimal_places) {
-        var l10n = core._t.database.parameters;
-        value = _.str.sprintf('%.' + currency_decimal_places + 'f', value || 0).split('.');
-        value[0] = utils.insert_thousand_seps(value[0]);
-        value = value.join(l10n.decimal_point);
-        if (position === "after") {
-            value += currency_symbol;
-        } else {
-            value = currency_symbol + value;
-        }
-        return value;
-    },
-    /**
-     * formating description for the website sale display
-     *
-     * @private
-     * @param {string} get description.
-     * @returns {string} Contains string with replace '\n' to '<br>'.
-     */
-    _formatDescriptionValue: function (description_sale) {
-        return description_sale.split("\n").join("<br>");
-    },
-    /**
      * It is responsible to decide how many numbers of products
      * are display in each slide of carousel.
      *

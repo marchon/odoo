@@ -1047,13 +1047,10 @@ class WebsiteSale(http.Controller):
             product_details.append({
                 'id': product.id,
                 'name': product.name,
-                'description_sale': product.description_sale,
-                'website_price': product.website_price,
+                'description_sale': '<br/>'.join(product.description_sale.split('\n')),  # Replace \n with <br/>
+                'price': tools.misc.formatLang(request.env, product.website_price, currency_obj=pricelist.currency_id),
                 'product_variant_id': product.product_variant_id.id,
                 'product_variant_count': product.product_variant_count,
-                'currency_symbol': pricelist.currency_id.symbol,
-                'currency_position': pricelist.currency_id.position,
-                'currency_decimal_places': pricelist.currency_id.decimal_places,
                 'rating': product.rating_get_stats(),
             })
         return {

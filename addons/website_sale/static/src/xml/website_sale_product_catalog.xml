@@ -66,11 +66,11 @@
                             </a>
                         </strong>
                         <strong t-if="product.product_variant_count gte 1">
-                            <t t-esc="widget._formatCurrencyValue(product.website_price, currency_symbol, currency_position, currency_decimal_places)" />
+                            <t t-esc="product.price" />
                         </strong>
                     </div>
                     <div class="o_product_description text-info">
-                        <t t-if="product.description_sale" t-raw="widget._formatDescriptionValue(product.description_sale)"/>
+                        <t t-if="product.description_sale" t-raw="product.description_sale"/>
                     </div>
                     <div class="o_button_container">
                         <form action="/shop/cart/update" method="post" class="o_add_to_cart o_action_button">
