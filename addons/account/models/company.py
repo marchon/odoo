@@ -87,18 +87,17 @@ Best Regards,'''))
         date_str = current_date.strftime(DEFAULT_SERVER_DATE_FORMAT)
 
         # Compatibility with datetime.date and datetime.datetime
-        if isinstance(current_date, date):
-            current_date = datetime(current_date.year, current_date.month, current_date.day)
+        if isinstance(current_date, datetime):
+            current_date = date(current_date.year, current_date.month, current_date.day)
 
         def resolve_february(company, year):
             # This method is useful because:
             # - Take care about leap year.
-            # - Avoid 'out of range' error from datetime.
-            # - Avoid trouble with hours/minutes/seconds/milliseconds caused by using 'replace'.
+            # - Avoid 'out of range' error from date.
             month = company.fiscalyear_last_month
             last_day_month = calendar.monthrange(year, month)[1]
             day = min(company.fiscalyear_last_day, last_day_month)
-            return datetime(year, month, day)
+            return date(year, month, day)
 
         # Compute initial date_from/date_to
         date_to = resolve_february(self, current_date.year)
@@ -118,8 +117,8 @@ Best Regards,'''))
         ], order='date_start DESC', limit=1)
 
         if fiscalyear_from:
-            fy_date_from = datetime.strptime(fiscalyear_from.date_start, DEFAULT_SERVER_DATE_FORMAT)
-            fy_date_to = datetime.strptime(fiscalyear_from.date_end, DEFAULT_SERVER_DATE_FORMAT)
+            fy_date_from = datetime.strptime(fiscalyear_from.date_start, DEFAULT_SERVER_DATE_FORMAT).date()
+            fy_date_to = datetime.strptime(fiscalyear_from.date_end, DEFAULT_SERVER_DATE_FORMAT).date()
 
             # Check if the date is part of an existing fiscal year record.
             if fy_date_to >= current_date:
@@ -136,7 +135,7 @@ Best Regards,'''))
         ], order='date_end', limit=1)
 
         if fiscalyear_to:
-            fy_date_from = datetime.strptime(fiscalyear_to.date_start, DEFAULT_SERVER_DATE_FORMAT)
+            fy_date_from = datetime.strptime(fiscalyear_to.date_start, DEFAULT_SERVER_DATE_FORMAT).date()
 
             if fy_date_from < date_to:
                 date_to = fy_date_from - timedelta(days=1)
