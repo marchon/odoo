@@ -129,13 +129,10 @@ class PaymentTransactionPayumoney(models.Model):
             'acquirer_reference': data.get('payuMoneyId'),
             'payment_date': fields.Datetime.now(),
         }
-        if status == 'success':
-            post_func = self.post
-        elif status == 'pending':
-            post_func = self.mark_as_pending
-        else:
-            post_func = self.cancel
-
         result = self.write(vals)
-        post_func()
+        self._postprocess_payment_transaction('pending')
+        if status == 'success':
+            self._postprocess_payment_transaction('post')
+        elif status != 'pending':
+            self._postprocess_payment_transaction('cancel')
         return result

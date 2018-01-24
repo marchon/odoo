@@ -191,7 +191,7 @@ class TxAuthorize(models.Model):
                     'acquirer_reference': data.get('x_trans_id'),
                     'payment_date': fields.Datetime.now(),
                 })
-                self.post()
+                self._postprocess_payment_transaction('post')
             elif data.get('x_type').lower() in ['auth_only']:
                 self.write({'acquirer_reference': data.get('x_trans_id')})
                 self.mark_to_capture()
@@ -213,14 +213,14 @@ class TxAuthorize(models.Model):
             return True
         elif status_code == self._authorize_pending_tx_status:
             self.write({'acquirer_reference': data.get('x_trans_id')})
-            self.mark_as_pending()
+            self._postprocess_payment_transaction('pending')
             return True
         elif status_code == self._authorize_cancel_tx_status:
             self.write({
                 'acquirer_reference': data.get('x_trans_id'),
                 'state_message': data.get('x_response_reason_text'),
             })
-            self.cancel()
+            self._postprocess_payment_transaction('cancel')
             return True
         else:
             error = data.get('x_response_reason_text')
@@ -229,7 +229,7 @@ class TxAuthorize(models.Model):
                 'state_message': error,
                 'acquirer_reference': data.get('x_trans_id'),
             })
-            self.cancel()
+            self._postprocess_payment_transaction('cancel')
             return False
 
     @api.multi
@@ -284,21 +284,21 @@ class TxAuthorize(models.Model):
 
                 if self.payment_token_id:
                     self.payment_token_id.verified = True
-                self.post()
+                self._postprocess_payment_transaction('post')
             if tree.get('x_type').lower() == 'auth_only':
                 self.write({'acquirer_reference': tree.get('x_trans_id')})
-                self.mark_to_capture()
+                self._postprocess_payment_transaction('capture')
                 self.execute_callback()
             if tree.get('x_type').lower() == 'void':
-                self.cancel()
+                self._postprocess_payment_transaction('cancel')
             return True
         elif status_code == self._authorize_pending_tx_status:
             self.write({'acquirer_reference': tree.get('x_trans_id')})
-            self.mark_as_pending()
+            self._postprocess_payment_transaction('pending')
             return True
         elif status_code == self._authorize_cancel_tx_status:
             self.write({'acquirer_reference': tree.get('x_trans_id')})
-            self.cancel()
+            self._postprocess_payment_transaction('cancel')
             return True
         else:
             error = tree.get('x_response_reason_text')
@@ -307,7 +307,7 @@ class TxAuthorize(models.Model):
                 'state_message': error,
                 'acquirer_reference': tree.get('x_trans_id'),
             })
-            self.cancel()
+            self._postprocess_payment_transaction('cancel')
             return False
 
 

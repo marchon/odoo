@@ -222,7 +222,7 @@ class TxAdyen(models.Model):
                 # 'payment_date': data.get('payment_date', fields.datetime.now()),
                 # 'paypal_txn_type': data.get('express_checkout')
             })
-            self.post()
+            self._postprocess_payment_transaction('post')
             return True
         elif status == 'PENDING':
             self.write({'acquirer_reference': data.get('pspReference')})
@@ -232,5 +232,5 @@ class TxAdyen(models.Model):
             error = _('Adyen: feedback error')
             _logger.info(error)
             self.write({'state_message': error})
-            self.cancel()
+            self._postprocess_payment_transaction('cancel')
             return False

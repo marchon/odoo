@@ -20,11 +20,8 @@ class PaymentTransaction(models.Model):
         automatic_invoice = self.env['ir.config_parameter'].sudo().get_param('website_sale.automatic_invoice')
         for trans in self.filtered(lambda t: t.sale_order_ids):
             for so in trans.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent')):
-                old_state = so.state
                 # Confirm the sales orders linked to the payment.
                 so.action_confirm()
-                # Log a "state has changed" notification on the sales orders chatters.
-                so._log_transaction_so_message(old_state, trans)
 
             trans.sale_order_ids._force_lines_to_invoice_policy_order()
 
@@ -32,22 +29,16 @@ class PaymentTransaction(models.Model):
                 continue
 
             # Create invoices automatically.
-            invoice_ids = trans.sale_order_ids.action_invoice_create()
-            if invoice_ids:
-                for inv in self.env['account.invoice'].browse(invoice_ids):
-                    # Log a "state has changed" notification on the invoices chatters.
-                    inv._log_transaction_invoice_creation_message(trans)
-            trans.invoice_ids = [(6, 0, invoice_ids)]
-        return super(PaymentTransaction, self.filtered(lambda t: not t.capture)).post()
+            invoices = trans.sale_order_ids.action_invoice_create()
+            trans.invoice_ids = [(6, 0, invoices)]
+        return super(PaymentTransaction, self).post()
 
     @api.multi
     def mark_to_capture(self):
         # The sale orders are confirmed if the transaction are set to 'capture' directly.
         for trans in self.filtered(lambda t: not t.capture and t.acquirer_id.capture_manually):
-            for so in trans.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent')):
-                old_state = so.state
-                so.action_confirm()
-                so._log_transaction_so_message(old_state, trans)
+            sales_orders = trans.sale_order_ids.filtered(lambda so: so.state in ('draft', 'sent'))
+            sales_orders.action_confirm()
         super(PaymentTransaction, self).mark_to_capture()
 
     @api.multi
@@ -55,10 +46,8 @@ class PaymentTransaction(models.Model):
         # The quotations are sent for each remaining sale orders in state 'draft'.
         super(PaymentTransaction, self).mark_as_pending()
         for trans in self.filtered(lambda t: t.pending):
-            for so in trans.sale_order_ids.filtered(lambda so: so.state == 'draft'):
-                old_state = so.state
-                so.force_quotation_send()
-                so._log_transaction_so_message(old_state, trans)
+            sales_orders = trans.sale_order_ids.filtered(lambda so: so.state == 'draft')
+            sales_orders.force_quotation_send()
 
     # --------------------------------------------------
     # Tools for payment
@@ -72,6 +61,9 @@ class PaymentTransaction(models.Model):
         }
         if render_values:
             values.update(render_values)
+        # Not very elegant to do that in this place but this is the only common place in each transaction
+        # to log a message in the chatter.
+        self._preprocess_payment_transaction()
         return self.acquirer_id.with_context(submit_class='btn btn-primary', submit_txt=submit_txt or _('Pay Now')).sudo().render(
             self.reference,
             order.amount_total,

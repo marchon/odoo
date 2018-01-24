@@ -6,6 +6,7 @@ from odoo.addons.payment_paypal.controllers.main import PaypalController
 from werkzeug import urls
 
 from odoo.tools import mute_logger
+import odoo.tests
 
 from lxml import objectify
 
@@ -30,6 +31,7 @@ class PaypalCommon(PaymentAcquirerCommon):
         self.switch_polo = (('6331101999990016', '123'))
 
 
+@odoo.tests.tagged('post_install', '-at_install', 'external', '-standard')
 class PaypalForm(PaypalCommon):
 
     def test_10_paypal_form_render(self):

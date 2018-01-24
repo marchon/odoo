@@ -11,14 +11,6 @@ class AccountInvoice(models.Model):
     payment_tx_id = fields.Many2one('payment.transaction', string='Last Transaction', copy=False)
 
     @api.multi
-    def _log_transaction_invoice_update_message(self, transaction):
-        self.ensure_one()
-        message = _('This invoice has been updated automatically by the transaction %s:') % transaction._get_oe_log_html()
-        values = ['%s: %s -> %s' % (_('Status'), 'draft', self.state), '%s: %s' % (_('Date'), fields.datetime.now())]
-        message += '<ul><li>' + '</li><li>'.join(values) + '</li></ul>'
-        self.message_post(body=message)
-
-    @api.multi
     def create_payment_transaction(self, vals):
         # Ensure the currencies are the same.
         currency = self[0].currency_id

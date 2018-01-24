@@ -2,7 +2,10 @@
 
 from odoo.addons.sale.tests.test_sale_common import TestSale
 
+import odoo.tests
 
+
+@odoo.tests.tagged('post_install', '-at_install')
 class TestSaleFlow(TestSale):
     def create_so(self):
         return self.env['sale.order'].create({

@@ -25,6 +25,7 @@ class AuthorizeCommon(PaymentAcquirerCommon):
         # self.authorize.auto_confirm = 'confirm_so'
 
 
+@odoo.tests.tagged('post_install', '-at_install', 'external', '-standard')
 class AuthorizeForm(AuthorizeCommon):
 
     def _authorize_generate_hashing(self, values):

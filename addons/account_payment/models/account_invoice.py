@@ -16,6 +16,13 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def get_portal_transactions(self):
+        '''Retrieve the transactions to display in the portal.
+        The transactions must be 'posted' (e.g. success with Paypal) or 'draft' + pending (Wire Transfer)
+        but not in 'capture' (the user must capture the amount manually to get paid and set the transaction to
+        'posted').
+
+        :return: The transactions to display in the portal.
+        '''
         return self.sudo().mapped('payment_ids.payment_transaction_ids')\
             .filtered(lambda trans: trans.state == 'posted' or (trans.state == 'draft' and trans.pending))
 

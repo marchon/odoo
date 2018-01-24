@@ -892,15 +892,6 @@ class WebsiteSale(http.Controller):
         if not order or (order.amount_total and not tx):
             return request.redirect('/shop')
 
-        if (not order.amount_total and not tx) or (tx.pending and tx.state != 'cancelled'):
-            if (not order.amount_total and not tx):
-                # Orders are confirmed by payment transactions, but there is none for free orders,
-                # (e.g. free events), so confirm immediately
-                order.with_context(send_email=True).action_confirm()
-        elif tx and tx.state == 'cancelled':
-            # cancel the quotation
-            order.action_cancel()
-
         # clean context and session, then redirect to the confirmation page
         request.website.sale_reset()
         if tx and not tx.pending:

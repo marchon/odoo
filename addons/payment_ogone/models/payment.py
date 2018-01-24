@@ -304,19 +304,19 @@ class PaymentTxOgone(models.Model):
             self.write(vals)
             if self.payment_token_id:
                 self.payment_token_id.verified = True
-            self.post()
+            self._postprocess_payment_transaction('post')
             self.execute_callback()
             # if this transaction is a validation one, then we refund the money we just withdrawn
             if self.type == 'validation':
-                self.create_refund().s2s_do_refund()
+                self.s2s_do_refund()
 
             return True
         elif status in self._ogone_cancel_tx_status:
             self.write({'acquirer_reference': data.get('PAYID')})
-            self.cancel()
+            self._postprocess_payment_transaction('cancel')
         elif status in self._ogone_pending_tx_status or status in self._ogone_wait_tx_status:
             self.write({'acquirer_reference': data.get('PAYID')})
-            self.mark_as_pending()
+            self._postprocess_payment_transaction('pending')
         else:
             error = 'Ogone: feedback error: %(error_str)s\n\n%(error_code)s: %(error_msg)s' % {
                 'error_str': data.get('NCERRORPLUS'),
@@ -328,7 +328,7 @@ class PaymentTxOgone(models.Model):
                 'state_message': error,
                 'acquirer_reference': data.get('PAYID'),
             })
-            self.cancel()
+            self._postprocess_payment_transaction('cancel')
             return False
 
     # --------------------------------------------------
@@ -452,18 +452,18 @@ class PaymentTxOgone(models.Model):
                 self.write({'payment_token_id': pm.id})
             if self.payment_token_id:
                 self.payment_token_id.verified = True
-            self.post()
+            self._postprocess_payment_transaction('post')
             self.execute_callback()
             return True
         elif status in self._ogone_cancel_tx_status:
             self.write({'acquirer_reference': tree.get('PAYID')})
-            self.cancel()
+            self._postprocess_payment_transaction('cancel')
         elif status in self._ogone_pending_tx_status:
             self.write({
                 'acquirer_reference': tree.get('PAYID'),
                 'html_3ds': base64.b64decode(tree.HTML_ANSWER.decode('ascii')),
             })
-            self.mark_as_pending()
+            self._postprocess_payment_transaction('post')
         elif status in self._ogone_wait_tx_status and tries > 0:
             time.sleep(0.5)
             self.write({'acquirer_reference': tree.get('PAYID')})
@@ -480,7 +480,7 @@ class PaymentTxOgone(models.Model):
                 'state_message': error,
                 'acquirer_reference': tree.get('PAYID'),
             })
-            self.cancel()
+            self._postprocess_payment_transaction('cancel')
             return False
 
     def _ogone_s2s_get_tx_status(self):

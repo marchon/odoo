@@ -528,7 +528,6 @@ class PaymentTransaction(models.Model):
                             help='Internal reference of the TX')
     acquirer_reference = fields.Char('Acquirer Reference', help='Reference of the TX as stored in the acquirer database')
     # duplicate partner / transaction data to store the values at transaction time
-    partner_id = fields.Many2one('res.partner', 'Customer', track_visibility='onchange')
     partner_name = fields.Char('Partner Name')
     partner_lang = fields.Selection(_lang_get, 'Language', default=lambda self: self.env.lang)
     partner_email = fields.Char('Email')
@@ -569,6 +568,69 @@ class PaymentTransaction(models.Model):
             self.payment_token_id = False
 
     @api.multi
+    def _preprocess_payment_transaction(self):
+        '''Log the message saying the transaction has been sent to the remote server to be
+        processed by the acquirer.
+        '''
+        message = 'Transaction %s sent to the acquirer %s:'
+        for trans in self:
+            values = []
+            if trans.payment_token_id:
+                values.append('%s: %s' % (_('Token'), trans.payment_token_id._get_oe_log_html()))
+            values.append('%s: %s' % (_('Date'), fields.datetime.now()))
+            post_message = message % (trans._get_oe_log_html(), trans.acquirer_id.name)
+            post_message += '<ul><li>' + '</li><li>'.join(values) + '</li></ul>'
+            trans.payment_id.message_post(body=post_message)
+
+    @api.multi
+    def _postprocess_payment_transaction(self, state):
+        '''Update the transaction state/pending/capture and log these changes in the chatter.
+        This method should be called by the acquirer with a state passed in parameters depending of the response.
+
+        :param state: The new state of the transaction in:
+            * pending:  Need further action from the user.
+            * capture:  The amount can be captured manually.
+            * post:     Payment posted, transaction is done.
+            * cancel:   Payment cancelled, transaction voided or an error happened.
+        '''
+        message = 'Transaction %s updated by the acquirer %s:'
+        for trans in self:
+            values = ['%s: %s' % (_('Date'), fields.datetime.now())]
+            old_state = trans.state
+            old_capture = trans.capture
+
+            if trans.state_message:
+                values = ['%s: %s' % (_('Response Message'), trans.state_message)] + values
+
+            if trans.acquirer_reference:
+                values = ['%s: %s' % (_('Reference'), trans.acquirer_reference)] + values
+
+            if state == 'pending':
+                self.mark_as_pending()
+            elif state == 'capture':
+                self.mark_to_capture()
+                values = ['%s: %s' % (_('Capture'), _('Allowed'))] + values
+            elif state == 'post':
+                self.mark_as_pending()
+                self.post()
+                if old_capture:
+                    values = ['%s: %s' % (_('Capture'), _('Success'))] + values
+            elif state == 'cancel':
+                self.mark_as_pending()
+                self.cancel()
+                if old_capture:
+                    values = ['%s: %s' % (_('Capture'), _('Voided'))] + values
+            else:
+                return
+            if trans.state != old_state:
+                values = ['%s -> %s' % (old_state, trans.state)] + values
+
+            post_message = message % (trans._get_oe_log_html(), trans.acquirer_id.name)
+            post_message += '<ul><li>' + '</li><li>'.join(values) + '</li></ul>'
+            trans.payment_id.message_post(body=post_message)
+
+
+    @api.multi
     def mark_to_capture(self):
         # The 'capture' boolean means the transaction is allowed to capture the amount.
         # If the 'capture' boolean is True, it means the transaction has been processed by the remote server and then,
@@ -579,7 +641,7 @@ class PaymentTransaction(models.Model):
 
     @api.multi
     def mark_as_pending(self):
-        # The 'pending' boolean means the transaction has already been processed by the remote server.
+        # The 'pending' boolean means the transaction has been processed.
         self.filtered(lambda t: not t.pending).write({'pending': True})
 
     @api.multi
@@ -588,64 +650,25 @@ class PaymentTransaction(models.Model):
         return '<a href=# data-oe-model=payment.transaction data-oe-id=%d>%s</a>' % (self.id, self.reference)
 
     @api.multi
-    def _log_transaction_payment_message(self, old_state):
-        self.ensure_one()
-        message = _('This payment has been updated automatically by the transaction %s:') % self._get_oe_log_html()
-        values = ['%s: %s -> %s' % (_('Status'), old_state, self.state), '%s: %s' % (_('Date'), fields.datetime.now())]
-        message += '<ul><li>' + '</li><li>'.join(values) + '</li></ul>'
-        self.payment_id.message_post(body=message)
-
-    @api.multi
     def post(self):
         '''Invoices are validated automatically upon the transaction is posted.'''
-        self.filtered(lambda t: not t.pending).write({'pending': True})
-        if any([t.capture for t in self]):
-            raise UserError(_('A least one transaction can\'t be posted because can be captured manually.'))
         for trans in self:
-            for inv in trans.invoice_ids.filtered(lambda inv: inv.state == 'draft'):
-                inv.action_invoice_open()
-                inv._log_transaction_invoice_update_message(trans)
+            invoices = trans.invoice_ids.filtered(lambda inv: inv.state == 'draft')
+            invoices.action_invoice_open()
             if trans.state != 'draft':
                 continue
-            old_state = trans.state
             trans.payment_id.post()
-            trans._log_transaction_payment_message(old_state)
+
+            if trans.capture:
+                trans.capture = False
 
     @api.multi
     def cancel(self):
-        self.filtered(lambda t: not t.pending).write({'pending': True})
-        self.filtered(lambda t: t.capture).write({'capture': False})
         for trans in self:
-            old_state = trans.state
             trans.payment_id.cancel()
-            trans._log_transaction_payment_message(old_state)
 
-    @api.multi
-    def _prepare_payment_transaction_refund_vals(self):
-        '''Create values to create a transaction as refund of this one.
-        :return: a dictionary to create a payment.transaction record.
-        '''
-        self.ensure_one()
-        return {
-            'acquirer_id': self.acquirer_id.id,
-            'type': self.type,
-            'partner_id': self.partner_id.id,
-            'payment_id': self.payment_id.create_refund().id,
-        }
-
-    @api.multi
-    def create_refund(self):
-        '''Refund the selected posted transactions.
-        :return: A list of draft transactions to refund them.
-        '''
-        if any(p.state in ['draft', 'cancelled'] for p in self):
-            raise UserError(_('Only a posted transaction can be refunded.'))
-
-        refund_transactions = self.env['payment.transaction']
-        for trans in self:
-            refund_transactions += self.create(trans._prepare_payment_transaction_refund_vals())
-
-        return refund_transactions
+            if trans.capture:
+                trans.capture = False
 
     @api.multi
     def on_change_partner_id(self, partner_id):
@@ -803,27 +826,6 @@ class PaymentTransaction(models.Model):
     # FORM RELATED METHODS
     # --------------------------------------------------
 
-    @api.multi
-    def render(self):
-        values = {
-            'reference': self.reference,
-            'amount': self.amount,
-            'currency_id': self.currency_id.id,
-            'currency': self.currency_id,
-            'partner': self.partner_id,
-            'partner_name': self.partner_name,
-            'partner_lang': self.partner_lang,
-            'partner_email': self.partner_email,
-            'partner_zip': self.partner_zip,
-            'partner_address': self.partner_address,
-            'partner_city': self.partner_city,
-            'partner_country_id': self.partner_country_id.id,
-            'partner_country': self.partner_country_id,
-            'partner_phone': self.partner_phone,
-            'partner_state': None,
-        }
-        return self.acquirer_id.render(None, None, None, values=values)
-
     @api.model
     def form_feedback(self, data, acquirer_name):
         invalid_parameters, tx = None, None
@@ -857,6 +859,7 @@ class PaymentTransaction(models.Model):
 
     @api.multi
     def s2s_do_transaction(self, **kwargs):
+        self._preprocess_payment_transaction()
         custom_method_name = '%s_s2s_do_transaction' % self.acquirer_id.provider
         if hasattr(self, custom_method_name):
             return getattr(self, custom_method_name)(**kwargs)
@@ -911,14 +914,14 @@ class PaymentTransaction(models.Model):
 
     @api.multi
     def action_capture(self):
-        if any(self.mapped(lambda tx: tx.state != 'capture')):
+        if any([not t.capture for t in self]):
             raise ValidationError(_('Only transactions having the capture status can be captured.'))
         for tx in self:
             tx.s2s_capture_transaction()
 
     @api.multi
     def action_void(self):
-        if any(self.mapped(lambda tx: tx.state != 'capture')):
+        if any([not t.capture for t in self]):
             raise ValidationError(_('Only transactions having the capture status can be voided.'))
         for tx in self:
             tx.s2s_void_transaction()
@@ -936,6 +939,11 @@ class PaymentToken(models.Model):
     active = fields.Boolean('Active', default=True)
     payment_ids = fields.One2many('payment.transaction', 'payment_token_id', 'Payment Transactions')
     verified = fields.Boolean(string='Verified', default=False)
+
+    @api.multi
+    def _get_oe_log_html(self):
+        self.ensure_one()
+        return '<a href=# data-oe-model=payment.token data-oe-id=%d>%s</a>' % (self.id, self.name)
 
     @api.model
     def create(self, values):
@@ -1020,7 +1028,7 @@ class PaymentToken(models.Model):
         except:
             _logger.error('Error while validating a payment method')
         finally:
-            tx.create_refund().s2s_do_refund()
+            tx.s2s_do_refund()
         return tx
 
     @api.multi

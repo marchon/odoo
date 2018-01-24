@@ -20,20 +20,19 @@ class SaleOrder(models.Model):
 
     @api.multi
     def get_portal_transactions(self):
+        '''Retrieve the transactions to display in the portal.
+        The transactions must be 'posted' (e.g. success with Paypal) or 'draft' + pending (Wire Transfer)
+        but not in 'capture' (the user must capture the amount manually to get paid and set the transaction to
+        'posted').
+
+        :return: The transactions to display in the portal.
+        '''
         return self.mapped('payment_ids.payment_transaction_ids')\
             .filtered(lambda trans: trans.state == 'posted' or (trans.state == 'draft' and trans.pending))
 
     @api.multi
     def get_portal_last_transaction(self):
         return self.sudo().payment_tx_id
-
-    @api.multi
-    def _log_transaction_so_message(self, old_state, transaction):
-        self.ensure_one()
-        message = _('This sale order has been updated automatically by the transaction %s:') % transaction._get_oe_log_html()
-        values = ['%s: %s -> %s' % (_('Status'), old_state, self.state), '%s: %s' % (_('Date'), fields.datetime.now())]
-        message += '<ul><li>' + '</li><li>'.join(values) + '</li></ul>'
-        self.message_post(body=message)
 
     @api.multi
     def create_payment_transaction(self, vals):

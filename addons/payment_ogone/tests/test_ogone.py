@@ -2,6 +2,7 @@
 
 from lxml import objectify
 import time
+import odoo.tests
 
 from odoo.addons.payment.models.payment_acquirer import ValidationError
 from odoo.addons.payment.tests.common import PaymentAcquirerCommon
@@ -11,6 +12,7 @@ from werkzeug import urls
 from odoo.tools import mute_logger
 
 
+@odoo.tests.tagged('post_install', '-at_install', 'external', '-standard')
 class OgonePayment(PaymentAcquirerCommon):
 
     def setUp(self):

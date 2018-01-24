@@ -10,7 +10,6 @@ from odoo.addons.payment_buckaroo.controllers.main import BuckarooController
 from odoo.tools import mute_logger
 
 
-@odoo.tests.tagged('-post_install', '-at_install')
 class BuckarooCommon(PaymentAcquirerCommon):
 
     def setUp(self):
@@ -19,7 +18,7 @@ class BuckarooCommon(PaymentAcquirerCommon):
         self.buckaroo = self.env.ref('payment.payment_acquirer_buckaroo')
 
 
-@odoo.tests.tagged('-post_install', '-at_install')
+@odoo.tests.tagged('post_install', '-at_install', 'external', '-standard')
 class BuckarooForm(BuckarooCommon):
 
     def test_10_Buckaroo_form_render(self):
