@@ -2530,7 +2530,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             instance) for ``self`` in cache.
         """
         # fetch the records of this model without field_name in their cache
-        records = self._in_cache_without(field)
+        records = self._in_cache_without(field, limit=None)
 
         # determine which fields can be prefetched
         fs = {field}
@@ -2555,7 +2555,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 if f.compute or self.env.cache.contains(self, f):
                     fs.discard(f)
                 else:
-                    records &= self._in_cache_without(f)
+                    records &= self._in_cache_without(f, limit=None)
 
         # fetch records with read()
         assert self in records and field in fs
