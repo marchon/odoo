@@ -2,9 +2,12 @@
 from odoo.addons.account.tests.account_test_classes import AccountingTestCase
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
+import odoo.tests
+
 from datetime import datetime
 
 
+@odoo.tests.tagged('post_install', '-at_install')
 class TestFiscalPosition(AccountingTestCase):
 
     def check_fiscal_year(self, company, date, expected_date_from, expected_date_to):
