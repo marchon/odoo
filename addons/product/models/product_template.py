@@ -83,7 +83,7 @@ class ProductTemplate(models.Model):
                "Expressed in the default unit of measure of the product. ")
 
     volume = fields.Float(
-        'Volume', compute='_compute_volume', inverse='_set_volume',
+        'Volume', compute='_compute_volume', inverse='_set_volume', digits=dp.get_precision('Volume'),
         help="The volume in m3.", store=True)
     weight = fields.Float(
         'Weight', compute='_compute_weight', digits=dp.get_precision('Stock Weight'),
