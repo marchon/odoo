@@ -5,7 +5,7 @@
     'name': 'Email Gateway',
     'version': '1.0',
     'depends': ['mail'],
-    'category': 'Extra Tools',
+    'category': 'Productivity',
     'description': """
 Retrieve incoming email on POP/IMAP servers.
 ============================================

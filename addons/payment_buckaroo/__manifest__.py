@@ -2,7 +2,7 @@
 
 {
     'name': 'Buckaroo Payment Acquirer',
-    'category': 'Accounting',
+    'category': 'Finance',
     'summary': 'Payment Acquirer: Buckaroo Implementation',
     'version': '1.0',
     'description': """Buckaroo Payment Acquirer""",

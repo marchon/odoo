@@ -3,7 +3,7 @@
 
 {
     'name': 'Barcode Scanner Hardware Driver',
-    'category': 'Point of Sale',
+    'category': 'Sales',
     'sequence': 6,
     'summary': 'Hardware Driver for Barcode Scanners',
     'website': 'https://www.odoo.com/page/point-of-sale',

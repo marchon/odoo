@@ -2,7 +2,7 @@
 
 {
     'name': 'Transfer Payment Acquirer',
-    'category': 'Accounting',
+    'category': 'Finance',
     'summary': 'Payment Acquirer: Transfer Implementation',
     'version': '1.0',
     'description': """Transfer Payment Acquirer""",

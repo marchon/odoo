@@ -4,7 +4,7 @@
     'name': 'Maintenance',
     'version': '1.0',
     'sequence': 125,
-    'category': 'Human Resources',
+    'category': 'Operations',
     'description': """
         Track equipment and manage maintenance requests.""",
     'depends': ['mail'],

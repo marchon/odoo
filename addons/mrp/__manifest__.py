@@ -6,7 +6,7 @@
     'name': 'Manufacturing',
     'version': '2.0',
     'website': 'https://www.odoo.com/page/manufacturing',
-    'category': 'Manufacturing',
+    'category': 'Operations',
     'sequence': 14,
     'summary': 'Manufacturing Orders, Bill of Materials, Routings',
     'depends': ['product', 'stock', 'resource'],

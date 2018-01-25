@@ -6,7 +6,7 @@
     'version': '1.0',
     'category': 'Sales',
     'sequence': 5,
-    'summary': 'Leads, Opportunities, Activities',
+    'summary': 'Opportunity Pipeline, Leads',
     'description': "",
     'website': 'https://www.odoo.com/page/crm',
     'depends': [

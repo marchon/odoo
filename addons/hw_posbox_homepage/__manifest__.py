@@ -3,7 +3,7 @@
 
 {
     'name': 'PosBox Homepage',
-    'category': 'Point of Sale',
+    'category': 'Sales',
     'sequence': 6,
     'website': 'https://www.odoo.com/page/point-of-sale',
     'summary': 'A homepage for the PosBox',

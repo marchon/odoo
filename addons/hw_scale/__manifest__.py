@@ -3,7 +3,7 @@
 
 {
     'name': 'Weighing Scale Hardware Driver',
-    'category': 'Point of Sale',
+    'category': 'Sales',
     'sequence': 6,
     'summary': 'Hardware Driver for Weighing Scales',
     'website': 'https://www.odoo.com/page/point-of-sale',

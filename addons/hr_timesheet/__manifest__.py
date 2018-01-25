@@ -5,9 +5,9 @@
 {
     'name': 'Timesheets',
     'version': '1.0',
-    'category': 'Human Resources',
+    'category': 'Services',
     'sequence': 23,
-    'summary': 'Review and approve employees time reports',
+    'summary': 'Employee Time Tracking & Validation',
     'description': """
 This module implements a timesheet system.
 ==========================================

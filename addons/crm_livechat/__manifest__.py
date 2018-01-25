@@ -3,7 +3,7 @@
 
 {
     'name': 'CRM Livechat',
-    'category': 'crm',
+    'category': 'Sales',
     'summary': 'Create lead from livechat conversation',
     'depends': [
         'crm',

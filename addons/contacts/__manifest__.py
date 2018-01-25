@@ -3,9 +3,9 @@
 
 
 {
-    'name': 'Contacts Directory',
-    'category': 'Tools',
-    'summary': 'Customers, Vendors, Partners,...',
+    'name': 'Contacts',
+    'category': 'Productivity',
+    'summary': 'Contacts, Customers & Vendors Directory',
     'description': """
 This module gives you a quick view of your contacts directory, accessible from your home page.
 You can track your vendors, customers and other contacts.

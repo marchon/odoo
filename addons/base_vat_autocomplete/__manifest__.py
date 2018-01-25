@@ -4,7 +4,7 @@
 {
     'name': 'VAT Number Autocomplete',
     'version': '1.0',
-    'category': 'Accounting',
+    'category': 'Finance',
     'description': """
 Auto-Complete Addresses based on VAT numbers
 ============================================

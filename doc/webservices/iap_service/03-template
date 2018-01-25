@@ -48,7 +48,7 @@ Index: coalroller_service/coalroller_service/__manifest__.py
 +++ coalroller_service/coalroller_service/__manifest__.py
 @@ -2,4 +2,7 @@
      'name': "Coal Roller Service",
-     'category': 'Tools',
+     'category': 'Productivity',
      'depends': ['iap'],
 +    'data': [
 +        'views/no-credit.xml',

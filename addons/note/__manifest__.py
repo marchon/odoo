@@ -4,10 +4,10 @@
 {
     'name': 'Productivity',
     'version': '1.0',
-    'category': 'Tools',
+    'category': 'Productivity',
     'description': "",
     'website': 'https://www.odoo.com/page/notes',
-    'summary': 'Sticky notes, Collaborative, Memos',
+    'summary': 'Sticky Notes, Collaborative, Memos',
     'sequence': 45,
     'depends': [
         'mail',

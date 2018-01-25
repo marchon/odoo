@@ -3,7 +3,7 @@
 
 {
     'name': 'Email Marketing',
-    'summary': 'Design, send and track emails',
+    'summary': 'Mailing Design & Tracking',
     'description': "",
     'version': '2.0',
     'sequence': 110,

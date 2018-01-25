@@ -3,11 +3,11 @@
 
 
 {
-    'name': 'Repairs Management',
+    'name': 'Repairs',
     'version': '1.0',
     'sequence': 200,
-    'category': 'Manufacturing',
-    'summary': 'Repair broken or damaged products',
+    'category': 'Operations',
+    'summary': 'Repair Process for Damaged Products',
     'description': """
 The aim is to have a complete module to manage all products repairs.
 ====================================================================

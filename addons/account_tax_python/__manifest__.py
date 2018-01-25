@@ -12,7 +12,7 @@
 
         "Python Code" defines the amount of the tax.
         """,
-    'category': 'Accounting',
+    'category': 'Finance',
     'version': '1.0',
     'depends': ['account'],
     'data': [

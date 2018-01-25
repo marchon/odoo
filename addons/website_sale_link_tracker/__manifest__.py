@@ -9,6 +9,7 @@ View Link Tracker Statistics on eCommerce dashboard
 
         """,
     'depends': ['website_links', 'website_sale'],
+    'category': 'Website',
     'data': [
         'views/sale_order_views.xml',
         'views/assets.xml',

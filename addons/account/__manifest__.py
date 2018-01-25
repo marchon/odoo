@@ -3,12 +3,12 @@
 {
     'name' : 'Invoicing',
     'version' : '1.1',
-    'summary': 'Send Invoices and Track Payments',
+    'summary': 'Invoices & Payments',
     'sequence': 30,
     'description': """
 Core mechanisms for the accounting modules. To display the menuitems, install the module account_invoicing.
     """,
-    'category': 'Accounting',
+    'category': 'Finance',
     'website': 'https://www.odoo.com/page/billing',
     'images' : ['images/accounts.jpeg','images/bank_statement.jpeg','images/cash_register.jpeg','images/chart_of_accounts.jpeg','images/customer_invoice.jpeg','images/journal_entries.jpeg'],
     'depends' : ['base_setup', 'product', 'analytic', 'portal'],

@@ -2,13 +2,13 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 {
-    'name': 'Inventory Management',
+    'name': 'Inventory',
     'version': '1.1',
     'summary': 'Inventory, Logistics, Warehousing',
     'description': "",
     'website': 'https://www.odoo.com/page/warehouse',
     'depends': ['product', 'barcodes'],
-    'category': 'Warehouse',
+    'category': 'Operations',
     'sequence': 13,
     'demo': [
         'data/stock_demo_pre.xml',

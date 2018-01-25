@@ -3,7 +3,7 @@
 {
     'name': 'Attachments List and Document Indexation',
     'version': '2.1',
-    'category': 'Document Management',
+    'category': 'Productivity',
     'description': """
 Attachments list and document indexation
 ========================================

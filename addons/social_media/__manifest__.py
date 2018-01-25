@@ -13,7 +13,7 @@
     'author': "Odoo S.A.",
     'website': "https://wwww.odoo.com",
 
-    'category': 'Uncategorized',
+    'category': 'Productivity',
     'version': '0.1',
 
     'depends': ['base'],

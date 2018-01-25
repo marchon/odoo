@@ -3,7 +3,7 @@
 
 {
     'name': 'Budgets Management',
-    'category': 'Accounting',
+    'category': 'Finance',
     'description': """
 This module allows accountants to manage analytic and crossovered budgets.
 ==========================================================================

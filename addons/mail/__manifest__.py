@@ -3,7 +3,7 @@
 {
     'name': 'Discuss',
     'version': '1.0',
-    'category': 'Discuss',
+    'category': 'Productivity',
     'sequence': 25,
     'summary': 'Discussions, Mailing Lists, News',
     'description': "",

@@ -12,7 +12,7 @@ Keeps track of depreciations, and creates corresponding journal entries.
 
     """,
     'website': 'https://www.odoo.com/page/accounting',
-    'category': 'Accounting',
+    'category': 'Finance',
     'sequence': 32,
     'data': [
         'security/account_asset_security.xml',

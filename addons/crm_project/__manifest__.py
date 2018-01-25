@@ -4,7 +4,7 @@
     'name': 'Lead to Tasks',
     'summary': 'Create Tasks from Leads',
     'sequence': '19',
-    'category': 'Project',
+    'category': 'Services',
     'complexity': 'easy',
     'description': """
 Lead to Tasks

@@ -3,7 +3,7 @@
     'name' : 'Live Chat',
     'version': '1.0',
     'sequence': 170,
-    'summary': 'Live Chat with Visitors/Customers',
+    'summary': 'Live Chat for Website Visitors & Customers',
     'category': 'Website',
     'complexity': 'easy',
     'website': 'https://www.odoo.com/page/live-chat',

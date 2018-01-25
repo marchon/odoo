@@ -4,7 +4,7 @@
 {
     'name': 'Google Calendar',
     'version': '1.0',
-    'category': 'Extra Tools',
+    'category': 'Productivity',
     'description': "",
     'website': 'https://www.odoo.com/page/crm',
     'depends': ['google_account', 'calendar'],

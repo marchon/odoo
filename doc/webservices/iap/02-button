@@ -4,7 +4,7 @@ Index: coalroller/coalroller/__manifest__.py
 +++ coalroller/coalroller/__manifest__.py
 @@ -2,4 +2,7 @@
      'name': "Coal Roller",
-     'category': 'Tools',
+     'category': 'Productivity',
      'depends': ['iap'],
 +    'data': [
 +        'views/views.xml',
