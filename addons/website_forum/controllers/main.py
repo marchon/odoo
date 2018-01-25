@@ -16,6 +16,7 @@ from odoo.addons.web.controllers.main import binary_content
 from odoo.addons.website.models.ir_http import sitemap_qs2dom
 from odoo.http import request
 
+error_templates = {403: 'website_forum.403'}
 
 class WebsiteForum(http.Controller):
     _post_per_page = 10
@@ -113,7 +114,7 @@ class WebsiteForum(http.Controller):
                  '/forum/<model("forum.forum"):forum>/page/<int:page>',
                  '''/forum/<model("forum.forum"):forum>/tag/<model("forum.tag"):tag>/questions''',
                  '''/forum/<model("forum.forum"):forum>/tag/<model("forum.tag"):tag>/questions/page/<int:page>''',
-                 ], type='http', auth="public", website=True, sitemap=sitemap_forum)
+                 ], type='http', auth="public", website=True, sitemap=sitemap_forum, error_templates=error_templates)
     def questions(self, forum, tag=None, page=1, filters='all', sorting=None, search='', post_type=None, **post):
         Post = request.env['forum.post']
 
@@ -174,7 +175,7 @@ class WebsiteForum(http.Controller):
         })
         return request.render("website_forum.forum_index", values)
 
-    @http.route(['/forum/<model("forum.forum"):forum>/faq'], type='http', auth="public", website=True)
+    @http.route(['/forum/<model("forum.forum"):forum>/faq'], type='http', auth="public", website=True, error_templates=error_templates)
     def forum_faq(self, forum, **post):
         values = self._prepare_forum_values(forum=forum, searches=dict(), header={'is_guidelines': True}, **post)
         return request.render("website_forum.faq", values)
@@ -188,7 +189,7 @@ class WebsiteForum(http.Controller):
         )
         return json.dumps(data)
 
-    @http.route(['/forum/<model("forum.forum"):forum>/tag', '/forum/<model("forum.forum"):forum>/tag/<string:tag_char>'], type='http', auth="public", website=True, sitemap=False)
+    @http.route(['/forum/<model("forum.forum"):forum>/tag', '/forum/<model("forum.forum"):forum>/tag/<string:tag_char>'], type='http', auth="public", website=True, sitemap=False, error_templates=error_templates)
     def tags(self, forum, tag_char=None, **post):
         # build the list of tag first char, with their value as tag_char param Ex : [('All', 'all'), ('C', 'c'), ('G', 'g'), ('Z', z)]
         first_char_tag = forum.get_tags_first_char()
@@ -215,7 +216,7 @@ class WebsiteForum(http.Controller):
         })
         return request.render("website_forum.tag", values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/edit_welcome_message', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/edit_welcome_message', auth="user", website=True, error_templates=error_templates)
     def edit_welcome_message(self, forum, **kw):
         return request.render("website_forum.edit_welcome_message", {'forum': forum})
 
@@ -232,7 +233,7 @@ class WebsiteForum(http.Controller):
         except IOError:
             return False
 
-    @http.route(['''/forum/<model("forum.forum"):forum>/question/<model("forum.post", "[('forum_id','=',forum[0]),('parent_id','=',False),('can_view', '=', True)]"):question>'''], type='http', auth="public", website=True)
+    @http.route(['''/forum/<model("forum.forum"):forum>/question/<model("forum.post", "[('forum_id','=',forum[0]),('parent_id','=',False),('can_view', '=', True)]"):question>'''], type='http', auth="public", website=True, error_templates=error_templates)
     def question(self, forum, question, **post):
         # Hide posts from abusers (negative karma), except for moderators
         if not question.can_view:
@@ -315,7 +316,7 @@ class WebsiteForum(http.Controller):
 
     # Post
     # --------------------------------------------------
-    @http.route(['/forum/<model("forum.forum"):forum>/ask'], type='http', auth="user", website=True)
+    @http.route(['/forum/<model("forum.forum"):forum>/ask'], type='http', auth="user", website=True, error_templates=error_templates)
     def forum_post(self, forum, post_type=None, **post):
         user = request.env.user
         if post_type not in ['question', 'link', 'discussion']:  # fixme: make dynamic
@@ -382,7 +383,7 @@ class WebsiteForum(http.Controller):
             werkzeug.utils.redirect("/forum/%s/question/%s" % (slug(forum), slug(question)))
         return werkzeug.utils.redirect("/forum/%s" % slug(forum))
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/edit', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/edit', type='http', auth="user", website=True, error_templates=error_templates)
     def post_edit(self, forum, post, **kwargs):
         tags = [dict(id=tag.id, name=tag.name) for tag in post.tag_ids]
         tags = json.dumps(tags)
@@ -444,7 +445,7 @@ class WebsiteForum(http.Controller):
     # Moderation Tools
     # --------------------------------------------------
 
-    @http.route('/forum/<model("forum.forum"):forum>/validation_queue', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/validation_queue', type='http', auth="user", website=True, error_templates=error_templates)
     def validation_queue(self, forum):
         user = request.env.user
         if user.karma < forum.karma_moderate:
@@ -462,7 +463,7 @@ class WebsiteForum(http.Controller):
 
         return request.render("website_forum.moderation_queue", values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/flagged_queue', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/flagged_queue', type='http', auth="user", website=True, error_templates=error_templates)
     def flagged_queue(self, forum):
         user = request.env.user
         if user.karma < forum.karma_moderate:
@@ -480,7 +481,7 @@ class WebsiteForum(http.Controller):
 
         return request.render("website_forum.moderation_queue", values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/offensive_posts', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/offensive_posts', type='http', auth="user", website=True, error_templates=error_templates)
     def offensive_posts(self, forum):
         user = request.env.user
         if user.karma < forum.karma_moderate:
@@ -508,7 +509,7 @@ class WebsiteForum(http.Controller):
         post.validate()
         return werkzeug.utils.redirect(url)
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/refuse', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/refuse', type='http', auth="user", website=True, error_templates=error_templates)
     def post_refuse(self, forum, post):
         post.refuse()
         return self.question_ask_for_close(forum, post)
@@ -519,7 +520,7 @@ class WebsiteForum(http.Controller):
             return {'error': 'anonymous_user'}
         return post.flag()[0]
 
-    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/ask_for_mark_as_offensive', type='http', auth="user", methods=['GET'], website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/post/<model("forum.post"):post>/ask_for_mark_as_offensive', type='http', auth="user", methods=['GET'], website=True, error_templates=error_templates)
     def post_ask_for_mark_as_offensive(self, forum, post):
         offensive_reasons = request.env['forum.post.reason'].search([('reason_type', '=', 'offensive')])
 
@@ -547,7 +548,7 @@ class WebsiteForum(http.Controller):
 
     @http.route(['/forum/<model("forum.forum"):forum>/users',
                  '/forum/<model("forum.forum"):forum>/users/page/<int:page>'],
-                type='http', auth="public", website=True)
+                type='http', auth="public", website=True, error_templates=error_templates)
     def users(self, forum, page=1, **searches):
         User = request.env['res.users']
         step = 30
@@ -595,7 +596,7 @@ class WebsiteForum(http.Controller):
         response.status = str(status)
         return response
 
-    @http.route(['/forum/<model("forum.forum"):forum>/user/<int:user_id>'], type='http', auth="public", website=True)
+    @http.route(['/forum/<model("forum.forum"):forum>/user/<int:user_id>'], type='http', auth="public", website=True, error_templates=error_templates)
     def open_user(self, forum, user_id=0, **post):
         User = request.env['res.users']
         Post = request.env['forum.post']
@@ -694,7 +695,7 @@ class WebsiteForum(http.Controller):
         })
         return request.render("website_forum.user_detail_full", values)
 
-    @http.route('/forum/<model("forum.forum"):forum>/user/<model("res.users"):user>/edit', type='http', auth="user", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/user/<model("res.users"):user>/edit', type='http', auth="user", website=True, error_templates=error_templates)
     def edit_profile(self, forum, user, **kwargs):
         countries = request.env['res.country'].search([])
         values = self._prepare_forum_values(forum=forum, searches=kwargs)
@@ -730,7 +731,7 @@ class WebsiteForum(http.Controller):
     # Badges
     # --------------------------------------------------
 
-    @http.route('/forum/<model("forum.forum"):forum>/badge', type='http', auth="public", website=True)
+    @http.route('/forum/<model("forum.forum"):forum>/badge', type='http', auth="public", website=True, error_templates=error_templates)
     def badges(self, forum, **searches):
         Badge = request.env['gamification.badge']
         badges = Badge.sudo().search([('challenge_ids.category', '=', 'forum')])

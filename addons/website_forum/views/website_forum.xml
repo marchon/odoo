@@ -51,7 +51,7 @@
 
 <!-- Page Index -->
 <template id="header" name="Forum Index">
-    <t t-call="website_forum.layout">
+    <t t-call="website_forum.layout" t-if="forum.active">
         <div t-if="is_public_user and not forum_welcome_message" class="forum_intro">
             <div t-field="forum.welcome_message"/>
         </div>
@@ -218,13 +218,28 @@
         </div>
         <div class="oe_structure"/>
     </t>
+    <t t-else="">
+        <t t-call="website_forum.403"/>
+    </t>
+</template>
+
+<template id="403">
+    <t t-call="website_forum.layout">
+        <div class="text-center text-muted">
+            <p class="css_editable_hidden">
+                <h1 groups="!base.group_erp_manager">No forum post yet.</h1>
+                <h2 groups="base.group_erp_manager">This forum has been archived.</h2>
+            </p>
+        </div>
+    </t>
 </template>
 
 <!-- Template use to edit the welcome_message -->
 <template id="edit_welcome_message">
-    <t t-call="website.layout">
+    <t t-if="forum.active" t-call="website.layout">
         <div t-field="forum.welcome_message"/>
     </t>
+    <t t-else="" t-call="website_forum.403"/>
 </template>
 
 <!-- Display a post -->
@@ -385,11 +400,13 @@
         <div class="container">
             <h1 class="mb32">Our forums</h1>
             <div class="row">
+                <div t-if="not forums" class="well">No forum post yet.</div>
                 <div t-foreach="forums" t-as="forum" class="col-sm-3 text-center mb32">
                     <a t-attf-href="/forum/#{ slug(forum) }">
                         <div class="fa fa-5x fa-comment mb16"/>
                         <div t-field="forum.name"/>
                     </a>
+                    <span t-if="not forum.website_published" class="label label-danger">unpublished</span>
                 </div>
             </div>
         </div>
