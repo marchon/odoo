@@ -2,6 +2,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 import itertools
+import unittest
+from cProfile import Profile
 
 from odoo.tests import common
 from odoo.tools import pycompat
@@ -71,6 +73,16 @@ class test_integer_field(CreatorCase):
             self.export(2**31-1),
             [[pycompat.text_type(2**31-1)]])
 
+    @unittest.skip("Only benches/profiles")
+    def test_xid_perfs(self):
+        for i in range(10000):
+            self.make(i)
+        self.model.invalidate_cache()
+        records = self.model.search([])
+
+        p = Profile()
+        p.runcall(records._export_rows, [['id'], ['value']])
+        p.dump_stats('xid_perfs.pstats')
 
 class test_float_field(CreatorCase):
     model_name = 'export.float'
@@ -326,9 +338,8 @@ class test_m2o(CreatorCase):
         # Expecting the m2o target model name in the external id,
         # not this model's name
         external_id = u'__export__.export_integer_%d' % record.id
-        self.assertEqual(
-            self.export(record.id, fields=['value/id']),
-            [[external_id]])
+        [[val]] = self.export(record.id, fields=['value/id'])
+        self.assertTrue(val.startswith(external_id))
 
 
 class test_o2m(CreatorCase):
