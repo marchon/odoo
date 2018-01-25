@@ -215,8 +215,17 @@ class Http(models.AbstractModel):
             if not request.uid:
                 cls._auth_method_public()
 
+            # get error templates for route(based on code), and if not found, show default one
+            default_template = 'website.%s' % code
             try:
-                html = request.env['ir.ui.view'].render_template('website.%s' % code, values)
+                rule, arguments = cls._find_handler(return_rule=True)
+                error_templates = rule.endpoint.routing.get('error_templates', {})
+                template = error_templates.get(code, default_template)
+            except werkzeug.exceptions.NotFound as e:
+                template = default_template
+
+            try:
+                html = request.env['ir.ui.view'].render_template(template, values)
             except Exception:
                 html = request.env['ir.ui.view'].render_template('website.http_error', values)
             return werkzeug.wrappers.Response(html, status=code, content_type='text/html;charset=utf-8')
