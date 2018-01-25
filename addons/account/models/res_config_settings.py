@@ -38,9 +38,9 @@ class ResConfigSettings(models.TransientModel):
     module_account_reports = fields.Boolean("Dynamic Reports")
     module_account_reports_followup = fields.Boolean("Enable payment followup management")
     module_account_check_printing = fields.Boolean("Allow check printing and deposits")
-    module_account_batch_deposit = fields.Boolean(string='Use batch deposit',
+    module_account_batch_payment = fields.Boolean(string='Use batch deposit',
         help='This allows you to group received checks before you deposit them to the bank.\n'
-             '-This installs the module account_batch_deposit.')
+             '-This installs the module account_batch_payment.')
     module_account_sepa = fields.Boolean(string='Use SEPA payments')
     module_account_sepa_direct_debit = fields.Boolean(string='Use SEPA Direct Debit')
     module_account_plaid = fields.Boolean(string="Plaid Connector")
