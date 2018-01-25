@@ -51,7 +51,7 @@
         remaining_jobs: jobs,
 
         __DEBUG__: {
-            didLogInfo: $.Deferred(),
+            didLogInfo: odooPromises.Deferred(),
             get_dependencies: function (name, transitive) {
                 var deps = name instanceof Array ? name: [name],
                     changed;
@@ -221,7 +221,7 @@
                 var require = make_require(job);
 
                 var job_exec;
-                var def = $.Deferred();
+                var def = odooPromises.Deferred();
                 try {
                     job_exec = job.factory.call(null, require);
                     jobs.splice(jobs.indexOf(job), 1);

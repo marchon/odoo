@@ -3,7 +3,7 @@
 
 var slice = [].slice;
 
-var odooPromises = {
+window.odooPromises = {
     /*!
      * Extract Promises of jQuery JavaScript Library v1.11.1
      */
@@ -25,7 +25,7 @@ var odooPromises = {
                 },
                 then: function( /* fnDone, fnFail, fnProgress */ ) {
                     var fns = arguments;
-                    return jQuery.Deferred(function( newDefer ) {
+                    return odooPromises.Deferred(function( newDefer ) {
                         jQuery.each( tuples, function( i, tuple ) {
                             var fn = jQuery.isFunction( fns[ i ] ) && fns[ i ];
                             // deferred[ done | fail | progress ] for forwarding actions to newDefer
@@ -54,9 +54,6 @@ var odooPromises = {
                 }
             },
             deferred = {};
-
-        // Keep pipe for back-compat
-        promise.pipe = promise.then;
 
         // Add list-specific methods
         jQuery.each( tuples, function( i, tuple ) {
@@ -106,7 +103,7 @@ var odooPromises = {
             remaining = length !== 1 || ( subordinate && jQuery.isFunction( subordinate.promise ) ) ? length : 0,
 
             // the master Deferred. If resolveValues consist of only a single Deferred, just use that.
-            deferred = remaining === 1 ? subordinate : jQuery.Deferred(),
+            deferred = remaining === 1 ? subordinate : odooPromises.Deferred(),
 
             // Update function for both resolve and progress values
             updateFunc = function( i, contexts, values ) {
@@ -149,7 +146,5 @@ var odooPromises = {
         return deferred.promise();
     }
 };
-
-jQuery.extend(odooPromises);
 
 })();
