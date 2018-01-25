@@ -21,10 +21,10 @@ var ProductCatalog = Widget.extend({
      */
     init: function (options) {
         this._super.apply(this, arguments);
-        this.options = options;
+        this.options = _.pick(options, 'catalog_type', 'product_selection', 'product_ids', 'sort_by', 'x', 'y', 'category_id');
         this.isRatingActive = false;
         this.isMobile = config.device.isMobile;
-        this.size = this.options.catalog_type === 'grid' ? 12 / this.options.x : 12 / (config.device.size_class + 1);
+        this.size = this.options.catalog_type === 'grid' ? 12 / this.options.x : 12 / config.device.size_class;
         this.carouselID = _.uniqueId('product-catalog-carousel-');
     },
     /**
@@ -42,7 +42,7 @@ var ProductCatalog = Widget.extend({
                 limit: this._getLimit(),
             }
         }).then(function (result) {
-            self.products = result.products;
+            self.products = self.options.catalog_type === 'grid' ? result.products : self._getCarouselProducts(result.products);
             self.isRatingActive = result.is_rating_active;
             self.productsAvailable = result.products_available;
             self.isSalesManager = result.is_sales_manager;
@@ -74,11 +74,12 @@ var ProductCatalog = Widget.extend({
      * are display in each slide of carousel.
      *
      * @private
+     * @param {Object} products
      * @returns {Array} Contains arrays of products.
      */
-    _getCarouselProducts: function () {
-        var lists = _.groupBy(this.products, function (product, index) {
-            return Math.floor(index/(config.device.size_class + 1));
+    _getCarouselProducts: function (products) {
+        var lists = _.groupBy(products, function (product, index) {
+            return Math.floor(index/config.device.size_class);
         });
         return _.toArray(lists);
     },
@@ -87,9 +88,9 @@ var ProductCatalog = Widget.extend({
      * @returns {Array} domain
      */
     _getDomain: function () {
-        if (this.options.product_selection == 'category') {
+        if (this.options.product_selection === 'category') {
             return [['public_categ_ids', 'child_of', [parseInt(this.options.category_id)]], ['website_published', '=', true]];
-        } else if (this.options.product_selection == 'manual') {
+        } else if (this.options.product_selection === 'manual') {
             var productIDs = this.options.product_ids.split(',').map(Number);
             return [['id', 'in', productIDs], ['website_published', '=', true]];
         } else {
@@ -129,8 +130,8 @@ var ProductCatalog = Widget.extend({
     _renderRating: function () {
         var self = this;
         this.$('.o_product_item').each(function () {
-            var productDetails = _.findWhere(self.products, {id: $(this).data('product-id')});
-            $(QWeb.render('website_rating.rating_stars_static', {val: productDetails.rating.avg})).appendTo($(this).find('.rating'));
+            var product = _.findWhere(self.products, {id: $(this).data('product-id')});
+            $(QWeb.render('website_rating.rating_stars_static', {val: product.rating.avg})).appendTo($(this).find('.rating'));
         });
     },
     /**
@@ -148,8 +149,7 @@ var ProductCatalog = Widget.extend({
 
 base.ready().then(function () {
     $('.s_product_catalog').each(function () {
-        var options = _.pick($(this).data(), 'catalog_type', 'product_selection', 'product_ids', 'sort_by', 'x', 'y', 'category_id');
-        var productCatalog = new ProductCatalog(options);
+        var productCatalog = new ProductCatalog($(this).data());
         $(this).find('.products_container').remove();
         productCatalog.appendTo($(this).find('.container'));
     });

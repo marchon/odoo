@@ -16,7 +16,6 @@ options.registry.product_catalog = options.Class.extend({
      * @override
      */
     start: function () {
-        var self = this;
         this.productCatalogData = _.pick(this.$target.data(), 'catalog_type', 'product_selection', 'product_ids', 'sort_by', 'x', 'y', 'category_id');
         this._setGrid();
         this._bindGridEvents();
@@ -286,8 +285,7 @@ options.registry.product_catalog = options.Class.extend({
             self.$target.attr('data-' + key, value);
             self.$target.data(key, value);
         });
-        var options = _.pick(this.productCatalogData, 'catalog_type', 'product_selection', 'product_ids', 'sort_by', 'x', 'y', 'category_id');
-        this.productCatalog = new productCatalog.ProductCatalog(options);
+        this.productCatalog = new productCatalog.ProductCatalog(this.productCatalogData);
         this.$target.find('.products_container').remove();
         this.productCatalog.appendTo(this.$target.find('.container')).then(function () {
             if (self.$target.attr('data-sortby') !== 'reorder_products') {
