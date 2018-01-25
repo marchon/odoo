@@ -3,6 +3,7 @@ odoo.define('portal.chatter', function(require) {
 
 var base = require('web_editor.base');
 var ajax = require('web.ajax');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Widget = require('web.Widget');
 var rpc = require('web.rpc');
@@ -46,7 +47,7 @@ var PortalChatter = Widget.extend({
     willStart: function(){
         var self = this;
         // load qweb template and init data
-        return $.when(
+        return concurrency.when(
             rpc.query({
                 route: '/mail/chatter_init',
                 params: this._messageFetchPrepareParams()

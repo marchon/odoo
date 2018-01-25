@@ -1,6 +1,7 @@
 odoo.define('account.dashboard_setup_bar', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var field_utils = require('web.field_utils');
 var KanbanView = require('web.KanbanView');
@@ -127,7 +128,7 @@ var AccountSetupBarModel = KanbanModel.extend({
      * @returns {Deferred<Object>} resolves to the required dashboard data
      */
     _fetchDashboardData: function () {
-        return $.when(this._rpc({
+        return concurrency.when(this._rpc({
                     model: 'account.journal',
                     method: 'retrieve_account_dashboard_setup_bar',
                     args: [],
@@ -141,7 +142,7 @@ var AccountSetupBarModel = KanbanModel.extend({
     _loadDashboard: function (super_def) {
         var self = this;
         var dashboard_def = this._fetchDashboardData();
-        return $.when(super_def, dashboard_def).then(function (id, dashboardValues) {
+        return concurrency.when(super_def, dashboard_def).then(function (id, dashboardValues) {
             self.dashboardValues[id] = dashboardValues;
             return id;
         });

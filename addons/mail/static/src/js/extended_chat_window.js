@@ -5,6 +5,7 @@ var core = require('web.core');
 
 var chat_manager = require('mail.chat_manager');
 var ChatWindow = require('mail.ChatWindow');
+var concurrency = require('web.concurrency');
 var composer = require('mail.composer');
 
 return ChatWindow.extend({
@@ -41,7 +42,7 @@ return ChatWindow.extend({
             });
             def = basic_composer.replace(self.$('.o_chat_composer'));
         }
-        return $.when(this._super(), def);
+        return concurrency.when(this._super(), def);
     },
     // Override on_keydown to only prevent jquery's blockUI to cancel event, but without sending
     // the message on ENTER keydown as this is handled by the BasicComposer

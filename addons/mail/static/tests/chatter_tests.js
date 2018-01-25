@@ -111,7 +111,7 @@ QUnit.test('basic rendering', function (assert) {
             }
             if (route === '/mail/read_followers') {
                 count++;
-                return $.when({
+                return concurrency.when({
                     followers: [],
                     subtypes: [],
                 });
@@ -122,7 +122,7 @@ QUnit.test('basic rendering', function (assert) {
             get_messages: function (event) {
                 // msgRpc++;
                 event.stopPropagation();
-                event.data.callback($.when([{
+                event.data.callback(concurrency.when([{
                     attachment_ids: [],
                     body: "",
                     date: moment("2016-12-20 09:35:40"),
@@ -178,14 +178,14 @@ QUnit.test('chatter in create mode', function (assert) {
         res_id: 2,
         mockRPC: function (route, args) {
             if (route === "/web/dataset/call_kw/partner/message_get_suggested_recipients") {
-                return $.when({2: []});
+                return concurrency.when({2: []});
             }
             return this._super(route, args);
         },
         intercepts: {
             get_messages: function (event) {
                 event.stopPropagation();
-                event.data.callback($.when([]));
+                event.data.callback(concurrency.when([]));
             },
             get_bus: function (event) {
                 event.stopPropagation();
@@ -254,14 +254,14 @@ QUnit.test('chatter rendering inside the sheet', function (assert) {
         res_id: 2,
         mockRPC: function (route, args) {
             if (route === "/web/dataset/call_kw/partner/message_get_suggested_recipients") {
-                return $.when({2: []});
+                return concurrency.when({2: []});
             }
             return this._super(route, args);
         },
         intercepts: {
             get_messages: function (event) {
                 event.stopPropagation();
-                event.data.callback($.when([]));
+                event.data.callback(concurrency.when([]));
             },
             get_bus: function (event) {
                 event.stopPropagation();
@@ -361,7 +361,7 @@ QUnit.test('kanban activity widget with an activity', function (assert) {
                 var done_ids = args.args[0];
                 this.data.partner.records[0].activity_ids = _.difference(current_ids, done_ids);
                 this.data.partner.records[0].activity_state = false;
-                return $.when();
+                return concurrency.when();
             }
             return this._super(route, args);
         },
@@ -423,7 +423,7 @@ QUnit.test('chatter: post, receive and star messages', function (assert) {
         res_id: 2,
     }];
     var bus = new Bus();
-    var getSuggestionsDef = $.Deferred();
+    var getSuggestionsDef = concurrency.Deferred();
     var form = createView({
         View: FormView,
         model: 'partner',
@@ -439,11 +439,11 @@ QUnit.test('chatter: post, receive and star messages', function (assert) {
         res_id: 2,
         mockRPC: function (route, args) {
             if (args.method === 'message_get_suggested_recipients') {
-                return $.when({2: []});
+                return concurrency.when({2: []});
             }
             if (args.method === 'get_mention_suggestions') {
                 getSuggestionsDef.resolve();
-                return $.when([{email: "test@odoo.com", id: 1, name: "Test User"}]);
+                return concurrency.when([{email: "test@odoo.com", id: 1, name: "Test User"}]);
             }
             return this._super(route, args);
         },
@@ -454,7 +454,7 @@ QUnit.test('chatter: post, receive and star messages', function (assert) {
                 var requested_msgs = _.filter(messages, function (msg) {
                     return _.contains(event.data.options.ids, msg.id);
                 });
-                event.data.callback($.when(requested_msgs));
+                event.data.callback(concurrency.when(requested_msgs));
             },
             post_message: function (event) {
                 event.stopPropagation();
@@ -593,7 +593,7 @@ QUnit.test('chatter: post a message and switch in edit mode', function (assert) 
         session: {},
         mockRPC: function (route, args) {
             if (route === "/web/dataset/call_kw/partner/message_get_suggested_recipients") {
-                return $.when({2: []});
+                return concurrency.when({2: []});
             }
             return this._super(route, args);
         },
@@ -603,7 +603,7 @@ QUnit.test('chatter: post a message and switch in edit mode', function (assert) 
                 var requested_msgs = _.filter(messages, function (msg) {
                     return _.contains(event.data.options.ids, msg.id);
                 });
-                event.data.callback($.when(requested_msgs));
+                event.data.callback(concurrency.when(requested_msgs));
             },
             post_message: function (event) {
                 event.stopPropagation();
@@ -707,7 +707,7 @@ QUnit.test('chatter: Attachment viewer', function (assert) {
             if(_.str.contains(route, '/mail/attachment/preview/') ||
                 _.str.contains(route, '/web/static/lib/pdfjs/web/viewer.html')){
                 var canvas = document.createElement('canvas');
-                return $.when(canvas.toDataURL());
+                return concurrency.when(canvas.toDataURL());
             }
             return this._super.apply(this, arguments);
         },
@@ -717,7 +717,7 @@ QUnit.test('chatter: Attachment viewer', function (assert) {
                 var requested_msgs = _.filter(messages, function (msg) {
                     return _.contains(event.data.options.ids, msg.id);
                 });
-                event.data.callback($.when(requested_msgs));
+                event.data.callback(concurrency.when(requested_msgs));
             },
             get_bus: function (event) {
                 event.stopPropagation();
@@ -783,7 +783,7 @@ QUnit.test('form activity widget: schedule next activity', function (assert) {
                 assert.ok(_.isEqual(args.args[0], [1]), "should call 'action_feedback' for id 1");
                 assert.strictEqual(args.kwargs.feedback, 'everything is ok',
                     "the feedback should be sent correctly");
-                return $.when();
+                return concurrency.when();
             }
             if (args.method === 'read' && checkReadArgs) {
                 assert.deepEqual(args.args[1], ['activity_ids', 'message_ids', 'display_name'],
@@ -794,7 +794,7 @@ QUnit.test('form activity widget: schedule next activity', function (assert) {
         intercepts: {
             get_messages: function (event) {
                 event.stopPropagation();
-                event.data.callback($.when([]));
+                event.data.callback(concurrency.when([]));
             },
             get_bus: function (event) {
                 event.stopPropagation();
@@ -954,7 +954,7 @@ QUnit.test('form activity widget: mark as done and remove', function (assert) {
         intercepts: {
             get_messages: function (event) {
                 event.stopPropagation();
-                event.data.callback($.when(messages));
+                event.data.callback(concurrency.when(messages));
             },
             get_bus: function (event) {
                 event.stopPropagation();
@@ -1046,10 +1046,10 @@ QUnit.test('followers widget: follow/unfollow, edit subtypes', function (assert)
                         res_model: 'partner',
                     });
                 }
-                return $.when(true);
+                return concurrency.when(true);
             }
             if (route === '/mail/read_followers') {
-                return $.when({
+                return concurrency.when({
                     followers: followers,
                     subtypes: subtypes,
                 });
@@ -1059,7 +1059,7 @@ QUnit.test('followers widget: follow/unfollow, edit subtypes', function (assert)
                 assert.ok(_.isEqual(args.args[1], [partnerID]), 'should call route for correct partner');
                 this.data.partner.records[0].message_follower_ids = [];
                 followers = [];
-                return $.when(true);
+                return concurrency.when(true);
             }
             if (route === '/web/dataset/call_kw/partner/read') {
                 nbReads++;
@@ -1136,7 +1136,7 @@ QUnit.test('followers widget: do not display follower duplications', function (a
             '</form>',
         mockRPC: function (route, args) {
             if (route === '/mail/read_followers') {
-                return $.when(def).then(function () {
+                return concurrency.when(def).then(function () {
                     return {
                         followers: _.filter(followers, function (follower) {
                             return _.contains(args.follower_ids, follower.id);
@@ -1164,7 +1164,7 @@ QUnit.test('followers widget: do not display follower duplications', function (a
 
     // simulate concurrent calls to read_followers and check that those followers
     // are not added twice in the dropdown
-    def = $.Deferred();
+    def = concurrency.Deferred();
     form.reload();
     form.reload();
     def.resolve();
@@ -1180,7 +1180,7 @@ QUnit.test('followers widget: do not display follower duplications', function (a
 QUnit.test('does not render and crash when destroyed before chat system is ready', function (assert) {
     assert.expect(0);
 
-    var def = $.Deferred();
+    var def = concurrency.Deferred();
 
     var form = createView({
         View: FormView,
@@ -1199,7 +1199,7 @@ QUnit.test('does not render and crash when destroyed before chat system is ready
         res_id: 2,
         mockRPC: function (route, args) {
             if (route === '/mail/read_followers') {
-                return $.when({
+                return concurrency.when({
                     followers: [],
                     subtypes: [],
                 });
@@ -1213,7 +1213,7 @@ QUnit.test('does not render and crash when destroyed before chat system is ready
             },
             get_messages: function (event) {
                 event.stopPropagation();
-                event.data.callback($.when([{
+                event.data.callback(concurrency.when([{
                     attachment_ids: [],
                     body: "",
                     date: moment("2016-12-20 09:35:40"),

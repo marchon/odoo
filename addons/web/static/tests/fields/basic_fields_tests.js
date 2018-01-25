@@ -130,7 +130,7 @@ QUnit.module('basic_fields', {
         var done = assert.async();
         assert.expect(4);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var _doAction = DebouncedField.prototype._doAction;
         DebouncedField.prototype._doAction = function () {
             _doAction.apply(this, arguments);
@@ -169,7 +169,7 @@ QUnit.module('basic_fields', {
         assert.verifySteps(['_setValue'], "_setValue should have been called once");
 
         // destroy the form view
-        def = $.Deferred();
+        def = concurrency.Deferred();
         form.destroy();
 
         // wait for the debounced callback to be called
@@ -896,7 +896,7 @@ QUnit.module('basic_fields', {
             mockRPC: function (route, args) {
                 if (route === "/web/dataset/call_button" && args.method === 'translate_fields') {
                     assert.deepEqual(args.args, ["partner",1,"foo",{}], 'should call "call_button" route');
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1017,7 +1017,7 @@ QUnit.module('basic_fields', {
             mockRPC: function (route, args) {
                 var result = this._super.apply(this, arguments);
                 if (args.method === "onchange") {
-                    return $.when(def).then(function () {
+                    return concurrency.when(def).then(function () {
                         return result;
                     });
                 } else {
@@ -1033,7 +1033,7 @@ QUnit.module('basic_fields', {
         assert.strictEqual(form.$('input[name="foo"]').val(), 'My little Foo Value',
             'should contain the default value');
 
-        def = $.Deferred();
+        def = concurrency.Deferred();
         form.$('.o_field_many2one input').click();
         var $dropdown = form.$('.o_field_many2one input').autocomplete('widget');
         $dropdown.find('li:first()').click();
@@ -1060,7 +1060,7 @@ QUnit.module('basic_fields', {
             },
         };
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var form = createView({
             View: FormView,
             model: 'partner',
@@ -1075,7 +1075,7 @@ QUnit.module('basic_fields', {
             mockRPC: function (route, args) {
                 var result = this._super.apply(this, arguments);
                 if (args.method === "onchange") {
-                    return $.when(def).then(function () {
+                    return concurrency.when(def).then(function () {
                         return result;
                     });
                 } else {
@@ -1307,7 +1307,7 @@ QUnit.module('basic_fields', {
             mockRPC: function (route, args) {
                 if (route === "/web/dataset/call_button" && args.method === 'translate_fields') {
                     assert.deepEqual(args.args, ["partner",1,"txt",{}], 'should call "call_button" route');
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1411,7 +1411,7 @@ QUnit.module('basic_fields', {
             assert.strictEqual(option.data.data, 'coucou==\n',
                 "we should download the correct data");
             option.complete();
-            return $.when();
+            return concurrency.when();
         };
 
         this.data.partner.records[0].foo = 'coucou.txt';
@@ -1566,7 +1566,7 @@ QUnit.module('basic_fields', {
 
         this.data.partner.fields.foo.type = 'text';
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var nbNotifyChanges = 0;
         var form = createView({
             View: FormView,
@@ -1616,7 +1616,7 @@ QUnit.module('basic_fields', {
 
         function waitForChangeTriggered() {
             return def.then(function () {
-                def = $.Deferred();
+                def = concurrency.Deferred();
                 return concurrency.delay(0);
             });
         }
@@ -1644,7 +1644,7 @@ QUnit.module('basic_fields', {
                 }
                 if (route === 'data:image/png;base64,myimage') {
                     assert.ok(true, "should called the correct route");
-                    return $.when('wow');
+                    return concurrency.when('wow');
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1690,7 +1690,7 @@ QUnit.module('basic_fields', {
             mockRPC: function (route, args) {
                 if (route === 'data:image/png;base64,myimage') {
                     assert.step("The view's image should have been fetched");
-                    return $.when('wow');
+                    return concurrency.when('wow');
                 }
                 return this._super.apply(this, arguments);
             },

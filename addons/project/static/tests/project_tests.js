@@ -1,6 +1,7 @@
 odoo.define('project.project_kanban_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var KanbanView = require('web.KanbanView');
 var testUtils = require('web.test_utils');
 
@@ -100,7 +101,7 @@ QUnit.module('project', {
                 '</kanban>',
             mockRPC: function(route, args) {
                 if (args.model === 'ir.attachment' && args.method === 'search_read') {
-                    return $.when([{
+                    return concurrency.when([{
                         id: 1,
                         name: "1.png"
                     },{

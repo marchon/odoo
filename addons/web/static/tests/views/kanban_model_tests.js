@@ -1,6 +1,7 @@
 odoo.define('web.kanban_model_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var KanbanModel = require('web.KanbanModel');
 var testUtils = require('web.test_utils');
 
@@ -212,7 +213,7 @@ QUnit.module('Views', {
                         assert.strictEqual(args.model, 'partner',
                             "model should be correct");
                     }
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },

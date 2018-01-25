@@ -2,6 +2,7 @@ odoo.define('pad.pad', function (require) {
 "use strict";
 
 var AbstractField = require('web.AbstractField');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var fieldRegistry = require('web.field_registry');
 
@@ -28,7 +29,7 @@ var FieldPad = AbstractField.extend({
                 FieldPad.prototype.isPadConfigured = result;
             });
         }
-        return $.when();
+        return concurrency.when();
     },
     /**
      * @override

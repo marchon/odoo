@@ -1,6 +1,7 @@
 odoo.define('web.Pager', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var utils = require('web.utils');
 var Widget = require('web.Widget');
 
@@ -46,7 +47,7 @@ var Pager = Widget.extend({
             can_edit: true, // editable
             single_page_hidden: false, // displayed even if there is a single page
             validate: function() {
-                return $.Deferred().resolve();
+                return concurrency.Deferred().resolve();
             },
             withAccessKey: true,  // can be disabled, for example, for x2m widgets
         });

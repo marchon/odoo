@@ -7,6 +7,7 @@ odoo.define('web.ListController', function (require) {
  * and bind all extra buttons/pager in the control panel.
  */
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var BasicController = require('web.BasicController');
 var DataExport = require('web.DataExport');
@@ -72,9 +73,9 @@ var ListController = BasicController.extend({
                 group_by_seq: searchData.groupbys || []
             });
             var record = self.model.get(self.handle, {raw: true});
-            return $.when(record.getDomain().concat(results.domain || []));
+            return concurrency.when(record.getDomain().concat(results.domain || []));
         } else {
-            return $.Deferred().resolve();
+            return concurrency.Deferred().resolve();
         }
     },
     /**
@@ -216,7 +217,7 @@ var ListController = BasicController.extend({
      */
     _archive: function (ids, archive) {
         if (ids.length === 0) {
-            return $.when();
+            return concurrency.when();
         }
         return this.model
             .toggleActive(ids, !archive, this.handle)
@@ -250,7 +251,7 @@ var ListController = BasicController.extend({
         if ((recordID || this.handle) === this.handle) {
             recordID = this.renderer.getEditableRecordID();
             if (recordID === null) {
-                return $.when();
+                return concurrency.when();
             }
         }
         var self = this;

@@ -1,6 +1,7 @@
 odoo.define('web_diagram.diagram_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var DiagramView = require('web_diagram.DiagramView');
 
 var testUtils = require('web.test_utils');
@@ -73,7 +74,7 @@ QUnit.module('Views', {
             var transition_records = _.filter(data.transition_model.records, function (record) {
                 return _.findWhere(node_records, {id: record.source_id});
             });
-            return $.when({
+            return concurrency.when({
                 parent_field: 'workflow_id',
                 display_name: _.findWhere(data.workflow.records, {id: args.id}).name,
                 nodes: _.map(node_records, function (record) {

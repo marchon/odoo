@@ -1,6 +1,7 @@
 odoo.define('web_settings_dashboard', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var framework = require('web.framework');
 var Widget = require('web.Widget');
@@ -22,7 +23,7 @@ var Dashboard = Widget.extend({
 
     load: function(dashboards){
         var self = this;
-        var loading_done = new $.Deferred();
+        var loading_done = new concurrency.Deferred();
         this._rpc({route: '/web_settings_dashboard/data'})
             .then(function (data) {
                 // Load each dashboard
@@ -35,7 +36,7 @@ var Dashboard = Widget.extend({
                 });
 
                 // Resolve loading_done when all dashboards defs are resolved
-                $.when.apply($, all_dashboards_defs).then(function() {
+                concurrency.when.apply(concurrency, all_dashboards_defs).then(function() {
                     loading_done.resolve();
                 });
             });

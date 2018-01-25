@@ -1,6 +1,7 @@
 odoo.define('web_tour.TourManager', function(require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var local_storage = require('web.local_storage');
 var mixins = require('web.mixins');
@@ -202,7 +203,7 @@ return core.Class.extend(mixins.EventDispatcherMixin, ServicesMixin, {
             url: options.url,
             rainbowMan: options.rainbowMan === undefined ? true : !!options.rainbowMan,
             test: options.test,
-            wait_for: options.wait_for || $.when(),
+            wait_for: options.wait_for || concurrency.when(),
         };
         if (options.skip_enabled) {
             tour.skip_link = '<p><span class="o_skip_tour">' + _t('Skip tour') + '</span></p>';
@@ -220,7 +221,7 @@ return core.Class.extend(mixins.EventDispatcherMixin, ServicesMixin, {
         _.each(this.tours, this._register.bind(this, do_update));
     },
     _register: function (do_update, tour, name) {
-        if (tour.ready) return $.when();
+        if (tour.ready) return concurrency.when();
 
         var tour_is_consumed = _.contains(this.consumed_tours, name);
 

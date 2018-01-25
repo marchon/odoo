@@ -200,7 +200,7 @@ var Followers = AbstractField.extend({
                     params: { follower_ids: missing_ids, res_model: this.model }
                 });
         }
-        return $.when(def).then(function (results) {
+        return concurrency.when(def).then(function (results) {
             if (results) {
                 self.followers = _.uniq(results.followers.concat(self.followers), 'id');
                 self.subtypes = results.subtypes;
@@ -236,7 +236,7 @@ var Followers = AbstractField.extend({
      */
     _unfollow: function (ids) {
         var self = this;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var text = _t("Warning! \n If you remove a follower, he won't be notified of any email or discussion on this document.\n Do you really want to remove this follower ?");
         Dialog.confirm(this, text, {
             confirm_callback: function () {

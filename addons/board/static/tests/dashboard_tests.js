@@ -1,6 +1,7 @@
 odoo.define('board.dashboard_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var testUtils = require('web.test_utils');
 var FormView = require('web.FormView');
 
@@ -115,7 +116,7 @@ QUnit.test('basic functionality, with one sub action', function (assert) {
         mockRPC: function (route, args) {
             if (route === '/web/action/load') {
                 assert.step('load action');
-                return $.when({
+                return concurrency.when({
                     res_model: 'partner',
                     views: [[4, 'list']],
                 });
@@ -125,7 +126,7 @@ QUnit.test('basic functionality, with one sub action', function (assert) {
             }
             if (route === '/web/view/add_custom') {
                 assert.step('add custom');
-                return $.when(true);
+                return concurrency.when(true);
             }
             return this._super.apply(this, arguments);
         },
@@ -205,7 +206,7 @@ QUnit.test('can sort a sub list', function (assert) {
             '</form>',
         mockRPC: function (route) {
             if (route === '/web/action/load') {
-                return $.when({
+                return concurrency.when({
                     res_model: 'partner',
                     views: [[4, 'list']],
                 });
@@ -244,7 +245,7 @@ QUnit.test('can open a record', function (assert) {
             '</form>',
         mockRPC: function (route) {
             if (route === '/web/action/load') {
-                return $.when({
+                return concurrency.when({
                     res_model: 'partner',
                     views: [[4, 'list']],
                 });
@@ -287,14 +288,14 @@ QUnit.test('can drag and drop a view', function (assert) {
             '</form>',
         mockRPC: function (route) {
             if (route === '/web/action/load') {
-                return $.when({
+                return concurrency.when({
                     res_model: 'partner',
                     views: [[4, 'list']],
                 });
             }
             if (route === '/web/view/add_custom') {
                 assert.step('add custom');
-                return $.when(true);
+                return concurrency.when(true);
             }
             return this._super.apply(this, arguments);
         },
@@ -334,14 +335,14 @@ QUnit.test('twice the same action in a dashboard', function (assert) {
             '</form>',
         mockRPC: function (route) {
             if (route === '/web/action/load') {
-                return $.when({
+                return concurrency.when({
                     res_model: 'partner',
                     views: [[4, 'list'],[5, 'kanban']],
                 });
             }
             if (route === '/web/view/add_custom') {
                 assert.step('add custom');
-                return $.when(true);
+                return concurrency.when(true);
             }
             return this._super.apply(this, arguments);
         },
@@ -386,11 +387,11 @@ QUnit.test('non-existing action in a dashboard', function (assert) {
         },
         mockRPC: function (route) {
             if (route === '/board/static/src/img/layout_1-1-1.png') {
-                return $.when();
+                return concurrency.when();
             }
             if (route === '/web/action/load') {
                 // server answer if the action doesn't exist anymore
-                return $.when(false);
+                return concurrency.when(false);
             }
             return this._super.apply(this, arguments);
         },

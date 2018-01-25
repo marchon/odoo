@@ -1,6 +1,7 @@
 odoo.define('account.reconciliation_tests.data', function () {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var Datas = {};
 
 var db = {
@@ -27,7 +28,7 @@ var db = {
             {id: 99, display_name: "partner 99", image: 'ZZZ', customer: true},
         ],
         mark_as_reconciled: function () {
-            return $.when();
+            return concurrency.when();
         },
     },
     'account.account': {
@@ -47,7 +48,7 @@ var db = {
             {id: 308, code: 101401, display_name: "101401 Bank"},
         ],
         mark_as_reconciled: function () {
-            return $.when();
+            return concurrency.when();
         },
     },
     'account.tax': {
@@ -66,7 +67,7 @@ var db = {
             var tax = _.find(db['account.tax'].records, {'id': args[0][0]});
             var amount = args[1];
             var tax_base = tax.price_include ? amount*100/(100+tax.amount) : amount;
-            return $.when({
+            return concurrency.when({
                 "base": amount,
                 "taxes": [{
                     'id': tax.id,
@@ -108,7 +109,7 @@ var db = {
     'account.bank.statement': {
         fields: {},
         reconciliation_widget_preprocess: function () {
-            return $.when(Datas.used.data_preprocess);
+            return concurrency.when(Datas.used.data_preprocess);
         },
     },
     'account.bank.statement.line': {
@@ -130,16 +131,16 @@ var db = {
             if (!Datas.used.mv_lines[key]) {
                 throw new Error("Unknown parameters for get_move_lines_for_reconciliation_widget: '"+ key + "'");
             }
-            return $.when(_.filter(Datas.used.mv_lines[key], function (line) {
+            return concurrency.when(_.filter(Datas.used.mv_lines[key], function (line) {
                 return excluded_ids.indexOf(line.id) === -1 && (!partner_id || partner_id === line.partner_id);
             }));
         },
         get_data_for_reconciliation_widget: function (args) {
             var ids = args[0];
-            return $.when(_.filter(Datas.used.data_widget, function (w) {return _.contains(ids, w.st_line.id);}));
+            return concurrency.when(_.filter(Datas.used.data_widget, function (w) {return _.contains(ids, w.st_line.id);}));
         },
         reconciliation_widget_auto_reconcile: function () {
-            return $.when(Datas.used.auto_reconciliation);
+            return concurrency.when(Datas.used.auto_reconciliation);
         },
         process_reconciliations: function (args) {
             var datas = args[1];
@@ -152,7 +153,7 @@ var db = {
                     return ids.indexOf(mv_line.id) === -1;
                 });
             }
-            return $.when();
+            return concurrency.when();
         },
     },
     'account.move.line': {
@@ -162,7 +163,7 @@ var db = {
             if (!Datas.used.data_for_manual_reconciliation_widget[key]) {
                 throw new Error("Unknown parameters for get_data_for_manual_reconciliation_widget: '"+ key + "'");
             }
-            return $.when(Datas.used.data_for_manual_reconciliation_widget[key]);
+            return concurrency.when(Datas.used.data_for_manual_reconciliation_widget[key]);
         },
         get_move_lines_for_manual_reconciliation: function (args) {
             var excluded_ids = args.splice(2, 1)[0];
@@ -170,7 +171,7 @@ var db = {
             if (!Datas.used.move_lines_for_manual_reconciliation[key]) {
                 throw new Error("Unknown parameters for get_move_lines_for_manual_reconciliation: '"+ key + "'");
             }
-            return $.when(_.filter(Datas.used.move_lines_for_manual_reconciliation[key], function (line) {
+            return concurrency.when(_.filter(Datas.used.move_lines_for_manual_reconciliation[key], function (line) {
                 return excluded_ids.indexOf(line.id) === -1;
             }));
         },
@@ -185,7 +186,7 @@ var db = {
                     });
                 }
             }
-            return $.when();
+            return concurrency.when();
         },
     },
     'account.reconcile.model': {

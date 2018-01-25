@@ -1,6 +1,7 @@
 odoo.define('lunch.tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var FormView = require('web.FormView');
 var testUtils = require('web.test_utils');
 
@@ -98,7 +99,7 @@ QUnit.module('lunch', {
             model: 'order',
             mockRPC: function (route, args) {
                 if (args.method === 'default_get') {
-                    return $.when({
+                    return concurrency.when({
                         previous_order_widget: '{' +
                             '"8": {' +
                                 '"note": "coucou",' +

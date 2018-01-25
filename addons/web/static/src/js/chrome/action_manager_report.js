@@ -7,6 +7,7 @@ odoo.define('web.ReportActionManager', function (require) {
  */
 
 var ActionManager = require('web.ActionManager');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var crash_manager = require('web.crash_manager');
 var framework = require('web.framework');
@@ -44,7 +45,7 @@ ActionManager.include({
      */
     _downloadReport: function (url) {
         framework.blockUI();
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var blocked = !session.get_file({
             url: '/report/download',
             data: {
@@ -100,7 +101,7 @@ ActionManager.include({
                         processedActions.push(currentAction);
                         currentAction = currentAction.next_report_to_generate;
                     } while (currentAction && !_.contains(processedActions, currentAction));
-                    return $.when.apply($, defs).done(options.on_close);
+                    return concurrency.when.apply(concurrency, defs).done(options.on_close);
                 } else {
                     // open the report in the client action if generating the PDF is not possible
                     return self._executeReportClientAction(action, options);
@@ -109,7 +110,7 @@ ActionManager.include({
         } else {
             console.error("The ActionManager can't handle reports of type " +
                 action.report_type, action);
-            return $.Deferred().reject();
+            return concurrency.Deferred().reject();
         }
     },
     /**

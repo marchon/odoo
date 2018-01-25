@@ -2,6 +2,7 @@ odoo.define('web.CalendarModel', function (require) {
 "use strict";
 
 var AbstractModel = require('web.AbstractModel');
+var concurrency = require('web.concurrency');
 var Context = require('web.Context');
 var core = require('web.core');
 var fieldUtils = require('web.field_utils');
@@ -198,8 +199,8 @@ return AbstractModel.extend({
         // fields to display color, e.g.: user_id.partner_id
         this.fieldColor = params.fieldColor;
         if (!this.preload_def) {
-            this.preload_def = $.Deferred();
-            $.when(
+            this.preload_def = concurrency.Deferred();
+            concurrency.when(
                 this._rpc({model: this.modelName, method: 'check_access_rights', args: ["write", false]}),
                 this._rpc({model: this.modelName, method: 'check_access_rights', args: ["create", false]}))
             .then(function (write, create) {
@@ -420,7 +421,7 @@ return AbstractModel.extend({
 
         var defs = _.map(this.data.filters, this._loadFilter.bind(this));
 
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             return self._rpc({
                     model: self.modelName,
                     method: 'search_read',
@@ -431,7 +432,7 @@ return AbstractModel.extend({
             .then(function (events) {
                 self._parseServerData(events);
                 self.data.data = _.map(events, self._recordToCalendarEvent.bind(self));
-                return $.when(
+                return concurrency.when(
                     self._loadColors(self.data, self.data.data),
                     self._loadRecordsToFilters(self.data, self.data.data)
                 );
@@ -452,7 +453,7 @@ return AbstractModel.extend({
             });
             this.model_color = this.fields[fieldName].relation || element.model;
         }
-        return $.Deferred().resolve();
+        return concurrency.Deferred().resolve();
     },
     /**
      * @param {any} filter
@@ -582,7 +583,7 @@ return AbstractModel.extend({
                     to_read[model] = _.object(res);
                 }));
         });
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             _.each(self.data.filters, function (filter) {
                 if (filter.write_model) {
                     return;

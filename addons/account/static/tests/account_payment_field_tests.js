@@ -1,6 +1,7 @@
 odoo.define('account.reconciliation_field_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var FormView = require('web.FormView');
 var testUtils = require('web.test_utils');
 
@@ -40,11 +41,11 @@ QUnit.module('account', {
             mockRPC: function (route, args) {
                 if (args.method === 'remove_move_reconcile') {
                     assert.deepEqual(args.args, [22,{"invoice_id":1}], "should call remove_move_reconcile {warning: required focus}");
-                    return $.when();
+                    return concurrency.when();
                 }
                 if (args.method === 'assign_outstanding_credit') {
                     assert.deepEqual(args.args, [4, 20], "should call assign_outstanding_credit {warning: required focus}");
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },

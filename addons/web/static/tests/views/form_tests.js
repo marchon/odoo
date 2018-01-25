@@ -170,7 +170,7 @@ QUnit.module('Views', {
     QUnit.test('attributes are transferred on async widgets', function (assert) {
         assert.expect(1);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var FieldChar = fieldRegistry.get('char');
         fieldRegistry.add('asyncwidget', FieldChar.extend({
@@ -347,7 +347,7 @@ QUnit.module('Views', {
     QUnit.test('asynchronous fields can be set invisible', function (assert) {
         assert.expect(1);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         // we choose this widget because it is a quite simple widget with a non
         // empty qweb template
@@ -1455,7 +1455,7 @@ QUnit.module('Views', {
             res_id: 1,
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'ir.attachment') {
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1600,7 +1600,7 @@ QUnit.module('Views', {
             viewOptions: {hasSidebar: true},
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'ir.attachment') {
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1631,7 +1631,7 @@ QUnit.module('Views', {
             viewOptions: {hasSidebar: true},
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'ir.attachment') {
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -2200,7 +2200,7 @@ QUnit.module('Views', {
             viewOptions: {hasSidebar: true},
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'ir.attachment') {
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -2547,7 +2547,7 @@ QUnit.module('Views', {
             res_id: 1,
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'ir.attachment') {
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -2591,7 +2591,7 @@ QUnit.module('Views', {
             res_id: 1,
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'ir.attachment') {
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 assert.step(args.method);
                 return this._super.apply(this, arguments);
@@ -2716,7 +2716,7 @@ QUnit.module('Views', {
             res_id: 2,
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({
+                    return concurrency.when({
                         value: { int_field: 10 },
                         warning: {
                             title: "Warning",
@@ -2765,7 +2765,7 @@ QUnit.module('Views', {
                 '</form>',
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({
+                    return concurrency.when({
                         value: { int_field: 10 },
                         warning: {
                             title: "Warning",
@@ -2806,7 +2806,7 @@ QUnit.module('Views', {
             res_id: 2,
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({
+                    return concurrency.when({
                         value: {},
                         warning: {
                             title: "Warning",
@@ -2849,7 +2849,7 @@ QUnit.module('Views', {
                     // the server error will be used by the session to display
                     // an error dialog.  From the point of view of the basic
                     // model, the deferred is just rejected.
-                    return $.Deferred().reject();
+                    return concurrency.Deferred().reject();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -3238,7 +3238,7 @@ QUnit.module('Views', {
                 obj.int_field = obj.foo.length + 1000;
             },
         };
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var form = createView({
             View: FormView,
             model: 'partner',
@@ -3288,7 +3288,7 @@ QUnit.module('Views', {
 
         function waitForFinishedOnChange() {
             return def.then(function () {
-                def = $.Deferred();
+                def = concurrency.Deferred();
                 return concurrency.delay(0);
             });
         }
@@ -3362,7 +3362,7 @@ QUnit.module('Views', {
     QUnit.test('onchanges that complete after discarding', function (assert) {
         assert.expect(4);
 
-        var def1 = $.Deferred();
+        var def1 = concurrency.Deferred();
 
         this.data.partner.onchanges = {
             foo: function (obj) {
@@ -3414,7 +3414,7 @@ QUnit.module('Views', {
     QUnit.test('discarding before save returns', function (assert) {
         assert.expect(4);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var form = createView({
             View: FormView,
@@ -3533,7 +3533,7 @@ QUnit.module('Views', {
             res_id: 2,
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({
+                    return concurrency.when({
                         value: {
                             p: [
                                 [5],
@@ -3595,7 +3595,7 @@ QUnit.module('Views', {
             res_id: 2,
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({
+                    return concurrency.when({
                         value: {
                             p: [[5], [1, 4, {foo: 'foo changed'}]],
                         },
@@ -4035,7 +4035,7 @@ QUnit.module('Views', {
                 '</form>',
             mockRPC: function (route, args) {
                 if (args.method === 'default_get') {
-                    return $.when({
+                    return concurrency.when({
                         product_ids: [[0, 0, {
                             name: 'xdroid',
                             partner_type_id: 12,
@@ -4623,7 +4623,7 @@ QUnit.module('Views', {
         this.data.partner.onchanges.foo = function (obj) {};
         this.data.partner.fields.foo.required = true;
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var form = createView({
             View: FormView,
@@ -4691,10 +4691,10 @@ QUnit.module('Views', {
                         "the active_id shoud be 1.");
                     assert.deepEqual(args.context.active_ids, [1],
                         "the active_ids should be an array with 1 inside.");
-                    return $.when({});
+                    return concurrency.when({});
                 }
                 if (args.method === 'search_read' && args.model === 'ir.attachment') {
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -4764,7 +4764,7 @@ QUnit.module('Views', {
             },
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/call_kw/product/get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 } else if (args.method === 'write') {
                     assert.strictEqual(args.model, 'product',
                         "should write on product model");
@@ -5349,11 +5349,11 @@ QUnit.module('Views', {
             res_id: 1,
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/call_kw/product/get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 } else if (route === "/web/dataset/call_button" && args.method === 'translate_fields') {
                     assert.deepEqual(args.args, ["product",37,"name",{}], 'should call "call_button" route');
                     nbTranslateCalls++;
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -5376,7 +5376,7 @@ QUnit.module('Views', {
     QUnit.test('buttons are disabled until status bar action is resolved', function (assert) {
         assert.expect(9);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var form = createView({
             View: FormView,
@@ -5440,7 +5440,7 @@ QUnit.module('Views', {
     QUnit.test('buttons are disabled until button box action is resolved', function (assert) {
         assert.expect(9);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var form = createView({
             View: FormView,
@@ -5551,7 +5551,7 @@ QUnit.module('Views', {
     QUnit.test('buttons are disabled until action is resolved (in dialogs)', function (assert) {
         assert.expect(3);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var form = createView({
             View: FormView,
@@ -5586,7 +5586,7 @@ QUnit.module('Views', {
             },
             mockRPC: function (route, args) {
                 if (args.method === 'get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -5616,7 +5616,7 @@ QUnit.module('Views', {
     QUnit.test('multiple clicks on save should reload only once', function (assert) {
         assert.expect(4);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var form = createView({
             View: FormView,
@@ -5677,7 +5677,7 @@ QUnit.module('Views', {
             mockRPC: function (route, args) {
                 assert.step(args.method);
                 if (args.method === 'write' && args.args[1].foo === 'incorrect value') {
-                    return $.Deferred().reject();
+                    return concurrency.Deferred().reject();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -5819,7 +5819,7 @@ QUnit.module('Views', {
                     assert.strictEqual(args.model, 'test',
                         "should search_count on test");
                     if (!args.kwargs.domain) {
-                        return $.Deferred().reject({
+                        return concurrency.Deferred().reject({
                             code: 200,
                             data: {},
                             message: "MockServer._getRecords: given domain has to be an array.",
@@ -5946,7 +5946,7 @@ QUnit.module('Views', {
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'ir.attachment') {
                     // rpcs done by the sidebar
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 var result = this._super.apply(this, arguments);
                 if (args.method === 'copy') {
@@ -6043,7 +6043,7 @@ QUnit.module('Views', {
             mockRPC: function (route, args) {
                 assert.step(args.method);
                 if (args.method === 'get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -6145,7 +6145,7 @@ QUnit.module('Views', {
             res_id: 1,
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/call_kw/partner/get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super.apply(this, arguments);
             },

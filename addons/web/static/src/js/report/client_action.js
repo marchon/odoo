@@ -1,6 +1,7 @@
 odoo.define('report.client_action', function (require) {
 'use strict';
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var ControlPanelMixin = require('web.ControlPanelMixin');
@@ -44,7 +45,7 @@ var ReportAction = Widget.extend(ControlPanelMixin, {
         var self = this;
         this.set('title', this.title);
         this.iframe = this.$('iframe')[0];
-        return $.when(this._super.apply(this, arguments), session.is_bound).then(function () {
+        return concurrency.when(this._super.apply(this, arguments), session.is_bound).then(function () {
             var web_base_url = session['web.base.url'];
             var trusted_host = utils.get_host_from_url(web_base_url);
             var trusted_protocol = utils.get_protocol_from_url(web_base_url);

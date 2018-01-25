@@ -3,6 +3,7 @@ odoo.define('im_livechat.im_livechat', function (require) {
 
 var local_storage = require('web.local_storage');
 var bus = require('bus.bus').bus;
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var session = require('web.session');
@@ -63,7 +64,7 @@ var LivechatButton = Widget.extend({
         if (!cookie) {
             ready = session.rpc("/im_livechat/init", {channel_id: this.options.channel_id}).then(function (result) {
                 if (!result.available_for_me) {
-                    return $.Deferred().reject();
+                    return concurrency.Deferred().reject();
                 }
                 self.rule = result.rule;
             });
@@ -124,7 +125,7 @@ var LivechatButton = Widget.extend({
                 QWeb.add_template(xml);
             });
         });
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
 
     open_chat: _.debounce(function () {
@@ -137,7 +138,7 @@ var LivechatButton = Widget.extend({
         this.opening_chat = true;
         clearTimeout(this.auto_popup_timeout);
         if (cookie) {
-            def = $.when(JSON.parse(cookie));
+            def = concurrency.when(JSON.parse(cookie));
         } else {
             this.messages = []; // re-initialize messages cache
             def = session.rpc('/im_livechat/get_session', {

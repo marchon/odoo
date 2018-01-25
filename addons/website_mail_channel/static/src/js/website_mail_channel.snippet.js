@@ -1,6 +1,7 @@
 odoo.define('website_mail_channel.snippet', function (require) {
 'use strict';
 
+var concurrency = require('web.concurrency');
 var sAnimation = require('website.content.snippets.animation');
 
 sAnimation.registry.follow_alias = sAnimation.Class.extend({
@@ -94,7 +95,7 @@ sAnimation.registry.follow_alias = sAnimation.Class.extend({
             .val(email ? email : "")
             .attr("disabled", follow === "on" || (email.length && this.is_user) ? "disabled" : false);
         this.$target.attr("data-follow", follow);
-        return $.when(alias_done);
+        return concurrency.when(alias_done);
     },
     get_alias_info: function () {
         var self = this;

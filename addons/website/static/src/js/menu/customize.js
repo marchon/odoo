@@ -1,6 +1,7 @@
 odoo.define('website.customizeMenu', function (require) {
 'use strict';
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Widget = require('web.Widget');
 var weContext = require('web_editor.context');
@@ -122,7 +123,7 @@ var AceEditorMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
         if (window.location.hash.substr(0, WebsiteAceEditor.prototype.hash.length) === WebsiteAceEditor.prototype.hash) {
             def = this._launchAce();
         }
-        return $.when(this._super.apply(this, arguments), def);
+        return concurrency.when(this._super.apply(this, arguments), def);
     },
 
     //--------------------------------------------------------------------------
@@ -149,7 +150,7 @@ var AceEditorMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
     _launchAce: function () {
         if (this.globalEditor) {
             this.globalEditor.do_show();
-            return $.when();
+            return concurrency.when();
         } else {
             var currentHash = window.location.hash;
             var indexOfView = currentHash.indexOf("?res=");

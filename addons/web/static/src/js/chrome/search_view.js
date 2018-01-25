@@ -2,6 +2,7 @@ odoo.define('web.SearchView', function (require) {
 "use strict";
 
 var AutoComplete = require('web.AutoComplete');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var FavoriteMenu = require('web.FavoriteMenu');
@@ -197,7 +198,7 @@ var FacetView = Widget.extend({
     start: function () {
         var self = this;
         var $e = this.$('.o_facet_values').last();
-        return $.when(this._super()).then(function () {
+        return concurrency.when(this._super()).then(function () {
             return $.when.apply(null, self.model.values.map(function (value, index) {
                 if (index > 0) {
                     $('<span/>', {html: self.model.get('separator') || _t(" or ")}).addClass('o_facet_values_sep').appendTo($e);
@@ -301,7 +302,7 @@ var SearchView = Widget.extend({
                 self.favorite_filters = filters;
             });
         }
-        return $.when(this._super(), def);
+        return concurrency.when(this._super(), def);
     },
     start: function () {
         if (this.headless) {
@@ -332,7 +333,7 @@ var SearchView = Widget.extend({
                 menu_defs.push(this.favorite_menu.appendTo(this.$buttons));
             }
         }
-        return $.when.apply($, menu_defs).then(this.set_default_filters.bind(this));
+        return concurrency.when.apply(concurrency, menu_defs).then(this.set_default_filters.bind(this));
     },
     get_title: function () {
         return this.title;
@@ -351,7 +352,7 @@ var SearchView = Widget.extend({
             });
         }
         this.query.reset([], {preventSearch: true});
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Performs the search view collection of widget data.

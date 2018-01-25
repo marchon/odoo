@@ -1,6 +1,7 @@
 odoo.define('web.MockServer', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var Class = require('web.Class');
 var data_manager = require('web.data_manager');
 var Domain = require('web.Domain');
@@ -962,66 +963,66 @@ var MockServer = Class.extend({
     _performRpc: function (route, args) {
         switch (route) {
             case '/web/action/load':
-                return $.when(this._mockLoadAction(args.kwargs));
+                return concurrency.when(this._mockLoadAction(args.kwargs));
 
             case '/web/dataset/search_read':
-                return $.when(this._mockSearchReadController(args));
+                return concurrency.when(this._mockSearchReadController(args));
         }
         if (route.indexOf('/web/image') >= 0 || _.contains(['.png', '.jpg'], route.substr(route.length - 4))) {
-            return $.when();
+            return concurrency.when();
         }
         switch (args.method) {
             case 'copy':
-                return $.when(this._mockCopy(args.model, args.args[0]));
+                return concurrency.when(this._mockCopy(args.model, args.args[0]));
 
             case 'create':
-                return $.when(this._mockCreate(args.model, args.args[0]));
+                return concurrency.when(this._mockCreate(args.model, args.args[0]));
 
             case 'default_get':
-                return $.when(this._mockDefaultGet(args.model, args.args, args.kwargs));
+                return concurrency.when(this._mockDefaultGet(args.model, args.args, args.kwargs));
 
             case 'fields_get':
-                return $.when(this._mockFieldsGet(args.model, args.args));
+                return concurrency.when(this._mockFieldsGet(args.model, args.args));
 
             case 'load_views':
-                return $.when(this._mockLoadViews(args.model, args.kwargs));
+                return concurrency.when(this._mockLoadViews(args.model, args.kwargs));
 
             case 'name_get':
-                return $.when(this._mockNameGet(args.model, args.args));
+                return concurrency.when(this._mockNameGet(args.model, args.args));
 
             case 'name_create':
-                return $.when(this._mockNameCreate(args.model, args.args));
+                return concurrency.when(this._mockNameCreate(args.model, args.args));
 
             case 'name_search':
-                return $.when(this._mockNameSearch(args.model, args.args, args.kwargs));
+                return concurrency.when(this._mockNameSearch(args.model, args.args, args.kwargs));
 
             case 'onchange':
-                return $.when(this._mockOnchange(args.model, args.args));
+                return concurrency.when(this._mockOnchange(args.model, args.args));
 
             case 'read':
-                return $.when(this._mockRead(args.model, args.args, args.kwargs));
+                return concurrency.when(this._mockRead(args.model, args.args, args.kwargs));
 
             case 'read_group':
-                return $.when(this._mockReadGroup(args.model, args.kwargs));
+                return concurrency.when(this._mockReadGroup(args.model, args.kwargs));
 
             case 'read_progress_bar':
-                return $.when(this._mockReadProgressBar(args.model, args.kwargs));
+                return concurrency.when(this._mockReadProgressBar(args.model, args.kwargs));
 
             case 'search_count':
-                return $.when(this._mockSearchCount(args.model, args.args));
+                return concurrency.when(this._mockSearchCount(args.model, args.args));
 
             case 'search_read':
-                return $.when(this._mockSearchRead(args.model, args.args, args.kwargs));
+                return concurrency.when(this._mockSearchRead(args.model, args.args, args.kwargs));
 
             case 'unlink':
-                return $.when(this._mockUnlink(args.model, args.args));
+                return concurrency.when(this._mockUnlink(args.model, args.args));
 
             case 'write':
-                return $.when(this._mockWrite(args.model, args.args));
+                return concurrency.when(this._mockWrite(args.model, args.args));
         }
         var model = this.data[args.model];
         if (model && typeof model[args.method] === 'function') {
-            return $.when(this.data[args.model][args.method](args.args, args.kwargs));
+            return concurrency.when(this.data[args.model][args.method](args.args, args.kwargs));
         }
 
         throw new Error("Unimplemented route: " + route);

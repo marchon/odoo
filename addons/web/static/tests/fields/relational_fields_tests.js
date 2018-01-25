@@ -178,7 +178,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 if (args.method === 'get_formview_action') {
                     assert.deepEqual(args.args[0], [4], "should call get_formview_action with correct id");
-                    return $.when({
+                    return concurrency.when({
                         res_id: 17,
                         type: 'ir.actions.act_window',
                         target: 'current',
@@ -187,7 +187,7 @@ QUnit.module('relational_fields', {
                 }
                 if (args.method === 'get_formview_id') {
                     assert.deepEqual(args.args[0], [4], "should call get_formview_id with correct id");
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super(route, args);
             },
@@ -232,7 +232,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 if (args.method === 'get_formview_id') {
                     assert.deepEqual(args.args[0], [4], "should call get_formview_id with correct id");
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super(route, args);
             },
@@ -301,7 +301,7 @@ QUnit.module('relational_fields', {
             res_id: 1,
             mockRPC: function (route, args) {
                 if (args.method === 'get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super(route, args);
             },
@@ -463,7 +463,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 assert.step(args.method);
                 if (args.method === 'get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 if (args.method === 'onchange') {
                     assert.strictEqual(args.args[1].user_id, 17,
@@ -669,7 +669,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 if (args.method === 'name_get') {
                     count++;
-                    return $.when([[1, "first record\nand some address"]]);
+                    return concurrency.when([[1, "first record\nand some address"]]);
                 }
                 return this._super(route, args);
             },
@@ -828,7 +828,7 @@ QUnit.module('relational_fields', {
         var M2O_DELAY = relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY;
         relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY = 0;
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var newRecordID;
         var form = createView({
             View: FormView,
@@ -881,7 +881,7 @@ QUnit.module('relational_fields', {
         var M2O_DELAY = relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY;
         relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY = 0;
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var newRecordID;
         var list = createView({
             View: ListView,
@@ -942,7 +942,7 @@ QUnit.module('relational_fields', {
         var M2O_DELAY = relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY;
         relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY = 0;
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var newRecordID;
         var form = createView({
             View: FormView,
@@ -1014,7 +1014,7 @@ QUnit.module('relational_fields', {
         var M2O_DELAY = relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY;
         relationalFields.FieldMany2One.prototype.AUTOCOMPLETE_DELAY = 0;
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var newRecordID;
         var form = createView({
             View: FormView,
@@ -1098,7 +1098,7 @@ QUnit.module('relational_fields', {
                 '</form>',
             mockRPC: function (route, args) {
                 if (args.method === 'default_get') {
-                    return $.when({p: [[0, 0, {display_name: 'new record'}]]});
+                    return concurrency.when({p: [[0, 0, {display_name: 'new record'}]]});
                 } else if (args.method === 'name_get') {
                     // This should not be called at all and thus is not accounted for
                     // in the assert.expect. If this is called, you broke this test.
@@ -1137,7 +1137,7 @@ QUnit.module('relational_fields', {
                 '</form>',
             mockRPC: function (route, args) {
                 if (args.method === 'default_get') {
-                    return $.when({p: [[0, 0, {display_name: 'new record', trululu: false}]]});
+                    return concurrency.when({p: [[0, 0, {display_name: 'new record', trululu: false}]]});
                 } else if (args.method === 'name_get') {
                     // This should not be called at all and thus is not accounted for
                     // in the assert.expect. If this is called, you broke this test.
@@ -1185,7 +1185,7 @@ QUnit.module('relational_fields', {
                 '</form>',
             mockRPC: function (route, args) {
                 if (args.method === 'default_get') {
-                    return $.when({timmy: [[0, 0, {display_name: 'brandon is the new timmy', name: 'brandon'}]]});
+                    return concurrency.when({timmy: [[0, 0, {display_name: 'brandon is the new timmy', name: 'brandon'}]]});
                 }
                 if (args.method === 'create') {
                     assert.deepEqual(args.args[0], {
@@ -1245,7 +1245,7 @@ QUnit.module('relational_fields', {
                 '</form>',
             mockRPC: function (route, args) {
                 if (args.method === 'default_get') {
-                    return $.when({turtles: [[6, 0, [2,3]]]});
+                    return concurrency.when({turtles: [[6, 0, [2,3]]]});
                 }
                 if (args.method === 'create') {
                     // it would be even better if we did not send the current
@@ -1287,7 +1287,7 @@ QUnit.module('relational_fields', {
             res_id: 1,
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/call_kw/product/get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1396,7 +1396,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 count++;
                 if (args.method === 'name_get' && args.args[0][0] === 2) {
-                    return $.when([[2, "hello world\nso much noise"]]);
+                    return concurrency.when([[2, "hello world\nso much noise"]]);
                 }
                 return this._super(route, args);
             },
@@ -1465,14 +1465,14 @@ QUnit.module('relational_fields', {
                         {hey: "ho", hello: "world", test: "yop"},
                         'the field attr context should have been used for the ' +
                         'RPC (evaluated and merged with the session one)');
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 if (args.method === 'name_search' && args.model === 'partner') {
                     assert.deepEqual(args.kwargs.args, [['id', 'in', [12]]],
                         'the field attr domain should have been used for the RPC (and evaluated)');
                     assert.deepEqual(args.kwargs.context, {hey: 'ho', timmy: [[6, false, [12]]]},
                         'the field attr context should have been used for the RPC (and evaluated)');
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1612,7 +1612,7 @@ QUnit.module('relational_fields', {
             },
             mockRPC: function (route) {
                 if (route === '/web/dataset/call_kw/product/get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1776,7 +1776,7 @@ QUnit.module('relational_fields', {
             obj.int_field = obj.product_id || 0;
         };
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var list = createView({
             View: ListView,
@@ -1832,7 +1832,7 @@ QUnit.module('relational_fields', {
             obj.int_field = obj.product_id || 0;
         };
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var list = createView({
             View: ListView,
@@ -1896,7 +1896,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
                     domain = [['id', 'in', [10]]];
-                    return $.when({
+                    return concurrency.when({
                         domain: {
                             trululu: domain,
                             unexisting_field: domain,
@@ -1948,7 +1948,7 @@ QUnit.module('relational_fields', {
             res_id: 1,
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({
+                    return concurrency.when({
                         domain: {
                             trululu: domain,
                         },
@@ -2009,7 +2009,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 if (args.method === 'get_formview_id') {
                     assert.deepEqual(args.args[0], [1], "should call get_formview_id with correct id");
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super(route, args);
             },
@@ -4217,7 +4217,7 @@ QUnit.module('relational_fields', {
             res_id: 2,
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({value: { p: [
+                    return concurrency.when({value: { p: [
                         [5],                             // delete all
                         [0, 0, {foo: "from onchange"}],  // create new
                     ]}});
@@ -4257,7 +4257,7 @@ QUnit.module('relational_fields', {
                 '</form>',
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({value: { p: [
+                    return concurrency.when({value: { p: [
                         [5],                             // delete all
                         [0, 0, {foo: "from onchange"}],  // create new
                     ]}});
@@ -6179,7 +6179,7 @@ QUnit.module('relational_fields', {
             },
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/call_kw/partner/get_formview_id') {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 if (args.method === 'write') {
                     assert.deepEqual(args.args[1].timmy, [[6,  false, [12]]],
@@ -6711,7 +6711,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 var result = this._super.apply(this, arguments);
                 if (args.method === 'onchange') {
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
@@ -6721,7 +6721,7 @@ QUnit.module('relational_fields', {
         form.$('.o_field_x2many_list_row_add a').click();
         assert.strictEqual(form.$('.o_data_row').length, 1,
             "should have created the first row immediately");
-        def = $.Deferred();
+        def = concurrency.Deferred();
         form.$('.o_field_many2one input').click();
         form.$('.o_field_many2one input').autocomplete('widget').find('a').first().click();
 
@@ -6768,14 +6768,14 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 var result = this._super.apply(this, arguments);
                 if (args.method === 'onchange') {
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
         });
 
         // click twice to add a new line
-        def = $.Deferred();
+        def = concurrency.Deferred();
         form.$('.o_field_x2many_list_row_add a').click();
         form.$('.o_field_x2many_list_row_add a').click();
         assert.strictEqual(form.$('.o_data_row').length, 0,
@@ -6823,7 +6823,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 var result = this._super.apply(this, arguments);
                 if (args.method === 'onchange') {
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
@@ -6832,7 +6832,7 @@ QUnit.module('relational_fields', {
         // trigger the two onchanges
         form.$('.o_field_x2many_list_row_add a').click();
         form.$('.o_data_row .o_field_widget').val('a name').trigger('input');
-        def = $.Deferred();
+        def = concurrency.Deferred();
         form.$('.o_datepicker_input').click(); // focusout o2m and set value to today
         var dateTimeVal = fieldUtils.format.datetime(moment(), {timezone: false});
         form.$('.o_datepicker_input').val(dateTimeVal).trigger('change');
@@ -6870,7 +6870,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
                     assert.step(args.method);
-                    return $.when({
+                    return concurrency.when({
                         value: {},
                         warning: {
                             title: "Warning",
@@ -7014,7 +7014,7 @@ QUnit.module('relational_fields', {
                 '</form>',
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({
+                    return concurrency.when({
                         value: {
                             p: [[5], [0, 0, {display_name: 'new', timmy: [[5], [4, 12]]}]],
                         },
@@ -7262,14 +7262,14 @@ QUnit.module('relational_fields', {
                 var result = this._super.apply(this, arguments);
                 if (args.method === 'onchange') {
                     // delay the onchange RPC
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
         });
 
         form.$('.o_field_x2many_list_row_add a').click();
-        def = $.Deferred();
+        def = concurrency.Deferred();
         form.$('.o_field_widget[name=int_field]')
             .val('44')
             .trigger('input');
@@ -7317,14 +7317,14 @@ QUnit.module('relational_fields', {
                 var result = this._super.apply(this, arguments);
                 if (args.method === 'onchange') {
                     // delay the onchange RPC
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
         });
 
         form.$('.o_field_x2many_list_row_add a').click();
-        def = $.Deferred();
+        def = concurrency.Deferred();
         form.$('.o_field_widget[name=int_field]')
             .val('44')
             .trigger('input')
@@ -7472,7 +7472,7 @@ QUnit.module('relational_fields', {
                         // the server error will be used by the session to display
                         // an error dialog.  From the point of view of the basic
                         // model, the deferred is just rejected.
-                        return $.Deferred().reject();
+                        return concurrency.Deferred().reject();
                     }
                 }
                 if (args.method === 'write') {
@@ -7628,7 +7628,7 @@ QUnit.module('relational_fields', {
             res_id: 1,
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({value: { turtles: [
+                    return concurrency.when({value: { turtles: [
                         [5],
                         [1, 1, {turtle_foo: "from onchange", partner_ids: [[5]]}],
                     ]}});
@@ -8982,7 +8982,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
                     domain = [['id', 'in', [10]]];
-                    return $.when({
+                    return concurrency.when({
                         domain: {
                             trululu: domain,
                         }
@@ -9174,7 +9174,7 @@ QUnit.module('relational_fields', {
                 if (args.method === 'name_search') {
                     assert.deepEqual(args.kwargs.args, [['id', '<', 50], ['id', 'not in', [12]]],
                         "domain sent to name_search should be correct");
-                    return $.when([[14, 'silver']]);
+                    return concurrency.when([[14, 'silver']]);
                 }
                 return this._super.apply(this, arguments);
             }
@@ -9641,7 +9641,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
                     domain = [['id', 'in', [10]]];
-                    return $.when({
+                    return concurrency.when({
                         value: {
                             trululu: false,
                         },
@@ -9901,7 +9901,7 @@ QUnit.module('relational_fields', {
             mockRPC: function (route, args) {
                 if (args.method === 'get_formview_action') {
                     assert.deepEqual(args.args[0], [37], "should call get_formview_action with correct id");
-                    return $.when({
+                    return concurrency.when({
                         res_id: 17,
                         type: 'ir.actions.act_window',
                         target: 'current',
@@ -9910,7 +9910,7 @@ QUnit.module('relational_fields', {
                 }
                 if (args.method === 'get_formview_id') {
                     assert.deepEqual(args.args[0], [37], "should call get_formview_id with correct id");
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 if (args.method === 'name_search') {
                     assert.strictEqual(args.model, 'partner_type',

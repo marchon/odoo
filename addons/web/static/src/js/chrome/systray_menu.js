@@ -1,6 +1,7 @@
 odoo.define('web.SystrayMenu', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var Widget = require('web.Widget');
 
 /**
@@ -16,7 +17,7 @@ var SystrayMenu = Widget.extend({
         this._super(parent);
         this.items = [];
         this.widgets = [];
-        this.load = $.Deferred();
+        this.load = concurrency.Deferred();
     },
     /**
      * @override
@@ -26,7 +27,7 @@ var SystrayMenu = Widget.extend({
         var self = this;
         self._super.apply(this, arguments);
         self._loadItems();
-        $.when.apply($, self.items).always(function () {
+        concurrency.when.apply(concurrency, self.items).always(function () {
             self.load.resolve();
         });
         return self.load;

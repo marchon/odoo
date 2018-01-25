@@ -1,6 +1,7 @@
 odoo.define('web.framework', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var crash_manager = require('web.crash_manager');
 var ajax = require('web.ajax');
@@ -147,7 +148,7 @@ core.action_registry.add("login", login);
 
 function logout() {
     redirect('/web/session/logout');
-    return $.Deferred();
+    return concurrency.Deferred();
 }
 core.action_registry.add("logout", logout);
 

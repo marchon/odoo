@@ -2,6 +2,7 @@ odoo.define('mail.many2manytags', function (require) {
 "use strict";
 
 var BasicModel = require('web.BasicModel');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var form_common = require('web.view_dialogs');
 var field_registry = require('web.field_registry');
@@ -42,7 +43,7 @@ BasicModel.include({
             var changes = {operation: 'DELETE', ids: _.pluck(invalidPartnerIds, 'id')};
             def = this._applyX2ManyChange(record, fieldName, changes);
         }
-        return $.when(def).then(function () {
+        return concurrency.when(def).then(function () {
             list = self._applyX2ManyOperations(self.localData[localID]);
             if (list.res_ids.length) {
                 def = self._rpc({
@@ -52,8 +53,8 @@ BasicModel.include({
                     context: record.getContext({fieldName: fieldName}),
                 });
             }
-            return $.when(def).then(function (names) {
-                return $.when({
+            return concurrency.when(def).then(function (names) {
+                return concurrency.when({
                     invalidPartnerIds: _.pluck(invalidPartnerIds, 'res_id'),
                     partnerNames: _.object(names),
                 });
@@ -86,7 +87,7 @@ var FieldMany2ManyTagsEmail = M2MTags.extend({
 
         // propose the user to correct invalid partners
         _.each(this.record.specialData[this.name].invalidPartnerIds, function (resID) {
-            var def = $.Deferred();
+            var def = concurrency.Deferred();
             popupDefs.push(def);
 
             var pop = new form_common.FormViewDialog(self, {
@@ -104,7 +105,7 @@ var FieldMany2ManyTagsEmail = M2MTags.extend({
                 def.resolve();
             });
         });
-        return $.when.apply($, popupDefs).then(function() {
+        return concurrency.when.apply(concurrency, popupDefs).then(function() {
             // All popups have been processed for the given ids
             // It is now time to set the final value with valid partners ids.
             validPartners = _.uniq(validPartners);
@@ -128,7 +129,7 @@ var FieldMany2ManyTagsEmail = M2MTags.extend({
      */
     _render: function () {
         var self = this;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var _super = this._super.bind(this);
         if (this.record.specialData[this.name].invalidPartnerIds.length) {
             def = this._checkEmailPopup();

@@ -1,6 +1,7 @@
 odoo.define('web.Apps', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var framework = require('web.framework');
 var session = require('web.session');
@@ -25,7 +26,7 @@ var Apps = Widget.extend({
         // return the client via a deferred, resolved or rejected depending if
         // the remote host is available or not.
         var check_client_available = function(client) {
-            var d = $.Deferred();
+            var d = concurrency.Deferred();
             var i = new Image();
             i.onerror = function() {
                 d.reject(client);
@@ -105,7 +106,7 @@ var Apps = Widget.extend({
 
     start: function() {
         var self = this;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         self.get_client().then(function(client) {
             self.client = client;
 

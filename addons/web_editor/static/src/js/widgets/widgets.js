@@ -2,6 +2,7 @@ odoo.define('web_editor.widget', function (require) {
 'use strict';
 
 var base = require('web_editor.base');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
 var Widget = require('web.Widget');
@@ -225,7 +226,7 @@ var ImageWidget = MediaWidget.extend({
      * @override
      */
     willStart: function () {
-        return $.when(
+        return concurrency.when(
             this._super.apply(this, arguments),
             this.search('', true)
         );
@@ -419,7 +420,7 @@ var ImageWidget = MediaWidget.extend({
                 return def;
             }
         });
-        $.when.apply($, imageDefs).then(function () {
+        concurrency.when.apply(concurrency, imageDefs).then(function () {
             _.delay(function () {
                 $divs.removeClass('o_image_loading');
             }, 400);
@@ -1130,7 +1131,7 @@ var MediaDialog = Dialog.extend({
             defs.push(this.videoDialog.appendTo(this.$("#editor-media-video")));
         }
 
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             self._setActive(self.imageDialog);
         });
     },
@@ -1408,7 +1409,7 @@ var LinkDialog = Dialog.extend({
             var $url = this.$('input[name="url"]');
             $url.closest('.form-group').addClass('has-error');
             $url.focus();
-            return $.Deferred().reject();
+            return concurrency.Deferred().reject();
         }
         this.data.text = data.label;
         this.data.url = data.url;

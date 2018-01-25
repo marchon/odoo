@@ -116,7 +116,7 @@ exports.PosModel = Backbone.Model.extend({
 
     connect_to_proxy: function(){
         var self = this;
-        var  done = new $.Deferred();
+        var  done = new concurrency.Deferred();
         this.barcode_reader.disconnect_from_proxy();
         this.chrome.loading_message(_t('Connecting to the PosBox'),0);
         this.chrome.loading_skip(function(){
@@ -445,7 +445,7 @@ exports.PosModel = Backbone.Model.extend({
     },  {
         label: 'fonts',
         loaded: function(){
-            var fonts_loaded = new $.Deferred();
+            var fonts_loaded = new concurrency.Deferred();
             // Waiting for fonts to be loaded to prevent receipt printing
             // from printing empty receipt while loading Inconsolata
             // ( The font used for the receipt )
@@ -464,7 +464,7 @@ exports.PosModel = Backbone.Model.extend({
         label: 'pictures',
         loaded: function(self){
             self.company_logo = new Image();
-            var  logo_loaded = new $.Deferred();
+            var  logo_loaded = new concurrency.Deferred();
             self.company_logo.onload = function(){
                 var img = self.company_logo;
                 var ratio = 1;
@@ -508,7 +508,7 @@ exports.PosModel = Backbone.Model.extend({
     // loads all the needed data on the sever. returns a deferred indicating when all the data has loaded.
     load_server_data: function(){
         var self = this;
-        var loaded = new $.Deferred();
+        var loaded = new concurrency.Deferred();
         var progress = 0;
         var progress_step = 1.0 / self.models.length;
         var tmp = {}; // this is used to share a temporary state between models loaders
@@ -551,7 +551,7 @@ exports.PosModel = Backbone.Model.extend({
 
                     rpc.query(params).then(function(result){
                         try{    // catching exceptions in model.loaded(...)
-                            $.when(model.loaded(self,result,tmp))
+                            concurrency.when(model.loaded(self,result,tmp))
                                 .then(function(){ load_model(index + 1); },
                                       function(err){ loaded.reject(err); });
                         }catch(err){
@@ -563,7 +563,7 @@ exports.PosModel = Backbone.Model.extend({
                     });
                 }else if( model.loaded ){
                     try{    // catching exceptions in model.loaded(...)
-                        $.when(model.loaded(self,tmp))
+                        concurrency.when(model.loaded(self,tmp))
                             .then(  function(){ load_model(index +1); },
                                     function(err){ loaded.reject(err); });
                     }catch(err){
@@ -588,7 +588,7 @@ exports.PosModel = Backbone.Model.extend({
     // updated partners, and fails if not
     load_new_partners: function(){
         var self = this;
-        var def  = new $.Deferred();
+        var def  = new concurrency.Deferred();
         var fields = _.find(this.models,function(model){ return model.model === 'res.partner'; }).fields;
         var domain = [['customer','=',true],['write_date','>',this.db.get_partner_write_date()]];
         rpc.query({
@@ -712,7 +712,7 @@ exports.PosModel = Backbone.Model.extend({
     },
 
     _convert_product_img_to_base64: function (product, url) {
-        var deferred = new $.Deferred();
+        var deferred = new concurrency.Deferred();
         var img = new Image();
 
         img.onload = function () {
@@ -766,7 +766,7 @@ exports.PosModel = Backbone.Model.extend({
         }
 
         // when all images are loaded in product.image_base64
-        return $.when.apply($, get_image_deferreds).then(function () {
+        return concurrency.when.apply(concurrency, get_image_deferreds).then(function () {
             var rendered_order_lines = "";
             var rendered_payment_lines = "";
             var order_total_with_tax = self.chrome.format_currency(0);
@@ -815,7 +815,7 @@ exports.PosModel = Backbone.Model.extend({
             this.db.add_order(order.export_as_JSON());
         }
 
-        var pushed = new $.Deferred();
+        var pushed = new concurrency.Deferred();
 
         this.flush_mutex.exec(function(){
             var flushed = self._flush_orders(self.db.get_orders(), opts);
@@ -839,7 +839,7 @@ exports.PosModel = Backbone.Model.extend({
 
     push_and_invoice_order: function(order){
         var self = this;
-        var invoiced = new $.Deferred();
+        var invoiced = new concurrency.Deferred();
 
         if(!order.get_client()){
             invoiced.reject({code:400, message:'Missing Customer', data:{}});
@@ -849,7 +849,7 @@ exports.PosModel = Backbone.Model.extend({
         var order_id = this.db.add_order(order.export_as_JSON());
 
         this.flush_mutex.exec(function(){
-            var done = new $.Deferred(); // holds the mutex
+            var done = new concurrency.Deferred(); // holds the mutex
 
             // send the order to the server
             // we have a 30 seconds timeout on this push.
@@ -915,7 +915,7 @@ exports.PosModel = Backbone.Model.extend({
     // server generated ids for the sent orders
     _save_to_server: function (orders, options) {
         if (!orders || !orders.length) {
-            var result = $.Deferred();
+            var result = concurrency.Deferred();
             result.resolve([]);
             return result;
         }

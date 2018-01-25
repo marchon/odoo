@@ -1,6 +1,7 @@
 odoo.define('web.calendar_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var CalendarView = require('web.CalendarView');
 var CalendarRenderer = require('web.CalendarRenderer');
 var Dialog = require('web.Dialog');
@@ -53,7 +54,7 @@ QUnit.module('Views', {
                     {id: 6, user_id: session.uid, partner_id: 1, name: "event 6", start: "2016-12-18 08:00:00", stop: "2016-12-18 09:00:00", allday: false, partner_ids: [3], type: 3}
                 ],
                 check_access_rights: function () {
-                    return $.when(true);
+                    return concurrency.when(true);
                 }
             },
             user: {
@@ -384,7 +385,7 @@ QUnit.module('Views', {
             },
             mockRPC: function (route, args) {
                 if (args.method === "create") {
-                    return $.Deferred().reject({
+                    return concurrency.Deferred().reject({
                         code: 200,
                         data: {},
                         message: "Odoo server error",
@@ -984,7 +985,7 @@ QUnit.module('Views', {
             },
             mockRPC: function (route, args) {
                 if (args.method === "get_formview_id") {
-                    return $.Deferred().resolve('A view');
+                    return concurrency.Deferred().resolve('A view');
                 }
                 return this._super(route, args);
             },
@@ -1117,7 +1118,7 @@ QUnit.module('Views', {
             },
             mockRPC: function (route, args) {
                 if (args.method === "get_formview_id") {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super(route, args);
             },
@@ -1609,7 +1610,7 @@ QUnit.module('Views', {
     QUnit.test('quickcreate avoid double event creation', function (assert) {
         assert.expect(1);
         var createCount = 0;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var calendar = createView({
             View: CalendarView,
             model: 'event',
@@ -1660,7 +1661,7 @@ QUnit.module('Views', {
     QUnit.test('create an event (async dialog) [REQUIRE FOCUS]', function (assert) {
         assert.expect(3);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         testUtils.patch(Dialog, {
             open: function () {
                 var _super = this._super.bind(this);

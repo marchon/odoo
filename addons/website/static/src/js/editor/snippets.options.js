@@ -1,6 +1,7 @@
 odoo.define('website.snippets.options', function (require) {
 'use strict';
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
 var weWidgets = require('web_editor.widget');
@@ -74,7 +75,7 @@ options.registry.company_data = options.Class.extend({
                 proto.__link = '/web#action=base.action_res_company_form&view_type=form&id=' + (res && res[0] && res[0].company_id[0] || 1);
             });
         }
-        return $.when(this._super.apply(this, arguments), def);
+        return concurrency.when(this._super.apply(this, arguments), def);
     },
     /**
      * When the users selects company data, opens a dialog to ask him if he

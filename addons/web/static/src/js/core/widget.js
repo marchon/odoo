@@ -120,7 +120,7 @@ var Widget = core.Class.extend(mixins.PropertiesMixin, ServicesMixin, {
             var defs = _.map(this.xmlDependencies, function (xmlPath) {
                 return ajax.loadXML(xmlPath, core.qweb);
             });
-            return concurrency.when.apply($, defs);
+            return concurrency.when.apply(concurrency, defs);
         }
         return concurrency.when();
     },

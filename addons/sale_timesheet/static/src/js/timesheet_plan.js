@@ -3,6 +3,7 @@ odoo.define('project_timesheet.project_plan', function (require) {
 
 var ajax = require('web.ajax');
 var ControlPanelMixin = require('web.ControlPanelMixin');
+var concurrency = require('web.concurrency');
 var Context = require('web.Context');
 var core = require('web.core');
 var data = require('web.data');
@@ -34,7 +35,7 @@ var PlanAction = Widget.extend(ControlPanelMixin, {
             .then(function (result) {
                 self.fields_view = result.search;
             });
-        return $.when(this._super(), def);
+        return concurrency.when(this._super(), def);
     },
     start: function(){
         var self = this;
@@ -66,7 +67,7 @@ var PlanAction = Widget.extend(ControlPanelMixin, {
             self.$searchview_buttons = self.searchview.$buttons.contents();
         });
 
-        return $.when(def1, def2).then(function(){
+        return concurrency.when(def1, def2).then(function(){
             self.searchview.do_search();
             self.update_cp();
         });

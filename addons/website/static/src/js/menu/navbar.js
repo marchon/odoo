@@ -164,7 +164,7 @@ var WebsiteNavbarActionWidget = Widget.extend({
     handleAction: function (actionName, params) {
         var action = this[this.actions[actionName]];
         if (action) {
-            return $.when(action.apply(this, params || []));
+            return concurrency.when(action.apply(this, params || []));
         }
         return null;
     },

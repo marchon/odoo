@@ -655,7 +655,7 @@ var BasicModel = AbstractModel.extend({
                 record.data[field.name] = field.value;
             }
         });
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             return record.id;
         });
     },
@@ -782,7 +782,7 @@ var BasicModel = AbstractModel.extend({
     resequence: function (modelName, resIDs, parentID, options) {
         options = options || {};
         if ((resIDs.length <= 1)) {
-            return $.when(parentID); // there is nothing to sort
+            return concurrency.when(parentID); // there is nothing to sort
         }
         var self = this;
         var data = this.localData[parentID];
@@ -876,7 +876,7 @@ var BasicModel = AbstractModel.extend({
                 });
             }
 
-            var def = $.Deferred();
+            var def = concurrency.Deferred();
             var changedFields = Object.keys(changes);
 
             if (options.savePoint) {
@@ -1001,7 +1001,7 @@ var BasicModel = AbstractModel.extend({
             // sort field is still unknown (i.e. on other pages for example)
             return this._fetchUngroupedList(list);
         }
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Toggle the active value of given records (to archive/unarchive them)
@@ -1041,7 +1041,7 @@ var BasicModel = AbstractModel.extend({
             group.res_ids = [];
             group.offset = 0;
             this._updateParentResIDs(group);
-            return $.when(groupId);
+            return concurrency.when(groupId);
         }
         if (!group.isOpen) {
             group.isOpen = true;
@@ -1051,7 +1051,7 @@ var BasicModel = AbstractModel.extend({
                     self._updateParentResIDs(group);
                 });
             }
-            return $.when(def).then(function () {
+            return concurrency.when(def).then(function () {
                 return groupId;
             });
         }
@@ -1171,10 +1171,10 @@ var BasicModel = AbstractModel.extend({
         }
 
         if (options.notifyChange === false) {
-            return $.Deferred().resolve(_.keys(changes));
+            return concurrency.Deferred().resolve(_.keys(changes));
         }
 
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             var onChangeFields = []; // the fields that have changed and that have an on_change
             for (var fieldName in changes) {
                 field = record.fields[fieldName];
@@ -1185,7 +1185,7 @@ var BasicModel = AbstractModel.extend({
                     }
                 }
             }
-            var onchangeDef = $.Deferred();
+            var onchangeDef = concurrency.Deferred();
             if (onChangeFields.length) {
                 self._performOnChange(record, onChangeFields, options.viewType)
                     .then(function (result) {
@@ -1198,7 +1198,7 @@ var BasicModel = AbstractModel.extend({
                         onchangeDef.resolve({});
                     });
             } else {
-                onchangeDef = $.Deferred().resolve(_.keys(changes));
+                onchangeDef = concurrency.Deferred().resolve(_.keys(changes));
             }
             return onchangeDef.then(function (fieldNames) {
                 _.each(fieldNames, function (name) {
@@ -1230,7 +1230,7 @@ var BasicModel = AbstractModel.extend({
         var self = this;
         if (!data || !data.id) {
             record._changes[fieldName] = false;
-            return $.when();
+            return concurrency.when();
         }
 
         // here, we check that the many2one really changed. If the res_id is the
@@ -1246,7 +1246,7 @@ var BasicModel = AbstractModel.extend({
         }
         var relatedRecord = this.localData[relatedID];
         if (relatedRecord && (data.id === this.localData[relatedID].res_id)) {
-            return $.when();
+            return concurrency.when();
         }
         var rel_data = _.pick(data, 'id', 'display_name');
         var field = record.fields[fieldName];
@@ -1267,7 +1267,7 @@ var BasicModel = AbstractModel.extend({
                     rel_data.display_name = result[0][1];
                 });
         }
-        return $.when(def).then(function () {
+        return concurrency.when(def).then(function () {
             var rec = self._makeDataPoint({
                 context: record.context,
                 data: rel_data,
@@ -1454,7 +1454,7 @@ var BasicModel = AbstractModel.extend({
                 }
             }
         });
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * When an operation is applied to a x2many field, the field widgets
@@ -1476,7 +1476,7 @@ var BasicModel = AbstractModel.extend({
             // there is no need to apply any change on the record (the changes
             // have probably been already applied and saved, usecase: many2many
             // edition in a dialog)
-            return $.when();
+            return concurrency.when();
         }
 
         var self = this;
@@ -1546,7 +1546,7 @@ var BasicModel = AbstractModel.extend({
                             list_records[record.id].data = record;
                             self._parseServerData(fieldNames, list, record);
                         });
-                        return $.when(
+                        return concurrency.when(
                             self._fetchX2ManysBatched(list),
                             self._fetchReferencesBatched(list)
                         );
@@ -1621,10 +1621,10 @@ var BasicModel = AbstractModel.extend({
                         }),
                     });
                 }
-                return $.when(addDef, removedDef);
+                return concurrency.when(addDef, removedDef);
         }
 
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             // ensure to fetch up to 'limit' records (may be useful if records of
             // the current page have been removed)
             return self._readUngroupedList(list).then(function () {
@@ -1858,7 +1858,7 @@ var BasicModel = AbstractModel.extend({
             })
             .then(function (result) {
                 if (result.length === 0) {
-                    return $.Deferred().reject();
+                    return concurrency.Deferred().reject();
                 }
                 result = result[0];
                 record.data = _.extend({}, record.data, result);
@@ -1867,7 +1867,7 @@ var BasicModel = AbstractModel.extend({
                 self._parseServerData(fieldNames, record, record.data);
             })
             .then(function () {
-                return $.when(
+                return concurrency.when(
                     self._fetchX2Manys(record, options),
                     self._fetchReferences(record)
                 ).then(function () {
@@ -1906,7 +1906,7 @@ var BasicModel = AbstractModel.extend({
                 });
             });
         }
-        return $.when(def);
+        return concurrency.when(def);
     },
     /**
      * Fetch the extra data (`name_get`) for the reference fields of the record
@@ -1931,7 +1931,7 @@ var BasicModel = AbstractModel.extend({
                 defs.push(def);
             }
         });
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * Batch requests for one reference field in list (one request by different
@@ -1998,7 +1998,7 @@ var BasicModel = AbstractModel.extend({
             defs.push(def);
         });
 
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * Batch requests for references for datapoint of type list.
@@ -2015,7 +2015,7 @@ var BasicModel = AbstractModel.extend({
                 defs.push(this._fetchReferenceBatched(list, fieldNames[i]));
             }
         }
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * This method is incorrectly named.  It should be named something like
@@ -2059,7 +2059,7 @@ var BasicModel = AbstractModel.extend({
             return [elem.record.model, JSON.stringify(elem.context)].join();
         });
 
-        return $.when.apply($, _.map(groups, this._fetchMany2OneGroup.bind(this)));
+        return concurrency.when.apply(concurrency, _.map(groups, this._fetchMany2OneGroup.bind(this)));
     },
     /**
      * Check the AbstractField specializations that are (will be) used by the
@@ -2078,7 +2078,7 @@ var BasicModel = AbstractModel.extend({
         var self = this;
         var specialFieldNames = [];
         var fieldNames = (options && options.fieldNames) || record.getFieldNames();
-        return $.when.apply($, _.map(fieldNames, function (name) {
+        return concurrency.when.apply(concurrency, _.map(fieldNames, function (name) {
             var viewType = (options && options.viewType) || record.viewType;
             var fieldInfo = record.fieldsInfo[viewType][name] || {};
             var Widget = fieldInfo.Widget;
@@ -2113,7 +2113,7 @@ var BasicModel = AbstractModel.extend({
     _fetchSpecialMany2ones: function (record, fieldName, fieldInfo, fieldsToRead) {
         var field = record.fields[fieldName];
         if (field.type !== "many2one") {
-            return $.when();
+            return concurrency.when();
         }
 
         var context = record.getContext({fieldName: fieldName});
@@ -2134,7 +2134,7 @@ var BasicModel = AbstractModel.extend({
             domain: domain,
         });
         if (!hasChanged) {
-            return $.when();
+            return concurrency.when();
         }
 
         var self = this;
@@ -2179,7 +2179,7 @@ var BasicModel = AbstractModel.extend({
     _fetchSpecialRelation: function (record, fieldName) {
         var field = record.fields[fieldName];
         if (!_.contains(["many2one", "many2many", "one2many"], field.type)) {
-            return $.when();
+            return concurrency.when();
         }
 
         var context = record.getContext({fieldName: fieldName});
@@ -2191,7 +2191,7 @@ var BasicModel = AbstractModel.extend({
             domain: domain,
         });
         if (!hasChanged) {
-            return $.when();
+            return concurrency.when();
         }
 
         return this._rpc({
@@ -2218,7 +2218,7 @@ var BasicModel = AbstractModel.extend({
             // needs to be fetched a posteriori
             def = this._fetchReference(record, fieldName);
         }
-        return $.when(def);
+        return concurrency.when(def);
     },
     /**
      * Fetches all the m2o records associated to the given fieldName. If the
@@ -2274,15 +2274,15 @@ var BasicModel = AbstractModel.extend({
             domainValue: domainValue,
         });
         if (!hasChanged) {
-            return $.when();
+            return concurrency.when();
         } else if (!domainModel) {
-            return $.when({
+            return concurrency.when({
                 model: domainModel,
                 nbRecords: 0,
             });
         }
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         this._rpc({
                 model: domainModel,
@@ -2318,7 +2318,7 @@ var BasicModel = AbstractModel.extend({
             def = this._searchReadUngroupedList(list);
         }
         return def.then(function () {
-            return $.when(
+            return concurrency.when(
                 self._fetchX2ManysBatched(list),
                 self._fetchReferencesBatched(list));
         }).then(function () {
@@ -2375,7 +2375,7 @@ var BasicModel = AbstractModel.extend({
                 record.data[fieldName] = list.id;
                 if (!fieldInfo.__no_fetch) {
                     var def = self._readUngroupedList(list).then(function (list) {
-                        return $.when(
+                        return concurrency.when(
                             self._fetchX2ManysBatched(list),
                             self._fetchReferencesBatched(list)
                         );
@@ -2384,7 +2384,7 @@ var BasicModel = AbstractModel.extend({
                 }
             }
         });
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * batch requests for 1 x2m in list
@@ -2432,7 +2432,7 @@ var BasicModel = AbstractModel.extend({
         });
 
         if (!ids.length || fieldInfo.__no_fetch) {
-            return $.when();
+            return concurrency.when();
         }
         var def;
         var fieldNames = _.keys(fieldInfo.relatedFields);
@@ -2448,7 +2448,7 @@ var BasicModel = AbstractModel.extend({
                 context: list.getContext() || {},
             });
         } else {
-            def = $.when(_.map(ids, function (id) {
+            def = concurrency.when(_.map(ids, function (id) {
                 return {id:id};
             }));
         }
@@ -2487,7 +2487,7 @@ var BasicModel = AbstractModel.extend({
                 defs.push(this._fetchX2ManyBatched(list, fieldNames[i]));
             }
         }
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * Generates an object mapping field names to their changed value in a given
@@ -3022,7 +3022,7 @@ var BasicModel = AbstractModel.extend({
     _load: function (dataPoint, options) {
         if (options && options.onlyGroups &&
           !(dataPoint.type === 'list' && dataPoint.groupedBy.length)) {
-            return $.when(dataPoint);
+            return concurrency.when(dataPoint);
         }
 
         if (dataPoint.type === 'record') {
@@ -3316,7 +3316,7 @@ var BasicModel = AbstractModel.extend({
                                     x2manyList._changes.push({operation: 'ADD', resID: res_id});
                                 });
                                 var def = self._readUngroupedList(x2manyList).then(function () {
-                                    return $.when(
+                                    return concurrency.when(
                                         self._fetchX2ManysBatched(x2manyList),
                                         self._fetchReferencesBatched(x2manyList)
                                     );
@@ -3333,9 +3333,9 @@ var BasicModel = AbstractModel.extend({
                         record._changes[name] = self._parseServerValue(field, result[name]);
                     }
                 });
-                return $.when.apply($, defs)
+                return concurrency.when.apply(concurrency, defs)
                     .then(function () {
-                        var def = $.Deferred();
+                        var def = concurrency.Deferred();
                         self._performOnChange(record, fields_key).always(function () {
                             if (record._warning) {
                                 if (params.allowWarning) {
@@ -3419,7 +3419,7 @@ var BasicModel = AbstractModel.extend({
         var self = this;
         var onchangeSpec = this._buildOnchangeSpecs(record, viewType);
         if (!onchangeSpec) {
-            return $.when();
+            return concurrency.when();
         }
         var idList = record.data.id ? [record.data.id] : [];
         var options = {
@@ -3498,7 +3498,7 @@ var BasicModel = AbstractModel.extend({
 
         defs.push(this._fetchSpecialData(record, options));
 
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             return record;
         });
     },
@@ -3538,7 +3538,7 @@ var BasicModel = AbstractModel.extend({
                 context: list.getContext(),
             });
         } else {
-            def = $.when(_.map(missingIDs, function (id) {
+            def = concurrency.when(_.map(missingIDs, function (id) {
                 return {id:id};
             }));
         }
@@ -3670,7 +3670,7 @@ var BasicModel = AbstractModel.extend({
                         defs.push(self._load(newGroup, options));
                     }
                 });
-                return $.when.apply($, defs).then(function () {
+                return concurrency.when.apply(concurrency, defs).then(function () {
                     // generate the res_ids of the main list, being the concatenation
                     // of the fetched res_ids in each group
                     list.res_ids = _.flatten(_.map(arguments, function (group) {
@@ -3689,7 +3689,7 @@ var BasicModel = AbstractModel.extend({
      */
     _readUngroupedList: function (list) {
         var self = this;
-        var def = $.when();
+        var def = concurrency.when();
 
         // generate the current count and res_ids list by applying the changes
         list = this._applyX2ManyOperations(list);

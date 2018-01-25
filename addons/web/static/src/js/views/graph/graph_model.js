@@ -6,6 +6,7 @@ odoo.define('web.GraphModel', function (require) {
  * server.  It basically just do a read_group and format/normalize data.
  */
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var AbstractModel = require('web.AbstractModel');
 
@@ -102,7 +103,7 @@ return AbstractModel.extend({
         }
         if ('mode' in params) {
             this.chart.mode = params.mode;
-            return $.when();
+            return concurrency.when();
         }
         return this._loadGraph();
     },

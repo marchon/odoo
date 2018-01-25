@@ -3,6 +3,7 @@ odoo.define('mrp.mrp_state', function (require) {
 
 var AbstractField = require('web.AbstractField');
 var basic_fields = require('web.basic_fields');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var field_registry = require('web.field_registry');
 var time = require('web.time');
@@ -177,7 +178,7 @@ var TimeCounter = AbstractField.extend({
                 });
             }
         });
-        return $.when(this._super.apply(this, arguments), def);
+        return concurrency.when(this._super.apply(this, arguments), def);
     },
 
     destroy: function () {

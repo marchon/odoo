@@ -126,7 +126,7 @@ var Query = Class.extend({
      * @returns {jQuery.Deferred<Number>}
      */
     count: function () {
-        if (this._count !== undefined) { return $.when(this._count); }
+        if (this._count !== undefined) { return concurrency.when(this._count); }
         return this._model.call(
             'search_count', [this._filter], {
                 context: this._model.context(this._context)});
@@ -369,7 +369,7 @@ var DataSet =  Class.extend(mixins.PropertiesMixin, {
      */
     read_ids: function (ids, fields, options) {
         if (_.isEmpty(ids))
-            return $.Deferred().resolve([]);
+            return concurrency.Deferred().resolve([]);
 
         options = options || {};
         var method = 'read';
@@ -426,7 +426,7 @@ var DataSet =  Class.extend(mixins.PropertiesMixin, {
     read_index: function (fields, options) {
         options = options || {};
         return this.read_ids([this.ids[this.index]], fields, options).then(function (records) {
-            if (_.isEmpty(records)) { return $.Deferred().reject().promise(); }
+            if (_.isEmpty(records)) { return concurrency.Deferred().reject().promise(); }
             return records[0];
         });
     },
@@ -641,7 +641,7 @@ var DataSetStatic =  DataSet.extend({
     unlink: function (ids) {
         this.set_ids(_.without.apply(null, [this.ids].concat(ids)));
         this.trigger('unlink', ids);
-        return $.Deferred().resolve({result: true});
+        return concurrency.Deferred().resolve({result: true});
     },
 });
 

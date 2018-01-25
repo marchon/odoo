@@ -70,7 +70,7 @@ var AbstractActivityField = AbstractField.extend({
                     args: [missing_ids],
                 });
         }
-        return $.when(fetch_def).then(function (results) {
+        return concurrency.when(fetch_def).then(function (results) {
             // convert create_date and date_deadline to moments
             _.each(results, function (activity) {
                 activity.create_date = moment(time.auto_str_to_date(activity.create_date));

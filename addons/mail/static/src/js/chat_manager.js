@@ -3,6 +3,7 @@ odoo.define('mail.chat_manager', function (require) {
 
 var bus = require('bus.bus').bus;
 var utils = require('mail.utils');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var Bus = require('web.Bus');
 var core = require('web.core');
@@ -453,7 +454,7 @@ function on_channel_notification (message) {
         channel_already_in_cache = !!chat_manager.get_channel(message.channel_ids[0]);
         def = chat_manager.join_channel(message.channel_ids[0], {autoswitch: false});
     } else {
-        def = $.when();
+        def = concurrency.when();
     }
     def.then(function () {
         // don't increment unread if channel wasn't in cache yet as its unread counter has just been fetched
@@ -754,7 +755,7 @@ var ChatManager =  Class.extend(Mixins.EventDispatcherMixin, ServicesMixin, {
                     });
                 });
         } else {
-            return $.when(loaded_msgs);
+            return concurrency.when(loaded_msgs);
         }
     },
 
@@ -846,7 +847,7 @@ var ChatManager =  Class.extend(Mixins.EventDispatcherMixin, ServicesMixin, {
             channel = this.get_channel(options.channel_id);
             var channel_cache = get_channel_cache(channel, options.domain);
             if (channel_cache.loaded) {
-                return $.when(channel_cache.messages);
+                return concurrency.when(channel_cache.messages);
             } else {
                 return this._fetchFromChannel(channel, {domain: options.domain});
             }
@@ -900,7 +901,7 @@ var ChatManager =  Class.extend(Mixins.EventDispatcherMixin, ServicesMixin, {
                     args: [ids],
                 });
         } else {
-            return $.when();
+            return concurrency.when();
         }
     },
     mark_all_as_read: function (channel, domain) {
@@ -911,7 +912,7 @@ var ChatManager =  Class.extend(Mixins.EventDispatcherMixin, ServicesMixin, {
                     kwargs: {channel_ids: channel.id !== "channel_inbox" ? [channel.id] : [], domain: domain},
                 });
         }
-        return $.when();
+        return concurrency.when();
     },
     undo_mark_as_read: function (message_ids, channel) {
         return this._rpc({
@@ -1049,7 +1050,7 @@ var ChatManager =  Class.extend(Mixins.EventDispatcherMixin, ServicesMixin, {
         var channel = this.get_channel(channel_id);
         if (channel) {
             // channel already joined
-            channel_defs[channel_id] = $.when(channel);
+            channel_defs[channel_id] = concurrency.when(channel);
         } else {
             channel_defs[channel_id] = this._rpc({
                     model: 'mail.channel',
@@ -1195,7 +1196,7 @@ var ChatManager =  Class.extend(Mixins.EventDispatcherMixin, ServicesMixin, {
                         shadow: true,
                     });
             } else {
-                channels_preview_def = $.when();
+                channels_preview_def = concurrency.when();
             }
         }
         return channels_preview_def.then(function (channels) {
@@ -1228,7 +1229,7 @@ var ChatManager =  Class.extend(Mixins.EventDispatcherMixin, ServicesMixin, {
     },
 
     search_partner: function (search_val, limit) {
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var values = [];
         // search among prefetched partners
         var search_regexp = new RegExp(_.str.escapeRegExp(utils.unaccent(search_val)), 'i');
@@ -1249,7 +1250,7 @@ var ChatManager =  Class.extend(Mixins.EventDispatcherMixin, ServicesMixin, {
                     shadow: true,
                 });
         } else {
-            def = $.when(values);
+            def = concurrency.when(values);
         }
         return def.then(function (values) {
             var autocomplete_data = _.map(values, function (value) {

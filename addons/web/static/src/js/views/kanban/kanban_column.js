@@ -1,6 +1,7 @@
 odoo.define('web.KanbanColumn', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
@@ -154,7 +155,7 @@ var KanbanColumn = Widget.extend({
             this.$('.o_kanban_load_more').html(QWeb.render('KanbanView.LoadMore', {widget: this}));
         }
 
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
 
     //--------------------------------------------------------------------------

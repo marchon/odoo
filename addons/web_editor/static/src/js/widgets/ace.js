@@ -2,6 +2,7 @@ odoo.define('web_editor.ace', function (require) {
 'use strict';
 
 var ajax = require('web.ajax');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
 var Widget = require('web.Widget');
@@ -178,7 +179,7 @@ var ViewEditor = Widget.extend({
      * @override
      */
     willStart: function () {
-        return $.when(
+        return concurrency.when(
             this._super.apply(this, arguments),
             ajax.loadLibs(this),
             this._loadResources()
@@ -504,7 +505,7 @@ var ViewEditor = Widget.extend({
      *                    error occured.
      */
     _saveLess: function (session) {
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var self = this;
         this._rpc({
@@ -556,14 +557,14 @@ var ViewEditor = Widget.extend({
                 }
             }
         }).bind(this));
-        if (errorFound) return $.Deferred().reject(errorFound);
+        if (errorFound) return concurrency.Deferred().reject(errorFound);
 
         var defs = [];
         _.each(toSave, (function (_toSave, type) {
             defs = defs.concat(_.map(_toSave, (type === 'xml' ? this._saveView : this._saveLess).bind(this)));
         }).bind(this));
 
-        return $.when.apply($, defs).fail((function (session, error) {
+        return concurrency.when.apply(concurrency, defs).fail((function (session, error) {
             Dialog.alert(this, '', {
                 title: _t("Server error"),
                 $content: $('<div/>').html(
@@ -583,7 +584,7 @@ var ViewEditor = Widget.extend({
      *                     error occured.
      */
     _saveView: function (session) {
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var self = this;
         this._rpc({

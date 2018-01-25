@@ -1,6 +1,7 @@
 odoo.define('web.action_manager_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var ControlPanelMixin = require('web.ControlPanelMixin');
 var core = require('web.core');
 var ReportClientAction = require('report.client_action');
@@ -248,7 +249,7 @@ QUnit.module('ActionManager', {
             mockRPC: function (route, args) {
                 var result = this._super.apply(this, arguments);
                 if (args.method === 'read') {
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
@@ -260,7 +261,7 @@ QUnit.module('ActionManager', {
         actionManager.doAction(3, {clear_breadcrumbs: true});
 
         // switch to the form view (this request is blocked)
-        def = $.Deferred();
+        def = concurrency.Deferred();
         actionManager.$('.o_list_view .o_data_row:first').click();
 
         // execute another action meanwhile (don't block this request)
@@ -443,7 +444,7 @@ QUnit.module('ActionManager', {
             mockRPC: function (route, args) {
                 if (args.method === 'read') {
                     // this is the rpc to load form view
-                    return $.Deferred().reject();
+                    return concurrency.Deferred().reject();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -837,7 +838,7 @@ QUnit.module('ActionManager', {
     QUnit.test('drop previous actions if possible', function (assert) {
         assert.expect(6);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var actionManager = createActionManager({
             actions: this.actions,
             archs: this.archs,
@@ -873,8 +874,8 @@ QUnit.module('ActionManager', {
     QUnit.test('handle switching view and switching back on slow network', function (assert) {
         assert.expect(8);
 
-        var def = $.Deferred();
-        var defs = [$.when(), def, $.when()];
+        var def = concurrency.Deferred();
+        var defs = [concurrency.when(), def, concurrency.when()];
 
         var actionManager = createActionManager({
             actions: this.actions,
@@ -922,7 +923,7 @@ QUnit.module('ActionManager', {
     QUnit.test('when an server action takes too much time...', function (assert) {
         assert.expect(1);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var actionManager = createActionManager({
             actions: this.actions,
@@ -950,7 +951,7 @@ QUnit.module('ActionManager', {
     QUnit.test('clicking quickly on breadcrumbs...', function (assert) {
         assert.expect(1);
 
-        var def = $.when();
+        var def = concurrency.when();
 
         var actionManager = createActionManager({
             actions: this.actions,
@@ -972,7 +973,7 @@ QUnit.module('ActionManager', {
 
         // now, the next read operations will be deferred (this is the read
         // operation for the form view reload)
-        def = $.Deferred();
+        def = concurrency.Deferred();
 
         // click on the breadcrumbs for the form view, then on the kanban view
         // before the form view is fully reloaded
@@ -1000,7 +1001,7 @@ QUnit.module('ActionManager', {
                 var result = this._super.apply(this, arguments);
                 assert.step(args.method || route);
                 if (route === '/web/dataset/search_read' && args.model === 'partner') {
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
@@ -1015,7 +1016,7 @@ QUnit.module('ActionManager', {
             "should display the form view of action 4");
 
         // click to go back to Kanban (this request is blocked)
-        def = $.Deferred();
+        def = concurrency.Deferred();
         $('.o_control_panel .breadcrumb a').click();
 
         assert.strictEqual(actionManager.$('.o_form_view').length, 1,
@@ -1064,7 +1065,7 @@ QUnit.module('ActionManager', {
         assert.expect(16);
 
         var self = this;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var actionManager = createActionManager({
             actions: this.actions,
             archs: this.archs,
@@ -1144,7 +1145,7 @@ QUnit.module('ActionManager', {
                 var result = this._super.apply(this, arguments);
                 assert.step(args.method || route);
                 if (args.method === 'read') {
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
@@ -1156,7 +1157,7 @@ QUnit.module('ActionManager', {
             "should display the list view of action 3");
 
         // switch to the form view (this request is blocked)
-        def = $.Deferred();
+        def = concurrency.Deferred();
         actionManager.$('.o_list_view .o_data_row:first').click();
 
         assert.strictEqual(actionManager.$('.o_list_view').length, 1,
@@ -1300,7 +1301,7 @@ QUnit.module('ActionManager', {
                 if (route === '/web/action/run') {
                     assert.strictEqual(args.action_id, 2,
                         "should call the correct server action");
-                    return $.when(1); // execute action 1
+                    return concurrency.when(1); // execute action 1
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1334,7 +1335,7 @@ QUnit.module('ActionManager', {
             mockRPC: function (route, args) {
                 assert.step(args.method || route);
                 if (route === '/report/check_wkhtmltopdf') {
-                    return $.when('ok');
+                    return concurrency.when('ok');
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1370,7 +1371,7 @@ QUnit.module('ActionManager', {
             mockRPC: function (route, args) {
                 assert.step(args.method || route);
                 if (route === '/report/check_wkhtmltopdf') {
-                    return $.when('upgrade');
+                    return concurrency.when('upgrade');
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1423,10 +1424,10 @@ QUnit.module('ActionManager', {
             mockRPC: function (route, args) {
                 assert.step(args.method || route);
                 if (route === '/report/check_wkhtmltopdf') {
-                    return $.when('broken');
+                    return concurrency.when('broken');
                 }
                 if (route === 'test: /report/html/some_report') {
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -1700,13 +1701,13 @@ QUnit.module('ActionManager', {
             data: this.data,
             mockRPC: function () {
                 var result = this._super.apply(this, arguments);
-                return $.when(def).then(_.constant(result));
+                return concurrency.when(def).then(_.constant(result));
             },
         });
         actionManager.doAction(3);
 
         // switch to kanban view
-        def = $.Deferred();
+        def = concurrency.Deferred();
         $('.o_control_panel .o_cp_switch_kanban').click();
         assert.strictEqual(actionManager.$('.o_list_view').length, 1,
             "should still display the list view");
@@ -1719,7 +1720,7 @@ QUnit.module('ActionManager', {
             "should now display the kanban view");
 
         // switch back to list view
-        def = $.Deferred();
+        def = concurrency.Deferred();
         $('.o_control_panel .o_cp_switch_list').click();
         assert.strictEqual(actionManager.$('.o_kanban_view').length, 1,
             "should still display the kanban view");
@@ -1732,7 +1733,7 @@ QUnit.module('ActionManager', {
             "should now display the list view");
 
         // open a record in form view
-        def = $.Deferred();
+        def = concurrency.Deferred();
         actionManager.$('.o_list_view .o_data_row:first').click();
         assert.strictEqual(actionManager.$('.o_list_view').length, 1,
             "should still display the list view");
@@ -1749,7 +1750,7 @@ QUnit.module('ActionManager', {
             "there should be two controllers in the breadcrumbs");
 
         // go back to list view using the breadcrumbs
-        def = $.Deferred();
+        def = concurrency.Deferred();
         $('.o_control_panel .breadcrumb a').click();
         assert.strictEqual(actionManager.$('.o_form_view').length, 1,
             "should still display the form view");
@@ -1851,7 +1852,7 @@ QUnit.module('ActionManager', {
                     }, "should call route with correct arguments");
                     var record = _.findWhere(self.data.partner.records, {id: args.args[0][0]});
                     record.foo = 'value changed';
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -2084,7 +2085,7 @@ QUnit.module('ActionManager', {
             mockRPC: function (route, args) {
                 assert.step(route);
                 if (args.method === "get_formview_id") {
-                    return $.when(false);
+                    return concurrency.when(false);
                 }
                 return this._super.apply(this, arguments);
             },

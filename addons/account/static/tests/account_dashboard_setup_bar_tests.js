@@ -1,6 +1,7 @@
 odoo.define('account.setup_bar_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var testUtils = require('web.test_utils');
 var view_registry = require('web.view_registry');
 
@@ -50,7 +51,7 @@ QUnit.test('setup bar basic rendering', function(assert) {
         mockRPC: function(route, args) {
             if (args.method === 'retrieve_account_dashboard_setup_bar') {
                 assert.ok(true, "should call /retrieve_account_dashboard_setup_bar");
-                return $.when(dashboard_data);
+                return concurrency.when(dashboard_data);
             }
             return this._super(route, args);
         },

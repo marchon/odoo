@@ -1,6 +1,7 @@
 odoo.define('web.pivot_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var Context = require('web.Context');
 var core = require('web.core');
 var PivotView = require('web.PivotView');
@@ -689,7 +690,7 @@ QUnit.module('Views', {
             mockRPC: function (route, args) {
                 var result = this._super.apply(this, arguments);
                 if (args.method === 'read_group') {
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
@@ -709,7 +710,7 @@ QUnit.module('Views', {
             "should have 6 rows now");
 
         // expand all
-        def = $.Deferred();
+        def = concurrency.Deferred();
         pivot.$buttons.find('.o_pivot_expand_button').click();
         def.resolve();
 

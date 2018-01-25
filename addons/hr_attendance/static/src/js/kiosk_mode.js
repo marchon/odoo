@@ -1,6 +1,7 @@
 odoo.define('hr_attendance.kiosk_mode', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Widget = require('web.Widget');
 var Session = require('web.session');
@@ -27,7 +28,7 @@ var KioskMode = Widget.extend({
                 self.$el.html(QWeb.render("HrAttendanceKioskMode", {widget: self}));
                 self.start_clock();
             });
-        return $.when(def, this._super.apply(this, arguments));
+        return concurrency.when(def, this._super.apply(this, arguments));
     },
 
     _onBarcodeScanned: function(barcode) {

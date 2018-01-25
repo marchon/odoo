@@ -1,6 +1,7 @@
 odoo.define('web_editor.web_editor_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var FormView = require('web.FormView');
 var testUtils = require('web.test_utils');
 var core = require('web.core');
@@ -110,7 +111,7 @@ QUnit.test('field html translatable', function (assert) {
         mockRPC: function (route, args) {
             if (route === '/web/dataset/call_button' && args.method === 'translate_fields') {
                 assert.deepEqual(args.args, ['mass.mailing',1,'body',{}], "should call 'call_button' route");
-                return $.when();
+                return concurrency.when();
             }
             return this._super.apply(this, arguments);
         },
@@ -147,7 +148,7 @@ QUnit.test('field html_frame widget', function (assert) {
                     "the route should specify the correct model");
                 assert.ok(route.search('res_id=1') > 0,
                     "the route should specify the correct id");
-                return $.when();
+                return concurrency.when();
             }
             return this._super.apply(this, arguments);
         },
@@ -212,7 +213,7 @@ QUnit.test('html_frame does not crash when saving in readonly', function (assert
                 // manually call the callback to simulate that the iframe has
                 // been loaded (note: just the content, not the editor)
                 window.odoo[$.deparam(route).callback + '_content'].call();
-                return $.when();
+                return concurrency.when();
             }
             return this._super.apply(this, arguments);
         },
@@ -249,7 +250,7 @@ QUnit.test('html_frame does not crash when saving in edit mode (editor not loade
                 // manually call the callback to simulate that the iframe has
                 // been partially loaded (just the content, not the editor)
                 window.odoo[$.deparam(route).callback + '_content']();
-                return $.when();
+                return concurrency.when();
             }
             return this._super.apply(this, arguments);
         },
@@ -269,8 +270,8 @@ QUnit.test('html_frame saving in edit mode (editor and content fully loaded)', f
     assert.expect(4);
 
     var editorBar = new web_editor.Class();
-    var loadDeferred = $.Deferred();
-    var writeDeferred = $.Deferred();
+    var loadDeferred = concurrency.Deferred();
+    var writeDeferred = concurrency.Deferred();
 
     var form = testUtils.createView({
         View: FormView,

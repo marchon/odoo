@@ -2,6 +2,7 @@ odoo.define('base_import.import', function (require) {
 "use strict";
 
 var ControlPanelMixin = require('web.ControlPanelMixin');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var session = require('web.session');
 var time = require('web.time');
@@ -117,7 +118,7 @@ var DataImport = Widget.extend(ControlPanelMixin, {
         this.setup_separator_picker();
         this.setup_float_format_picker();
 
-        return $.when(
+        return concurrency.when(
             this._super(),
             self.create_model().done(function (id) {
                 self.id = id;
@@ -478,7 +479,7 @@ var DataImport = Widget.extend(ControlPanelMixin, {
                 // "JSON-RPC error" to an import failure, and
                 // prevent default handling (warning dialog)
                 if (event) { event.preventDefault(); }
-                return $.when([{
+                return concurrency.when([{
                     type: 'error',
                     record: false,
                     message: error.data.arguments && error.data.arguments[1] || error.message,

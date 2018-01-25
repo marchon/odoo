@@ -112,7 +112,7 @@ var AbstractWebClient = Widget.extend(mixins.ServiceProvider, {
         return session.is_bound
             .then(function () {
                 self.bind_events();
-                return $.when(
+                return concurrency.when(
                     self.set_action_manager(),
                     self.set_notification_manager(),
                     self.set_loading()
@@ -123,7 +123,7 @@ var AbstractWebClient = Widget.extend(mixins.ServiceProvider, {
                 } else {
                     // database manager needs the webclient to keep going even
                     // though it has no valid session
-                    return $.when();
+                    return concurrency.when();
                 }
             }).then(function () {
                 // Listen to 'scroll' event and propagate it on main bus

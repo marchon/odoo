@@ -13,8 +13,8 @@ QUnit.module('core', {}, function () {
 
         var m = new concurrency.Mutex();
 
-        var def1 = $.Deferred(),
-            def2 = $.Deferred();
+        var def1 = concurrency.Deferred(),
+            def2 = concurrency.Deferred();
 
         var p1 = m.exec(function () { return def1; });
         var p2 = m.exec(function () { return def2; });
@@ -36,8 +36,8 @@ QUnit.module('core', {}, function () {
 
         var m = new concurrency.Mutex();
 
-        var def1 = $.Deferred(),
-            def2 = $.Deferred();
+        var def1 = concurrency.Deferred(),
+            def2 = concurrency.Deferred();
 
         var p1 = m.exec(function() { return def1; });
         var p2 = m.exec(function() { return def2; });
@@ -59,9 +59,9 @@ QUnit.module('core', {}, function () {
 
         var m = new concurrency.Mutex();
 
-        var def1 = $.Deferred(),
-            def2 = $.Deferred(),
-            def3 = $.Deferred();
+        var def1 = concurrency.Deferred(),
+            def2 = concurrency.Deferred(),
+            def3 = concurrency.Deferred();
 
         var p1 = m.exec(function() {return def1;});
         var p2 = m.exec(function() {return def2;});
@@ -93,13 +93,13 @@ QUnit.module('core', {}, function () {
         var dm = new concurrency.DropMisordered(),
             flag = false;
 
-        var d1 = $.Deferred(),
-            d2 = $.Deferred();
+        var d1 = concurrency.Deferred(),
+            d2 = concurrency.Deferred();
 
         var r1 = dm.add(d1),
             r2 = dm.add(d2);
 
-        $.when(r1, r2).done(function () {
+        concurrency.when(r1, r2).done(function () {
             flag = true;
         });
 
@@ -118,8 +118,8 @@ QUnit.module('core', {}, function () {
             fail1 = false,
             fail2 = false;
 
-        var d1 = $.Deferred(),
-            d2 = $.Deferred();
+        var d1 = concurrency.Deferred(),
+            d2 = concurrency.Deferred();
 
         dm.add(d1).done(function () { done1 = true; })
                     .fail(function () { fail1 = true; });
@@ -147,8 +147,8 @@ QUnit.module('core', {}, function () {
             fail1 = false,
             fail2 = false;
 
-        var d1 = $.Deferred(),
-            d2 = $.Deferred();
+        var d1 = concurrency.Deferred(),
+            d2 = concurrency.Deferred();
 
         dm.add(d1).done(function () { done1 = true; })
                     .fail(function () { fail1 = true; });
@@ -174,8 +174,8 @@ QUnit.module('core', {}, function () {
 
         var dm = new concurrency.DropMisordered();
 
-        var d1 = $.Deferred(),
-            d2 = $.Deferred();
+        var d1 = concurrency.Deferred(),
+            d2 = concurrency.Deferred();
 
         var r1 = dm.add(d1),
             r2 = dm.add(d2);
@@ -183,7 +183,7 @@ QUnit.module('core', {}, function () {
         setTimeout(function () { d1.resolve(); }, 10);
         setTimeout(function () { d2.resolve(); }, 20);
 
-        $.when(r1, r2).done(function () {
+        concurrency.when(r1, r2).done(function () {
             assert.ok(true);
             done();
         });
@@ -197,8 +197,8 @@ QUnit.module('core', {}, function () {
             done1 = false, done2 = false,
             fail1 = false, fail2 = false;
 
-        var d1 = $.Deferred(), 
-            d2 = $.Deferred();
+        var d1 = concurrency.Deferred(), 
+            d2 = concurrency.Deferred();
         
         dm.add(d1).done(function () { done1 = true; })
                     .fail(function () { fail1 = true; });
@@ -228,8 +228,8 @@ QUnit.module('core', {}, function () {
             done1 = false, done2 = false,
             fail1 = false, fail2 = false;
 
-        var d1 = $.Deferred(),
-            d2 = $.Deferred();
+        var d1 = concurrency.Deferred(),
+            d2 = concurrency.Deferred();
 
         dm.add(d1).done(function () { done1 = true; })
                     .fail(function () { fail1 = true; });

@@ -17,6 +17,7 @@ odoo.define('web.PivotModel', function (require) {
  */
 
 var AbstractModel = require('web.AbstractModel');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var session = require('web.session');
 var utils = require('web.utils');
@@ -325,7 +326,7 @@ var PivotModel = AbstractModel.extend({
             this.data.measures = _.without(this.data.measures, field);
             // in this case, we already have all data in memory, no need to
             // actually reload a lesser amount of information
-            return $.when();
+            return concurrency.when();
         } else {
             this.data.measures.push(field);
         }

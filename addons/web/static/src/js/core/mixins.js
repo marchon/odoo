@@ -2,6 +2,7 @@ odoo.define('web.mixins', function (require) {
 "use strict";
 
 var Class = require('web.Class');
+var concurrency = require('web.concurrency');
 var utils = require('web.utils');
 var AbstractService = require('web.AbstractService');
 
@@ -63,21 +64,21 @@ var ParentedMixin = {
      * Utility method to only execute asynchronous actions if the current
      * object has not been destroyed.
      *
-     * @param {$.Deferred} promise The promise representing the asynchronous
+     * @param {concurrency.Deferred} promise The promise representing the asynchronous
      *                             action.
      * @param {bool} [reject=false] If true, the returned promise will be
      *                              rejected with no arguments if the current
      *                              object is destroyed. If false, the
      *                              returned promise will never be resolved
      *                              or rejected.
-     * @returns {$.Deferred} A promise that will mirror the given promise if
+     * @returns {concurrency.Deferred} A promise that will mirror the given promise if
      *                       everything goes fine but will either be rejected
      *                       with no arguments or never resolved if the
      *                       current object is destroyed.
      */
     alive: function (promise, reject) {
         var self = this;
-        return $.Deferred(function (def) {
+        return concurrency.Deferred(function (def) {
             promise.then(function () {
                 if (!self.isDestroyed()) {
                     def.resolve.apply(def, arguments);
@@ -440,6 +441,7 @@ return {
 odoo.define('web.ServicesMixin', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var rpc = require('web.rpc');
 
 /**
@@ -471,7 +473,7 @@ var ServicesMixin = {
     _rpc: function (params, options) {
         var query = rpc.buildQuery(params);
         var def = this.call('ajax', 'rpc', query.route, query.params, options);
-        return def ? def.promise() : $.Deferred().promise();
+        return def ? def.promise() : concurrency.Deferred().promise();
     },
     loadFieldView: function (dataset, view_id, view_type, options) {
         return this.loadViews(dataset.model, dataset.get_context().eval(), [[view_id, view_type]], options).then(function (result) {
@@ -479,7 +481,7 @@ var ServicesMixin = {
         });
     },
     loadViews: function (modelName, context, views, options) {
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         this.trigger_up('load_views', {
             modelName: modelName,
             context: context,
@@ -490,7 +492,7 @@ var ServicesMixin = {
         return def;
     },
     loadFilters: function (dataset, action_id) {
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         this.trigger_up('load_filters', {
             dataset: dataset,
             action_id: action_id,
@@ -519,7 +521,7 @@ var ServicesMixin = {
      * @returns {Deferred}
      */
     do_action: function (action, options) {
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         this.trigger_up('do_action', {
             action: action,

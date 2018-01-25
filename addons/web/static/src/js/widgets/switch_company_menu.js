@@ -7,6 +7,7 @@ odoo.define('web.SwitchCompanyMenu', function(require) {
  * of this widget, by displaying a dropdown menu in the systray.
  */
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var session = require('web.session');
@@ -32,7 +33,7 @@ var SwitchCompanyMenu = Widget.extend({
      * @override
      */
     willStart: function () {
-        return session.user_companies ? this._super() : $.Deferred().reject();
+        return session.user_companies ? this._super() : concurrency.Deferred().reject();
     },
     /**
      * @override

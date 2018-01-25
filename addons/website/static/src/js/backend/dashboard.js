@@ -2,6 +2,7 @@ odoo.define('website.backend.dashboard', function (require) {
 'use strict';
 
 var ajax = require('web.ajax');
+var concurrency = require('web.concurrency');
 var ControlPanelMixin = require('web.ControlPanelMixin');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
@@ -42,7 +43,7 @@ var Dashboard = Widget.extend(ControlPanelMixin, {
 
     willStart: function() {
         var self = this;
-        return $.when(ajax.loadLibs(this), this._super()).then(function() {
+        return concurrency.when(ajax.loadLibs(this), this._super()).then(function() {
             return self.fetch_data();
         });
     },
@@ -236,7 +237,7 @@ var Dashboard = Widget.extend(ControlPanelMixin, {
         }
 
         var self = this;
-        $.when(this.fetch_data()).then(function() {
+        concurrency.when(this.fetch_data()).then(function() {
             self.$('.o_website_dashboard').empty();
             self.render_dashboards();
             self.render_graphs();

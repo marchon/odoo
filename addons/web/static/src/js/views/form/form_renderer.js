@@ -2,6 +2,7 @@ odoo.define('web.FormRenderer', function (require) {
 "use strict";
 
 var BasicRenderer = require('web.BasicRenderer');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var dom = require('web.dom');
@@ -791,7 +792,7 @@ var FormRenderer = BasicRenderer.extend({
         var $form = this._renderNode(this.arch).addClass(this.className);
         delete this.defs;
 
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             self._updateView($form.contents());
         }, function () {
             $form.remove();

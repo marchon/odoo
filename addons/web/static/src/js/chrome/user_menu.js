@@ -9,6 +9,7 @@ odoo.define('web.UserMenu', function (require) {
  * editing its preferences, accessing the documentation, logging out...
  */
 
+var concurrency = require('web.concurrency');
 var framework = require('web.framework');
 var Widget = require('web.Widget');
 
@@ -32,7 +33,7 @@ var UserMenu = Widget.extend({
             var $avatar = self.$('.oe_topbar_avatar');
             if (!session.uid) {
                 $avatar.attr('src', $avatar.data('default-src'));
-                return $.when();
+                return concurrency.when();
             }
             var topbar_name = session.name;
             if (session.debug) {

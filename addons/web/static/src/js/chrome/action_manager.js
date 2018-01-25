@@ -70,7 +70,7 @@ var ActionManager = Widget.extend({
         this.controlPanel = new ControlPanel(this);
         var def = this.controlPanel.insertBefore(this.$el);
 
-        return $.when(def, this._super.apply(this, arguments));
+        return concurrency.when(def, this._super.apply(this, arguments));
     },
     /**
      * Called each time the action manager is attached into the DOM.
@@ -116,7 +116,7 @@ var ActionManager = Widget.extend({
                 readonlyIfRealDiscard: true,
             });
         }
-        return $.when();
+        return concurrency.when();
     },
     /**
      * This is the entry point to execute Odoo actions, given as an ID in
@@ -170,7 +170,7 @@ var ActionManager = Widget.extend({
             });
         }
 
-        return this.dp.add($.when(def)).then(function () {
+        return this.dp.add(concurrency.when(def)).then(function () {
             action.jsID = _.uniqueId('action_');
             action.pushState = options.pushState;
 
@@ -232,7 +232,7 @@ var ActionManager = Widget.extend({
     loadState: function (state) {
         var action;
         if (!state.action) {
-            return $.when();
+            return concurrency.when();
         }
         if (_.isString(state.action) && core.action_registry.contains(state.action)) {
             action = {
@@ -440,7 +440,7 @@ var ActionManager = Widget.extend({
         var ClientAction = core.action_registry.get(action.tag);
         if (!ClientAction) {
             console.error("Could not find client action " + action.tag, action);
-            return $.Deferred().reject();
+            return concurrency.Deferred().reject();
         }
         if (!(ClientAction.prototype instanceof Widget)) {
             // the client action might be a function, which is executed and
@@ -449,7 +449,7 @@ var ActionManager = Widget.extend({
             if (next) {
                 return this.doAction(next, options);
             }
-            return $.when();
+            return concurrency.when();
         }
 
         var controllerID = _.uniqueId('controller_');
@@ -495,7 +495,7 @@ var ActionManager = Widget.extend({
             this.trigger_up('show_effect', action.effect);
         }
 
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Executes actions of type 'ir.actions.server'.
@@ -541,14 +541,14 @@ var ActionManager = Widget.extend({
 
         if (action.target === 'self') {
             framework.redirect(url);
-            return $.Deferred();
+            return concurrency.Deferred();
         } else {
             window.open(url, '_blank');
         }
 
         options.on_close();
 
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Returns a description of the current stack of controllers, used to render
@@ -646,7 +646,7 @@ var ActionManager = Widget.extend({
     _handleAction: function (action, options) {
         if (!action.type) {
             console.error("No type for action", action);
-            return $.Deferred().reject();
+            return concurrency.Deferred().reject();
         }
         switch (action.type) {
             case 'ir.actions.act_url':
@@ -660,7 +660,7 @@ var ActionManager = Widget.extend({
             default:
                 console.error("The ActionManager can't handle actions of type " +
                     action.type, action);
-                return $.Deferred().reject();
+                return concurrency.Deferred().reject();
         }
     },
     /**
@@ -748,7 +748,7 @@ var ActionManager = Widget.extend({
      * @returns {Deferred<Object>} resolved with the description of the action
      */
     _loadAction: function (actionID, context) {
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         this.trigger_up('load_action', {
             actionID: actionID,
             context: context,
@@ -803,8 +803,8 @@ var ActionManager = Widget.extend({
         if (action.on_reverse_breadcrumb) {
             def = action.on_reverse_breadcrumb();
         }
-        return $.when(def).then(function () {
-            return $.when(controller.widget.do_show()).then(function () {
+        return concurrency.when(def).then(function () {
+            return concurrency.when(controller.widget.do_show()).then(function () {
                 var index = _.indexOf(self.controllerStack, controllerID);
                 self._pushController(controller, {index: index});
             });

@@ -1,6 +1,7 @@
 odoo.define('website.content.lazy_template_call', function (require) {
 'use strict';
 
+var concurrency = require('web.concurrency');
 var Widget = require('web.Widget');
 var websiteRootData = require('website.WebsiteRoot');
 
@@ -17,7 +18,7 @@ var LazyTemplateRenderer = Widget.extend({
             return $(this).data('oe-call');
         }).get());
         if (!oeCalls.length) {
-            return $.when(this._super.apply(this, arguments));
+            return concurrency.when(this._super.apply(this, arguments));
         }
 
         var def = this._rpc({
@@ -34,7 +35,7 @@ var LazyTemplateRenderer = Widget.extend({
             });
         });
 
-        return $.when(this._super.apply(this, arguments), def);
+        return concurrency.when(this._super.apply(this, arguments), def);
     },
 });
 

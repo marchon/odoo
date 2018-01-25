@@ -1,6 +1,7 @@
 odoo.define('website.editMenu', function (require) {
 'use strict';
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var weContext = require('web_editor.context');
 var editor = require('web_editor.editor');
@@ -35,7 +36,7 @@ var EditPageMenu = websiteNavbarData.WebsiteNavbarActionWidget.extend({
 
         // If we auto start the editor, do not show a welcome message
         if (this._editorAutoStart) {
-            return $.when(def, this._startEditMode());
+            return concurrency.when(def, this._startEditMode());
         }
 
         // Check that the page is empty

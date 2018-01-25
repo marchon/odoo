@@ -13,6 +13,7 @@ odoo.define('web.test_utils', function (require) {
 var ActionManager = require('web.ActionManager');
 var ajax = require('web.ajax');
 var basic_fields = require('web.basic_fields');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var ControlPanel = require('web.ControlPanel');
 var core = require('web.core');
@@ -88,7 +89,7 @@ var createActionManager = function (params) {
     _.extend(params, {
         mockRPC: function (route, args) {
             if (args.model === 'ir.attachment') {
-                return $.when([]);
+                return concurrency.when([]);
             }
             if (mockRPC) {
                 return mockRPC.apply(this, arguments);
@@ -674,7 +675,7 @@ function unpatch(Klass) {
 // before starting the qunit test suite.
 // (session.js is in charge of loading the static xml bundle and we also have
 // to load xml files that are normally lazy loaded by specific widgets).
-return $.when(
+return concurrency.when(
     session.is_bound,
     ajax.loadXML('/web/static/src/xml/dialog.xml', core.qweb)
 ).then(function () {

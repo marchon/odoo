@@ -6,6 +6,7 @@ odoo.define('web.KanbanModel', function (require) {
  * moving a record from a group to another, resequencing records...
  */
 
+var concurrency = require('web.concurrency');
 var BasicModel = require('web.BasicModel');
 
 var KanbanModel = BasicModel.extend({
@@ -56,7 +57,7 @@ var KanbanModel = BasicModel.extend({
         var groupBy = parent.groupedBy[0];
         var groupByField = parent.fields[groupBy];
         if (!groupByField || groupByField.type !== 'many2one') {
-            return $.Deferred().reject(); // only supported when grouped on m2o
+            return concurrency.Deferred().reject(); // only supported when grouped on m2o
         }
         return this._rpc({
                 model: groupByField.relation,
@@ -289,7 +290,7 @@ var KanbanModel = BasicModel.extend({
                 context: list.context,
             },
         });
-        return $.when(groupsDef, progressBarDef).then(function (a, data) {
+        return concurrency.when(groupsDef, progressBarDef).then(function (a, data) {
             _.each(list.data, function (groupID) {
                 var group = self.localData[groupID];
                 group.progressBarValues = _.extend({
@@ -315,7 +316,7 @@ var KanbanModel = BasicModel.extend({
         var self = this;
         var groupedByField = list.fields[list.groupedBy[0].split(':')[0]];
         if (groupedByField.type !== 'many2one') {
-            return $.when();
+            return concurrency.when();
         }
         var groupIds = _.reduce(list.data, function (groupIds, id) {
             var res_id = self.get(id, {raw: true}).res_id;
@@ -344,7 +345,7 @@ var KanbanModel = BasicModel.extend({
                 });
             });
         }
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Reloads all progressbar data if the given id is a record's one. This is

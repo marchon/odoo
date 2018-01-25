@@ -1,6 +1,7 @@
 odoo.define("web.ModelFieldSelector", function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require("web.core");
 var Widget = require("web.Widget");
 
@@ -95,7 +96,7 @@ var ModelFieldSelector = Widget.extend({
      * @returns {Deferred}
      */
     willStart: function () {
-        return $.when(
+        return concurrency.when(
             this._super.apply(this, arguments),
             this._prefill()
         );
@@ -145,7 +146,7 @@ var ModelFieldSelector = Widget.extend({
      */
     setChain: function (chain) {
         if (_.isEqual(chain, this.chain)) {
-            return $.when();
+            return concurrency.when();
         }
 
         this.chain = chain;
@@ -273,7 +274,7 @@ var ModelFieldSelector = Widget.extend({
         this.pages = [];
         return this._pushPageData(this.model).then((function () {
             this._validate(true);
-            return (this.chain.length ? processChain.call(this, this.chain.slice().reverse()) : $.when());
+            return (this.chain.length ? processChain.call(this, this.chain.slice().reverse()) : concurrency.when());
         }).bind(this));
 
         function processChain(chain) {
@@ -281,11 +282,11 @@ var ModelFieldSelector = Widget.extend({
             if (field && field.relation && chain.length > 0) { // Fetch next chain node if any and possible
                 return this._pushPageData(field.relation).then(processChain.bind(this, chain));
             } else if (field && chain.length === 0) { // Last node fetched
-                return $.when();
+                return concurrency.when();
             } else { // Wrong node chain
                 this._validate(false);
             }
-            return $.when();
+            return concurrency.when();
         }
     },
     /**
@@ -299,7 +300,7 @@ var ModelFieldSelector = Widget.extend({
     _pushPageData: function (model) {
         var def;
         if (this.model === model && this.options.fields) {
-            def = $.when(sortFields(this.options.fields, model));
+            def = concurrency.when(sortFields(this.options.fields, model));
         } else {
             def = this._getModelFieldsFromCache(model, this.options.filters);
         }

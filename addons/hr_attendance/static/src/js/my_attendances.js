@@ -1,6 +1,7 @@
 odoo.define('hr_attendance.my_attendances', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Widget = require('web.Widget');
 
@@ -33,7 +34,7 @@ var MyAttendances = Widget.extend({
                 self.$el.html(QWeb.render("HrAttendanceMyMainMenu", {widget: self}));
             });
 
-        return $.when(def, this._super.apply(this, arguments));
+        return concurrency.when(def, this._super.apply(this, arguments));
     },
 
     update_attendance: function () {

@@ -4,6 +4,7 @@ odoo.define('mail.chat_client_action_mobile', function (require) {
 var ChatAction = require('mail.chat_client_action');
 var chat_manager = require('mail.chat_manager');
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var session = require('web.session');
@@ -173,7 +174,7 @@ ChatAction.include({
             var channels = _.where(chat_manager.get_channels(), {type: type});
             def = chat_manager.get_channels_preview(channels);
         }
-        return $.when(def).then(function (channelsPreview) {
+        return concurrency.when(def).then(function (channelsPreview) {
             // update content
             if (inInbox) {
                 if (!previouslyInInbox) {

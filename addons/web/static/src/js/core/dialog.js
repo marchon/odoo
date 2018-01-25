@@ -1,6 +1,7 @@
 odoo.define('web.Dialog', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var dom = require('web.dom');
 var Widget = require('web.Widget');
@@ -45,7 +46,7 @@ var Dialog = Widget.extend({
      */
     init: function (parent, options) {
         this._super(parent);
-        this._opened = $.Deferred();
+        this._opened = concurrency.Deferred();
 
         options = _.defaults(options || {}, {
             title: _t('Odoo'), subtitle: '',
@@ -123,7 +124,7 @@ var Dialog = Widget.extend({
                     def = buttonData.click.call(self, e);
                 }
                 if (buttonData.close) {
-                    $.when(def).always(self.close.bind(self));
+                    concurrency.when(def).always(self.close.bind(self));
                 }
             });
             self.$footer.append($button);

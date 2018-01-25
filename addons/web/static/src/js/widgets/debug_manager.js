@@ -3,6 +3,7 @@ odoo.define('web.DebugManager', function (require) {
 
 var ActionManager = require('web.ActionManager');
 var dialogs = require('web.view_dialogs');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
@@ -61,7 +62,7 @@ var DebugManager = Widget.extend({
         this._has_features = false;
         // whether the current user is an administrator
         this._is_admin = session.is_system;
-        return $.when(
+        return concurrency.when(
             this._rpc({
                     model: 'res.users',
                     method: 'check_access_rights',
@@ -159,7 +160,7 @@ var DebugManager = Widget.extend({
             .append(QWeb.render('WebClient.DebugManager.Global', {
                 manager: this,
             }));
-        return $.when();
+        return concurrency.when();
     },
     select_view: function () {
         var self = this;
@@ -318,7 +319,7 @@ DebugManager.include({
 DebugManager.include({
     start: function () {
         this._can_edit_views = false;
-        return $.when(
+        return concurrency.when(
             this._super(),
             this._rpc({
                     model: 'ir.ui.view',

@@ -5,6 +5,7 @@ require('web.dom_ready');
 var rpc = require('web.rpc');
 var Widget = require('web.Widget');
 var base = require('web_editor.base');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 
 var _t = core._t;
@@ -180,7 +181,7 @@ if (!$('.o_website_links_chart').length) {
                 });
         };
 
-        $.when(total_clicks(),
+        concurrency.when(total_clicks(),
                clicks_by_day(),
                clicks_by_country(),
                last_week_clicks_by_country(),

@@ -2,6 +2,7 @@ odoo.define('website_rating.thread', function(require) {
     'use strict';
 
     var ajax = require('web.ajax');
+    var concurrency = require('web.concurrency');
     var core = require('web.core');
     var Widget = require('web.Widget');
 
@@ -130,7 +131,7 @@ odoo.define('website_rating.thread', function(require) {
         //--------------------------------------------------------------------------
 
         _loadTemplates: function(){
-            return $.when(this._super(), ajax.loadXML('/website_rating/static/src/xml/website_mail.xml', qweb));
+            return concurrency.when(this._super(), ajax.loadXML('/website_rating/static/src/xml/website_mail.xml', qweb));
         },
         _messageFetchPrepareParams: function(){
             var params = this._super.apply(this, arguments);

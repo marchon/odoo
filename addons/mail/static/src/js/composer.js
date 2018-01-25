@@ -5,6 +5,7 @@ var chat_mixin = require('mail.chat_mixin');
 var DocumentViewer = require('mail.DocumentViewer');
 var utils = require('mail.utils');
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var data = require('web.data');
@@ -201,7 +202,7 @@ var MentionManager = Widget.extend({
 
         if (this.active_listener) {
             var mention_word = this.mention_word;
-            $.when(this.active_listener.fetch_callback(mention_word)).then(function (suggestions) {
+            concurrency.when(this.active_listener.fetch_callback(mention_word)).then(function (suggestions) {
                 if (mention_word === self.mention_word) {
                     // update suggestions only if mention_word didn't change in the meantime
                     self.set('mention_suggestions', suggestions);
@@ -467,7 +468,7 @@ var BasicComposer = Widget.extend(chat_mixin, {
         // prevent html space collapsing
         value = value.replace(/ /g, '&nbsp;').replace(/([^>])&nbsp;([^<])/g, '$1 $2');
         var commands = this.options.commands_enabled ? this.mention_manager.get_listener_selection('/') : [];
-        return $.when({
+        return concurrency.when({
             content: this.mention_manager.generate_links(value),
             attachment_ids: _.pluck(this.get('attachment_ids'), 'id'),
             partner_ids: _.uniq(_.pluck(this.mention_manager.get_listener_selection('@'), 'id')),
@@ -668,7 +669,7 @@ var BasicComposer = Widget.extend(chat_mixin, {
     mention_fetch_throttled: function (model, method, kwargs) {
         var self = this;
         // Delays the execution of the RPC to prevent unnecessary RPCs when the user is still typing
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         clearTimeout(this.mention_fetch_timer);
         this.mention_fetch_timer = setTimeout(function () {
             return self._rpc({model: model, method: method, kwargs: kwargs})
@@ -690,7 +691,7 @@ var BasicComposer = Widget.extend(chat_mixin, {
     },
     mention_fetch_partners: function (search) {
         var self = this;
-        return $.when(this.mention_prefetched_partners).then(function (prefetched_partners) {
+        return concurrency.when(this.mention_prefetched_partners).then(function (prefetched_partners) {
             // filter prefetched partners with the given search string
             var suggestions = [];
             var limit = self.options.mention_fetch_limit;
@@ -719,7 +720,7 @@ var BasicComposer = Widget.extend(chat_mixin, {
     },
     mention_get_canned_responses: function (search) {
         var self = this;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         clearTimeout(this.canned_timeout);
         this.canned_timeout = setTimeout(function() {
             var canned_responses = self._getCannedResponses();

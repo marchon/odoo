@@ -1,6 +1,7 @@
 odoo.define('calendar.tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var FormView = require('web.FormView');
 var testUtils = require("web.test_utils");
 
@@ -53,7 +54,7 @@ QUnit.module('calendar', {
                         "the partner ids should be passed as argument");
                     assert.strictEqual(args.args[1], 14,
                         "the event id should be passed as argument");
-                    return $.when([
+                    return concurrency.when([
                         [1, "Jesus", "accepted", 0],
                         [2, "Mahomet", "needsAction", 0],
                     ]);

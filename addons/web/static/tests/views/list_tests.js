@@ -1,6 +1,7 @@
 odoo.define('web.list_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var basicFields = require('web.basic_fields');
 var FormView = require('web.FormView');
@@ -799,7 +800,7 @@ QUnit.module('Views', {
             arch: '<tree><field name="foo"/></tree>',
             mockRPC: function (route) {
                 if (route === '/web/dataset/call_kw/ir.attachment/search_read') {
-                    return $.when([]);
+                    return concurrency.when([]);
                 }
                 assert.step(route);
                 return this._super.apply(this, arguments);
@@ -2153,8 +2154,8 @@ QUnit.module('Views', {
     QUnit.test('navigation with tab and read completes after default_get', function (assert) {
         assert.expect(8);
 
-        var defaultGetDef = $.Deferred();
-        var readDef = $.Deferred();
+        var defaultGetDef = concurrency.Deferred();
+        var readDef = concurrency.Deferred();
 
         var list = createView({
             View: ListView,
@@ -2808,7 +2809,7 @@ QUnit.module('Views', {
                         "should write the right field as sequence");
                     assert.deepEqual(args.ids, [4, 2 , 3],
                         "should write the sequence in correct order");
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -2861,7 +2862,7 @@ QUnit.module('Views', {
                         "should write the right field as sequence");
                     assert.deepEqual(args.ids, [4, 2, 3],
                         "should write the sequence in correct order");
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -2903,7 +2904,7 @@ QUnit.module('Views', {
     QUnit.test('editable list with handle widget with slow network', function (assert) {
         assert.expect(15);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
 
         var list = createView({
             View: ListView,
@@ -2921,7 +2922,7 @@ QUnit.module('Views', {
                         "should write the right field as sequence");
                     assert.deepEqual(args.ids, [4, 2, 3],
                         "should write the sequence in correct order");
-                    return $.when(def);
+                    return concurrency.when(def);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -2985,7 +2986,7 @@ QUnit.module('Views', {
             m2o: function () {},
         };
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var list = createView({
             View: ListView,
             model: 'foo',
@@ -2994,7 +2995,7 @@ QUnit.module('Views', {
             mockRPC: function (route, args) {
                 var result = this._super.apply(this, arguments);
                 if (args.method === 'onchange') {
-                    return $.when(def).then(_.constant(result));
+                    return concurrency.when(def).then(_.constant(result));
                 }
                 return result;
             },
@@ -3145,7 +3146,7 @@ QUnit.module('Views', {
                 // Override of the read_group to display the row even if there is no record in it,
                 // to mock the behavihour of some fields e.g stage_id on the sale order.
                 if (args.method === 'read_group' && args.kwargs.groupby[0] === "m2o") {
-                    return $.when([
+                    return concurrency.when([
                         {
                             id: 8,
                             m2o:[1,"Value 1"],

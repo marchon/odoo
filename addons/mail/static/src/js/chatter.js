@@ -85,7 +85,7 @@ var Chatter = Widget.extend(chat_mixin, {
 
         // start and append the widgets
         var fieldDefs = _.invoke(this.fields, 'appendTo', $('<div>'));
-        var def = this.dp.add($.when.apply($, fieldDefs));
+        var def = this.dp.add(concurrency.when.apply(concurrency, fieldDefs));
         this._render(def).then(this._updateMentionSuggestions.bind(this));
 
         return this._super.apply(this, arguments);
@@ -132,7 +132,7 @@ var Chatter = Widget.extend(chat_mixin, {
             fieldsToReset = this.fields;
         }
         var fieldDefs = _.invoke(fieldsToReset, 'reset', record);
-        var def = this.dp.add($.when.apply($, fieldDefs));
+        var def = this.dp.add(concurrency.when.apply(concurrency, fieldDefs));
         this._render(def).then(function () {
             self.$el.height('auto');
             self._updateMentionSuggestions();
@@ -320,7 +320,7 @@ var Chatter = Widget.extend(chat_mixin, {
     _onOpenComposerMessage: function () {
         var self = this;
         if (!this.suggested_partners_def) {
-            this.suggested_partners_def = $.Deferred();
+            this.suggested_partners_def = concurrency.Deferred();
             var method = 'message_get_suggested_recipients';
             var args = [[this.context.default_res_id], this.context];
             this._rpc({model: this.record.model, method: method, args: args})

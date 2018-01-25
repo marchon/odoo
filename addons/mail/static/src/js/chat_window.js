@@ -3,6 +3,7 @@ odoo.define('mail.ChatWindow', function (require) {
 
 var ChatThread = require('mail.ChatThread');
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var Widget = require('web.Widget');
@@ -67,7 +68,7 @@ return Widget.extend({
             this.$el.css('margin-right', $.position.scrollbarWidth());
         }
         var def = this.thread.replace(this.$('.o_chat_content'));
-        return $.when(this._super(), def);
+        return concurrency.when(this._super(), def);
     },
     render: function (messages) {
         this.update_unread(this.unread_msgs);

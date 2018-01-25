@@ -7,6 +7,7 @@ odoo.define('web.ActWindowActionManager', function (require) {
  */
 
 var ActionManager = require('web.ActionManager');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var Context = require('web.Context');
 var core = require('web.core');
@@ -186,7 +187,7 @@ ActionManager.include({
 
             var viewDescr = _.findWhere(action.views, {type: viewType});
             var view = new viewDescr.Widget(viewDescr.fieldsView, viewOptions);
-            var def = $.Deferred();
+            var def = concurrency.Deferred();
             action.controllers[viewType] = def;
             view.getController(this).then(function (widget) {
                 if (def.state() === 'rejected') {
@@ -210,7 +211,7 @@ ActionManager.include({
                 delete self.controllers[controllerID];
             });
         } else {
-            action.controllers[viewType] = $.Deferred().resolve(controller);
+            action.controllers[viewType] = concurrency.Deferred().resolve(controller);
         }
 
         return action.controllers[viewType];
@@ -269,13 +270,13 @@ ActionManager.include({
                     _.extend(action.env, self._processSearchData(action, searchData));
                 });
             }
-            return $.when(def).then(function () {
+            return concurrency.when(def).then(function () {
                 var defs = [];
                 defs.push(self._createViewController(action, firstView.type));
                 if (lazyLoadFirstView) {
                     defs.push(self._createViewController(action, views[0].type, {}, {lazy: true}));
                 }
-                return $.when.apply($, defs);
+                return concurrency.when.apply(concurrency, defs);
             }).then(function (controller, lazyLoadedController) {
                 action.controllerID = controller.jsID;
                 return self._executeAction(action, options).done(function () {
@@ -506,7 +507,7 @@ ActionManager.include({
                 if (action.on_reverse_breadcrumb) {
                     def = action.on_reverse_breadcrumb();
                 }
-                return $.when(def).then(function () {
+                return concurrency.when(def).then(function () {
                     return self._switchController(action, controller.viewType);
                 });
             });
@@ -627,7 +628,7 @@ ActionManager.include({
 
         // determine the action to execute according to the actionData
         if (actionData.special) {
-            def = $.when({type: 'ir.actions.act_window_close'});
+            def = concurrency.when({type: 'ir.actions.act_window_close'});
         } else if (actionData.type === 'object') {
             // call a Python Object method, which may return an action to execute
             var args = recordID ? [[recordID]] : [env.resIDs];

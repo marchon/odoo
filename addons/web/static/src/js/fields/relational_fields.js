@@ -178,7 +178,7 @@ var FieldMany2One = AbstractField.extend({
             this.isDirty = false;
         }
         if (this.isDirty) {
-            return $.when();
+            return concurrency.when();
         } else {
             return this._render();
         }
@@ -284,7 +284,7 @@ var FieldMany2One = AbstractField.extend({
      */
     _quickCreate: function (name) {
         var self = this;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var slowCreate = function () {
             var dialog = self._searchCreatePopup("form", false, self._createContext(name));
             dialog.on('closed', self, def.resolve.bind(def));
@@ -360,7 +360,7 @@ var FieldMany2One = AbstractField.extend({
      */
     _search: function (search_val) {
         var self = this;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         this.orderer.add(def);
 
         var context = this.record.getContext(this.recordParams);
@@ -773,7 +773,7 @@ var FieldX2Many = AbstractField.extend({
         if (!fieldChanged) {
            var newEval = this._evalColumnInvisibleFields();
            if (_.isEqual(this.currentColInvisibleFields, newEval)) {
-               return $.when();
+               return concurrency.when();
            }
         } else if (ev && ev.target === this && ev.data.changes && this.view.arch.tag === 'tree') {
             var command = ev.data.changes[this.name];
@@ -828,7 +828,7 @@ var FieldX2Many = AbstractField.extend({
             this.currentColInvisibleFields = this._evalColumnInvisibleFields();
             this.renderer.updateState(this.value, {'columnInvisibleFields': this.currentColInvisibleFields});
             this.pager.updateState({ size: this.value.count });
-            return $.when();
+            return concurrency.when();
         }
         var arch = this.view.arch;
         var viewType;
@@ -870,7 +870,7 @@ var FieldX2Many = AbstractField.extend({
      */
     _renderControlPanel: function () {
         if (!this.view) {
-            return $.when();
+            return concurrency.when();
         }
         var self = this;
         var defs = [];
@@ -893,7 +893,7 @@ var FieldX2Many = AbstractField.extend({
         this._renderButtons();
         defs.push(this.pager.appendTo($('<div>'))); // start the pager
         defs.push(this.control_panel.prependTo(this.$el));
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             self.control_panel.update({
                 cp_content: {
                     $buttons: self.$buttons,
@@ -930,7 +930,7 @@ var FieldX2Many = AbstractField.extend({
      *                     did not agree to discard.
      */
     _saveLine: function (recordID) {
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var fieldNames = this.renderer.canBeSaved(recordID);
         if (fieldNames.length) {
             this.trigger_up('discard_changes', {
@@ -1120,7 +1120,7 @@ var FieldX2Many = AbstractField.extend({
                 notifyChange: false,
             });
         });
-        $.when.apply($, defs).then(function () {
+        concurrency.when.apply(concurrency, defs).then(function () {
             // trigger only once the onchange for parent record
             self._setValue({
                 operation: 'UPDATE',

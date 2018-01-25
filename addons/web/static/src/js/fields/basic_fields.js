@@ -8,6 +8,7 @@ odoo.define('web.basic_fields', function (require) {
  */
 
 var AbstractField = require('web.AbstractField');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var crash_manager = require('web.crash_manager');
@@ -207,7 +208,7 @@ var InputField = DebouncedField.extend({
             this.isDirty = false;
         }
         if (this.isDirty || (event && event.target === this && event.data.changes[this.name] === this.value)) {
-            return $.when();
+            return concurrency.when();
         } else {
             return this._render();
         }
@@ -441,7 +442,7 @@ var FieldDate = InputField.extend({
                 self._replaceElement(self.datewidget.$el);
             });
         }
-        return $.when(def, this._super.apply(this, arguments));
+        return concurrency.when(def, this._super.apply(this, arguments));
     },
 
     //--------------------------------------------------------------------------
@@ -2254,7 +2255,7 @@ var FieldDomain = AbstractField.extend({
         // If there is no model, only change the non-domain-selector content
         if (!this._domainModel) {
             this._replaceContent();
-            return $.when();
+            return concurrency.when();
         }
 
         // Convert char value to array value

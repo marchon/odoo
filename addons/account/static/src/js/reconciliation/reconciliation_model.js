@@ -6,6 +6,7 @@ var field_utils = require('web.field_utils');
 var utils = require('web.utils');
 var session = require('web.session');
 var CrashManager = require('web.CrashManager');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var _t = core._t;
 
@@ -128,7 +129,7 @@ var StatementModel = BasicModel.extend({
         var line = this.getLine(handle);
         var prop = _.clone(_.find(line.mv_lines, {'id': mv_line_id}));
         this._addProposition(line, prop);
-        return $.when(this._computeLine(line), this._performMoveLine(handle));
+        return concurrency.when(this._computeLine(line), this._performMoveLine(handle));
     },
     /**
      * send information 'account.bank.statement.line' model to reconciliate
@@ -203,7 +204,7 @@ var StatementModel = BasicModel.extend({
         if (line.mode === 'create') {
             return this.createProposition(handle);
         }
-        return $.when();
+        return concurrency.when();
     },
     /**
      * call 'write' method on the 'account.bank.statement'
@@ -243,7 +244,7 @@ var StatementModel = BasicModel.extend({
         var line = this.getLine(handle);
         line.st_line.partner_id = partner && partner.id;
         line.st_line.partner_name = partner && partner.display_name || '';
-        return $.when(partner && this._changePartner(handle, partner.id))
+        return concurrency.when(partner && this._changePartner(handle, partner.id))
                 .then(function() {
                     line.reconciliation_proposition = [];
                     self._computeLine(line);
@@ -282,7 +283,7 @@ var StatementModel = BasicModel.extend({
         var prop = _.filter(line.reconciliation_proposition, '__focus');
         var last = prop[prop.length-1];
         if (last && !this._isValid(last)) {
-            return $.Deferred().reject();
+            return concurrency.Deferred().reject();
         }
 
         prop = this._formatQuickCreate(line);
@@ -350,7 +351,7 @@ var StatementModel = BasicModel.extend({
         var self = this;
         var statement_ids = context.statement_ids;
         if (!statement_ids) {
-            return $.when();
+            return concurrency.when();
         }
         this.context = context;
 
@@ -393,7 +394,7 @@ var StatementModel = BasicModel.extend({
             .then(function (accounts) {
                 self.accounts = _.object(_.pluck(accounts, 'id'), _.pluck(accounts, 'code'));
             });
-        return $.when(def_statement, def_reconcileModel, def_account).then(function () {
+        return concurrency.when(def_statement, def_reconcileModel, def_account).then(function () {
             _.each(self.lines, function (line) {
                 line.reconcileModels = self.reconcileModels;
             });
@@ -492,7 +493,7 @@ var StatementModel = BasicModel.extend({
                 return self.createProposition(handle);
             });
         } else if (line.mode === 'match') {
-            return $.when(def, self._performMoveLine(handle));
+            return concurrency.when(def, self._performMoveLine(handle));
         }
         return def;
     },
@@ -527,7 +528,7 @@ var StatementModel = BasicModel.extend({
         var props = _.filter(line.reconciliation_proposition, {'invalid': false});
         var prop = props[0];
         if (props.length !== 1 || Math.abs(line.st_line.amount) >= Math.abs(prop.amount)) {
-            return $.Deferred().reject();
+            return concurrency.Deferred().reject();
         }
         prop.partial_reconcile = !prop.partial_reconcile;
         if (!prop.partial_reconcile) {
@@ -677,7 +678,7 @@ var StatementModel = BasicModel.extend({
                 exception_type: _t("Incorrect Operation"),
                 message: _t("You cannot mix items from receivable and payable accounts.")
             }});
-            return $.when();
+            return concurrency.when();
         }
 
         line.reconciliation_proposition.push(prop);
@@ -797,7 +798,7 @@ var StatementModel = BasicModel.extend({
             }
         });
 
-        return $.when.apply($, tax_defs).then(function () {
+        return concurrency.when.apply(concurrency, tax_defs).then(function () {
             _.each(reconciliation_proposition, function (prop) {
                 prop.__tax_to_recompute = false;
             });
@@ -900,7 +901,7 @@ var StatementModel = BasicModel.extend({
             }
             defs.push(self._computeLine(line));
         });
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * Format the server value then compute the line
@@ -1136,7 +1137,7 @@ var ManualModel = StatementModel.extend({
                             var defs = _.map(result, self._formatLine.bind(self, context.mode));
                             self.valuenow = 0;
                             self.valuemax = Object.keys(self.lines).length;
-                            return $.when.apply($, defs);
+                            return concurrency.when.apply(concurrency, defs);
                         });
                 case 'accounts':
                     return self._rpc({
@@ -1149,7 +1150,7 @@ var ManualModel = StatementModel.extend({
                             var defs = _.map(result, self._formatLine.bind(self, 'accounts'));
                             self.valuenow = 0;
                             self.valuemax = Object.keys(self.lines).length;
-                            return $.when.apply($, defs);
+                            return concurrency.when.apply(concurrency, defs);
                         });
                 default:
                     var partner_ids = context.partner_ids;
@@ -1170,7 +1171,7 @@ var ManualModel = StatementModel.extend({
                             defs = defs.concat(_.map(result.suppliers, self._formatLine.bind(self, 'suppliers')));
                             self.valuenow = 0;
                             self.valuemax = Object.keys(self.lines).length;
-                            return $.when.apply($, defs);
+                            return concurrency.when.apply(concurrency, defs);
                         });
             }
         });
@@ -1194,7 +1195,7 @@ var ManualModel = StatementModel.extend({
             });
         }
 
-        var def = $.when();
+        var def = concurrency.when();
         var process_reconciliations = [];
         var reconciled = [];
         _.each(handles, function (handle) {
@@ -1258,7 +1259,7 @@ var ManualModel = StatementModel.extend({
                     }
                 }));
             });
-            return $.when.apply($, defs).then(function() {
+            return concurrency.when.apply(concurrency, defs).then(function() {
                 if (account_ids.length) {
                     self._rpc({
                             model: 'account.account',

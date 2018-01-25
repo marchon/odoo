@@ -2,6 +2,7 @@ odoo.define('google_calendar.calendar_tests', function (require) {
 "use strict";
 
 var CalendarView = require('web.CalendarView');
+var concurrency = require('web.concurrency');
 var testUtils = require('web.test_utils');
 
 var createView = testUtils.createView;
@@ -31,7 +32,7 @@ QUnit.module('Google Calendar', {
                     {id: 6, user_id: 4, partner_id: 4, name: "event 2", start: "2016-12-18 08:00:00", stop: "2016-12-18 09:00:00", allday: false, partner_ids: [], type: 3}
                 ],
                 check_access_rights: function () {
-                    return $.when(true);
+                    return concurrency.when(true);
                 }
             },
             user: {
@@ -92,7 +93,7 @@ QUnit.module('Google Calendar', {
                     this.data['calendar.event'].records.push(
                         {id: 7, user_id: 4, partner_id: 4, name: "event from google calendar", start: "2016-12-28 15:55:05", stop: "2016-12-29 18:55:05", allday: false, partner_ids: [], type: 2}
                     );
-                    return $.when({status: 'need_refresh'});
+                    return concurrency.when({status: 'need_refresh'});
                 } else if (route === '/web/dataset/call_kw/calendar.event/search_read') {
                     assert.step(route);
                 }

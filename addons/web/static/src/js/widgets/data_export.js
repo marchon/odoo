@@ -1,6 +1,7 @@
 odoo.define('web.DataExport', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var crash_manager = require('web.crash_manager');
 var data = require('web.data');
@@ -226,7 +227,7 @@ var DataExport = Dialog.extend({
 
         waitFor.push(this._rpc({route: '/web/export/formats'}).then(do_setup_export_formats));
 
-        var got_fields = new $.Deferred();
+        var got_fields = new concurrency.Deferred();
         this.$import_compat_radios.change(function(e) {
             self.$('.o_field_tree_structure').remove();
 
@@ -267,7 +268,7 @@ var DataExport = Dialog.extend({
 
         waitFor.push(this.show_exports_list());
 
-        return $.when.apply($, waitFor);
+        return concurrency.when.apply(concurrency, waitFor);
 
         function do_setup_export_formats(formats) {
             var $fmts = self.$('.o_export_format');
@@ -291,7 +292,7 @@ var DataExport = Dialog.extend({
     show_exports_list: function() {
         if (this.$('.o_exported_lists_select').is(':hidden')) {
             this.$('.o_exported_lists').show();
-            return $.when();
+            return concurrency.when();
         }
 
         var self = this;

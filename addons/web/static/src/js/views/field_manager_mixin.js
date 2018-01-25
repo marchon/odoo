@@ -69,7 +69,7 @@ var FieldManagerMixin = {
      * @returns {Deferred}
      */
     _confirmChange: function (id, fields, event) {
-        return $.when();
+        return concurrency.when();
     },
     /**
      * This method will be called whenever a save has been triggered by a change
@@ -82,7 +82,7 @@ var FieldManagerMixin = {
      * @returns {Deferred}
      */
     _confirmSave: function (id) {
-        return $.when();
+        return concurrency.when();
     },
 
     //--------------------------------------------------------------------------

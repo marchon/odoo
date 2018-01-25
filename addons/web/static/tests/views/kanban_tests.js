@@ -1,6 +1,7 @@
 odoo.define('web.kanban_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var KanbanColumnProgressBar = require('web.KanbanColumnProgressBar');
 var KanbanRenderer = require('web.KanbanRenderer');
@@ -554,7 +555,7 @@ QUnit.module('Views', {
             groupBy: ['product_id'],
             mockRPC: function (route, args) {
                 if (args.method === 'name_create') {
-                    return $.Deferred().reject({
+                    return concurrency.Deferred().reject({
                         code: 200,
                         data: {},
                         message: "Odoo server error",
@@ -617,7 +618,7 @@ QUnit.module('Views', {
                         {__domain: [['product_id', '=', 3]], product_id_count: 0},
                         {__domain: [['product_id', '=', 5]], product_id_count: 0},
                     ];
-                    return $.when(result);
+                    return concurrency.when(result);
                 }
                 return this._super.apply(this, arguments);
             },
@@ -727,7 +728,7 @@ QUnit.module('Views', {
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/resequence') {
                     assert.ok(true, "should call resequence");
-                    return $.when(true);
+                    return concurrency.when(true);
                 }
                 return this._super(route, args);
             },
@@ -775,7 +776,7 @@ QUnit.module('Views', {
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/resequence') {
                     assert.ok(true, "should call resequence");
-                    return $.when(true);
+                    return concurrency.when(true);
                 }
                 if (args.model === 'partner' && args.method === 'write') {
                     assert.deepEqual(args.args[1], {state: 'def'});
@@ -817,7 +818,7 @@ QUnit.module('Views', {
                     '</kanban>',
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/resequence') {
-                    return $.when();
+                    return concurrency.when();
                 }
                 if (args.model === 'partner' && args.method === 'write') {
                     throw new Error('should not be draggable');
@@ -1126,7 +1127,7 @@ QUnit.module('Views', {
                     resequencedIDs = args.ids;
                     assert.strictEqual(_.reject(args.ids, _.isNumber).length, 0,
                         "column resequenced should be existing records with IDs");
-                    return $.when(true);
+                    return concurrency.when(true);
                 }
                 if (args.method) {
                     assert.step(args.method);
@@ -1653,7 +1654,7 @@ QUnit.module('Views', {
             groupBy: ['product_id'],
             mockRPC: function (route) {
                 if (route === '/web/dataset/resequence') {
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -2067,7 +2068,7 @@ QUnit.module('Views', {
             mockRPC: function (route) {
                 if (route === '/web/dataset/resequence') {
                     nbResequence++;
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             },
@@ -2319,7 +2320,7 @@ QUnit.module('Views', {
             groupBy: ['int_field'],
             mockRPC: function (route, args) {
                 if (route === '/web/dataset/resequence') {
-                    return $.when(true);
+                    return concurrency.when(true);
                 }
                 return this._super(route, args);
             },

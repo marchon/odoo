@@ -280,6 +280,7 @@ return Widget.extend({
 odoo.define('web.FilterMenu', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var search_filters = require('web.search_filters');
 var search_inputs = require('web.search_inputs');
 var Widget = require('web.Widget');
@@ -337,7 +338,7 @@ return Widget.extend({
         if (this.custom_filters_open && !this.propositions.length) {
             def = this.append_proposition();
         }
-        $.when(def).then(function () {
+        concurrency.when(def).then(function () {
             self.$add_filter
                 .toggleClass('o_closed_menu', !self.custom_filters_open)
                 .toggleClass('o_open_menu', self.custom_filters_open);

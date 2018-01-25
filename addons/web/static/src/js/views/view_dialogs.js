@@ -1,6 +1,7 @@
 odoo.define('web.view_dialogs', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var data = require('web.data');
 var Dialog = require('web.Dialog');
@@ -159,7 +160,7 @@ var FormViewDialog = ViewDialog.extend({
         var FormView = view_registry.get('form');
         var fields_view_def;
         if (this.options.fields_view) {
-            fields_view_def = $.when(this.options.fields_view);
+            fields_view_def = concurrency.when(this.options.fields_view);
         } else {
             fields_view_def = this.loadFieldView(this.dataset, this.options.view_id, 'form');
         }
@@ -318,7 +319,7 @@ var SelectCreateDialog = ViewDialog.extend({
         var self = this;
         var fragment = document.createDocumentFragment();
 
-        var searchDef = $.Deferred();
+        var searchDef = concurrency.Deferred();
 
         // Set the dialog's header and its search view
         var $header = $('<div/>').addClass('o_modal_header').appendTo(fragment);
@@ -338,7 +339,7 @@ var SelectCreateDialog = ViewDialog.extend({
             searchDef.resolve(searchData);
         });
 
-        return $.when(searchDef).then(function (searchResult) {
+        return concurrency.when(searchDef).then(function (searchResult) {
             // Set the list view
             var listView = new ListView(fields_views.list, _.extend({
                 context: searchResult.context,

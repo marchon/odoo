@@ -1,6 +1,7 @@
 odoo.define('mail.systray_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var systray = require('mail.systray');
 var testUtils = require('web.test_utils');
 
@@ -56,7 +57,7 @@ QUnit.test('activity menu widget: menu with no records', function (assert) {
     testUtils.addMockEnvironment(activityMenu, {
         mockRPC: function (route, args) {
             if (args.method === 'activity_user_count') {
-                return $.when([]);
+                return concurrency.when([]);
             }
             return this._super(route, args);
             },
@@ -73,7 +74,7 @@ QUnit.test('activity menu widget: activity menu with 3 records', function (asser
     testUtils.addMockEnvironment(activityMenu, {
         mockRPC: function (route, args) {
             if (args.method === 'activity_user_count') {
-                return $.when(self.data['mail.activity.menu']['records']);
+                return concurrency.when(self.data['mail.activity.menu']['records']);
             }
             return this._super(route, args);
             },

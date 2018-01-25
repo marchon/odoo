@@ -1,6 +1,7 @@
 odoo.define('web.abstract_view_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var AbstractView = require('web.AbstractView');
 var ajax = require('web.ajax');
 var testUtils = require('web.test_utils');
@@ -24,7 +25,7 @@ QUnit.module('Views', {
         var done = assert.async();
         assert.expect(6);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var loadJS = ajax.loadJS;
         ajax.loadJS = function (url) {
             assert.step(url);
@@ -59,9 +60,9 @@ QUnit.module('Views', {
         assert.expect(10);
 
         var defs = {
-            a: $.Deferred(),
-            b: $.Deferred(),
-            c: $.Deferred(),
+            a: concurrency.Deferred(),
+            b: concurrency.Deferred(),
+            c: concurrency.Deferred(),
         };
         var loadJS = ajax.loadJS;
         ajax.loadJS = function (url) {

@@ -5,6 +5,7 @@ var Widget = require('web.Widget');
 var FieldManagerMixin = require('web.FieldManagerMixin');
 var relational_fields = require('web.relational_fields');
 var basic_fields = require('web.basic_fields');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var time = require('web.time');
 var qweb = core.qweb;
@@ -74,7 +75,7 @@ var StatementRenderer = Widget.extend(FieldManagerMixin, {
         }.bind(this);
         $('body').on('keyup', this.enterHandler);
 
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * @override
@@ -308,7 +309,7 @@ var LineRenderer = Widget.extend(FieldManagerMixin, {
             'toggle': 'popover'
         });
         var def2 = this._super.apply(this, arguments);
-        return $.when(def1, def2);
+        return concurrency.when(def1, def2);
     },
 
     //--------------------------------------------------------------------------
@@ -752,7 +753,7 @@ var ManualLineRenderer = LineRenderer.extend({
      */
     removeProposition: function (handle, id) {
         if (!id) {
-            return $.when();
+            return concurrency.when();
         }
         return this._super(handle, id);
     },
@@ -791,7 +792,7 @@ var ManualLineRenderer = LineRenderer.extend({
                 defs.push(def);
             }
 
-            return $.when.apply($, defs).then(function () {
+            return concurrency.when.apply(concurrency, defs).then(function () {
                 if (!self.fields.title_account_id) {
                     return self.fields.partner_id.prependTo(self.$('.accounting_view thead td:eq(1) span:first'));
                 } else {

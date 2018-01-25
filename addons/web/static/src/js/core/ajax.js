@@ -1,6 +1,7 @@
 odoo.define('web.ajax', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var utils = require('web.utils');
 var time = require('web.time');
@@ -19,13 +20,13 @@ function genericJsonRpc (fct_name, params, fct) {
             if (result.error.data.arguments[0] !== "bus.Bus not available in test mode") {
                 console.error("Server application error", JSON.stringify(result.error));
             }
-            return $.Deferred().reject("server", result.error);
+            return concurrency.Deferred().reject("server", result.error);
         } else {
             return result.result;
         }
     }, function() {
         //console.error("JsonRPC communication error", _.toArray(arguments));
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         return def.reject.apply(def, ["communication"].concat(_.toArray(arguments)));
     });
     // FIXME: jsonp?
@@ -84,7 +85,7 @@ function jsonpRpc(url, fct_name, params, settings) {
                 }
                 $form.remove();
             };
-            var deferred = $.Deferred();
+            var deferred = concurrency.Deferred();
             // the first bind is fired up when the iframe is added to the DOM
             $iframe.bind('load', function() {
                 // the second bind is fired up when the result of the form submission is received
@@ -162,7 +163,7 @@ var loadJS = (function () {
         var index = _.indexOf(urls, url);
         if (index < 0) {
             urls.push(url);
-            index = defs.push(alreadyRequired ? $.when() : $.Deferred()) - 1;
+            index = defs.push(alreadyRequired ? concurrency.when() : concurrency.Deferred()) - 1;
         }
 
         // Get the script associated deferred and returns it after initializing the script if needed. The
@@ -336,7 +337,7 @@ function post (controller_url, data) {
         };
     };
 
-    var Def = $.Deferred();
+    var Def = concurrency.Deferred();
     var postData = new FormData();
 
     $.each(data, function(i,val) {
@@ -382,7 +383,7 @@ var loadXML = (function () {
     // Some "static" variables associated to the loadXML function
     var isLoading = false;
     var loadingsData = [];
-    var allLoadingsDef = $.when();
+    var allLoadingsDef = concurrency.when();
     var seenURLs = [];
 
     return function (url, qweb) {
@@ -396,7 +397,7 @@ var loadXML = (function () {
         // associated deferred
         if (_.contains(seenURLs, url)) {
             var oldLoadingData = _.findWhere(loadingsData, {url: url});
-            return oldLoadingData ? oldLoadingData.def : $.when();
+            return oldLoadingData ? oldLoadingData.def : concurrency.when();
         }
         seenURLs.push(url);
 
@@ -405,14 +406,14 @@ var loadXML = (function () {
         var newLoadingData = {
             url: url,
             qweb: qweb,
-            def: $.Deferred(),
+            def: concurrency.Deferred(),
         };
         loadingsData.push(newLoadingData);
 
         // If not already started, start the loading loop (reinitialize the
         // "all the calls" deferred to an unresolved state)
         if (!isLoading) {
-            allLoadingsDef = $.Deferred();
+            allLoadingsDef = concurrency.Deferred();
             _load();
         }
 
@@ -460,11 +461,11 @@ var loadXML = (function () {
 function loadLibs (libs) {
     var defs = [];
     _.each(libs.jsLibs || [], function (urls) {
-        defs.push($.when.apply($, defs).then(function () {
+        defs.push(concurrency.when.apply(concurrency, defs).then(function () {
             if (typeof(urls) === 'string') {
                 return ajax.loadJS(urls);
             } else {
-                return $.when.apply($, _.map(urls, function (url) {
+                return concurrency.when.apply(concurrency, _.map(urls, function (url) {
                     return ajax.loadJS(url);
                 }));
             }
@@ -473,7 +474,7 @@ function loadLibs (libs) {
     _.each(libs.cssLibs || [], function (url) {
         defs.push(ajax.loadCSS(url));
     });
-    return $.when.apply($, defs);
+    return concurrency.when.apply(concurrency, defs);
 }
 
 var ajax = {

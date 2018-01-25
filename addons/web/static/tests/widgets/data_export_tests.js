@@ -1,6 +1,7 @@
 odoo.define('web.data_export_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var framework = require('web.framework');
 var ListView = require('web.ListView');
 var testUtils = require('web.test_utils');
@@ -57,13 +58,13 @@ QUnit.module('widgets', {
             },
             mockRPC: function (route) {
                 if (route === '/web/export/formats') {
-                    return $.when([
+                    return concurrency.when([
                         {tag: 'csv', label: 'CSV'},
                         {tag: 'xls', label: 'Excel'},
                     ]);
                 }
                 if (route === '/web/export/get_fields') {
-                    return $.when([
+                    return concurrency.when([
                         {
                             field_type: "one2many",
                             string: "Activities",
@@ -135,7 +136,7 @@ QUnit.module('widgets', {
 
         data.DataSet.prototype.create = function (data, options) {
             assert.step('create');
-            return $.when([]);
+            return concurrency.when([]);
         };
 
         var list = createView({
@@ -148,13 +149,13 @@ QUnit.module('widgets', {
             },
             mockRPC: function (route) {
                 if (route === '/web/export/formats') {
-                    return $.when([
+                    return concurrency.when([
                         {tag: 'csv', label: 'CSV'},
                         {tag: 'xls', label: 'Excel'},
                     ]);
                 }
                 if (route === '/web/export/get_fields') {
-                    return $.when([
+                    return concurrency.when([
                         {
                             field_type: "one2many",
                             string: "Activities",

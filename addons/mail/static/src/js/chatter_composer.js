@@ -2,6 +2,7 @@ odoo.define('mail.ChatterComposer', function (require) {
 "use strict";
 
 // var chat_manager = require('mail.chat_manager');
+var concurrency = require('web.concurrency');
 var composer = require('mail.composer');
 var utils = require('mail.utils');
 
@@ -42,7 +43,7 @@ var ChatterComposer = composer.BasicComposer.extend({
 
     preprocess_message: function () {
         var self = this;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         this._super().then(function (message) {
             message = _.extend(message, {
                 subtype: 'mail.mt_comment',
@@ -111,7 +112,7 @@ var ChatterComposer = composer.BasicComposer.extend({
      **/
     check_suggested_partners: function (checked_suggested_partners) {
         var self = this;
-        var check_done = $.Deferred();
+        var check_done = concurrency.Deferred();
 
         var recipients = _.filter(checked_suggested_partners, function (recipient) { return recipient.checked; });
         var recipients_to_find = _.filter(recipients, function (recipient) { return (! recipient.partner_id); });
@@ -133,13 +134,13 @@ var ChatterComposer = composer.BasicComposer.extend({
         }
 
         // for unknown names + incomplete partners -> open popup - cancel = remove from recipients
-        $.when(def).pipe(function (result) {
+        concurrency.when(def).pipe(function (result) {
             result = result || [];
             var emails_deferred = [];
             var recipient_popups = result.concat(recipients_to_check);
 
             _.each(recipient_popups, function (partner_info) {
-                var deferred = $.Deferred();
+                var deferred = concurrency.Deferred();
                 emails_deferred.push(deferred);
 
                 var partner_name = partner_info.full_name;
@@ -170,7 +171,7 @@ var ChatterComposer = composer.BasicComposer.extend({
                     });
                 });
             });
-            $.when.apply($, emails_deferred).then(function () {
+            concurrency.when.apply(concurrency, emails_deferred).then(function () {
                 var new_names_to_find = _.difference(names_to_find, names_to_remove);
                 var def;
                 if (new_names_to_find.length > 0) {
@@ -180,7 +181,7 @@ var ChatterComposer = composer.BasicComposer.extend({
                             args: [[self.context.default_res_id], new_names_to_find, true],
                         });
                 }
-                $.when(def).pipe(function (result) {
+                concurrency.when(def).pipe(function (result) {
                     result = result || [];
                     var recipient_popups = result.concat(recipients_to_check);
                     _.each(recipient_popups, function (partner_info) {
@@ -202,7 +203,7 @@ var ChatterComposer = composer.BasicComposer.extend({
         }
 
         var self = this;
-        var recipient_done = $.Deferred();
+        var recipient_done = concurrency.Deferred();
         if (this.options.is_log) {
             recipient_done.resolve([]);
         } else {

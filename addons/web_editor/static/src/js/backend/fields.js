@@ -3,6 +3,7 @@ odoo.define('web_editor.backend', function (require) {
 
 var AbstractField = require('web.AbstractField');
 var basic_fields = require('web.basic_fields');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var session = require('web.session');
@@ -76,7 +77,7 @@ var FieldTextHtmlSimple = basic_fields.DebouncedField.extend(TranslatableFieldMi
                 this._renderReadonly();
             }
         }
-        return $.when();
+        return concurrency.when();
     },
 
     //--------------------------------------------------------------------------
@@ -221,8 +222,8 @@ var FieldTextHtml = AbstractField.extend({
     start: function () {
         var self = this;
 
-        this.editorLoadedDeferred = $.Deferred();
-        this.contentLoadedDeferred = $.Deferred();
+        this.editorLoadedDeferred = concurrency.Deferred();
+        this.contentLoadedDeferred = concurrency.Deferred();
         this.callback = _.uniqueId('FieldTextHtml_');
         window.odoo[this.callback+"_editor"] = function (EditorBar) {
             setTimeout(function () {
@@ -403,7 +404,7 @@ var FieldTextHtml = AbstractField.extend({
         if (this.mode === 'readonly') {
             return;
         }
-        return $.when(this.contentLoadedDeferred, this.editorLoadedDeferred, result).then(function () {
+        return concurrency.when(this.contentLoadedDeferred, this.editorLoadedDeferred, result).then(function () {
             // switch to WYSIWYG mode if currently in code mode to get all changes
             if (config.debug && self.editor.rte) {
                 var layoutInfo = self.editor.rte.editable().data('layoutInfo');

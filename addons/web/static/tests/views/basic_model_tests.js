@@ -1,6 +1,7 @@
 odoo.define('web.basic_model_tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var BasicModel = require('web.BasicModel');
 var testUtils = require('web.test_utils');
 
@@ -742,7 +743,7 @@ QUnit.module('Views', {
             data: this.data,
             mockRPC: function (route, args) {
                 if (args.method === 'onchange') {
-                    return $.when({value: { product_id: false }});
+                    return concurrency.when({value: { product_id: false }});
                 }
                 return this._super(route, args);
             },
@@ -1640,7 +1641,7 @@ QUnit.module('Views', {
             data: this.data,
             mockRPC: function (route, args) {
                 if (args.method === 'default_get') {
-                    return $.when({
+                    return concurrency.when({
                         product_ids: [[0, 0, {"name": "xdroid"}]]
                     });
                 }
@@ -2109,7 +2110,7 @@ QUnit.module('Views', {
             mockRPC: function (route) {
                 if (route === '/web/dataset/search_read') {
                     // simulate randomn sort form the server
-                    return $.when({
+                    return concurrency.when({
                         length: 3,
                         records: [
                             {id: 12, display_name: "gold", date: "2017-01-25"},

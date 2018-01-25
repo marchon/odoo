@@ -1,6 +1,7 @@
 odoo.define('web.DataManager', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var fieldRegistry = require('web.field_registry');
@@ -106,12 +107,12 @@ return core.Class.extend({
                 _.each(views_descr, function (view_descr) {
                     var toolbar = options.toolbar && view_descr[1] !== 'search';
                     var fv_key = self._gen_key(model, view_descr[0], view_descr[1], toolbar, context);
-                    self._cache.fields_views[fv_key] = $.when(result.fields_views[view_descr[1]]);
+                    self._cache.fields_views[fv_key] = concurrency.when(result.fields_views[view_descr[1]]);
                 });
 
                 // Insert filters, if any, into the filters cache
                 if (result.filters) {
-                    self._cache.filters[filters_key] = $.when(result.filters);
+                    self._cache.filters[filters_key] = concurrency.when(result.filters);
                 }
 
                 return result.fields_views;

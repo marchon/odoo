@@ -8,6 +8,7 @@ odoo.define('web.BasicController', function (require) {
  */
 
 var AbstractController = require('web.AbstractController');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
 var FieldManagerMixin = require('web.FieldManagerMixin');
@@ -69,11 +70,11 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
      */
     canBeDiscarded: function (recordID) {
         if (!this.model.isDirty(recordID || this.handle)) {
-            return $.when(false);
+            return concurrency.when(false);
         }
 
         var message = _t("The record has been modified, your changes will be discarded. Do you want to proceed?");
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var dialog = Dialog.confirm(this, message, {
             title: _t("Warning"),
             confirm_callback: def.resolve.bind(def, true),
@@ -229,9 +230,9 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
      */
     _callButtonAction: function (attrs, record) {
         var self = this;
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var reload = function () {
-            return self.isDestroyed() ? $.when() : self.reload();
+            return self.isDestroyed() ? concurrency.when() : self.reload();
         };
         record = record || this.model.get(this.handle);
 
@@ -427,7 +428,7 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
             }
             return saveDef;
         } else {
-            return $.Deferred().reject(); // Cannot be saved
+            return concurrency.Deferred().reject(); // Cannot be saved
         }
     },
     /**
@@ -448,7 +449,7 @@ var BasicController = AbstractController.extend(FieldManagerMixin, {
                 core.bus.trigger('DOM_updated');
             });
         }
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Helper method, to get the current environment variables from the model

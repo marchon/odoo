@@ -13,6 +13,7 @@ odoo.define('web.BasicView', function (require) {
 var AbstractView = require('web.AbstractView');
 var BasicController = require('web.BasicController');
 var BasicModel = require('web.BasicModel');
+var concurrency = require('web.concurrency');
 
 var BasicView = AbstractView.extend({
     config: _.extend({}, AbstractView.prototype.config, {
@@ -129,7 +130,7 @@ var BasicView = AbstractView.extend({
                     }
                 });
             }
-            return $.when(def).then(function () {
+            return concurrency.when(def).then(function () {
                 return record.id;
             });
         }

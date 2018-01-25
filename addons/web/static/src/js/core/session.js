@@ -102,7 +102,7 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
             if (self.session_is_valid()) {
                 return deferred.then(function () { return self.load_modules(); });
             }
-            return $.when(
+            return concurrency.when(
                     deferred,
                     self.rpc('/web/webclient/bootstrap_translations', {mods: self.module_list})
                         .then(function (trans) {
@@ -123,7 +123,7 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
      */
     session_authenticate: function () {
         var self = this;
-        return $.when(this._session_authenticate.apply(this, arguments)).then(function () {
+        return concurrency.when(this._session_authenticate.apply(this, arguments)).then(function () {
             return self.load_modules();
         });
     },
@@ -135,7 +135,7 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
         var params = {db: db, login: login, password: password};
         return this.rpc("/web/session/authenticate", params).then(function (result) {
             if (!result.uid) {
-                return $.Deferred().reject();
+                return concurrency.Deferred().reject();
             }
             delete result.session_id;
             _.extend(self, result);
@@ -147,7 +147,7 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
     },
     user_has_group: function (group) {
         if (!this.uid) {
-            return $.when(false);
+            return concurrency.when(false);
         }
         var def = this._groups_def[group];
         if (!def) {
@@ -201,11 +201,11 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
         var to_load = _.difference(modules, self.module_list).join(',');
         this.module_list = all_modules;
 
-        var loaded = $.when(self.load_translations());
+        var loaded = concurrency.when(self.load_translations());
         var locale = "/web/webclient/locale/" + self.user_context.lang || 'en_US';
         var file_list = [ locale ];
         if(to_load.length) {
-            loaded = $.when(
+            loaded = concurrency.when(
                 loaded,
                 self.rpc('/web/webclient/csslist', {mods: to_load}).done(self.load_css.bind(self)),
                 self.load_qweb(to_load),
@@ -232,7 +232,7 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
     },
     load_js: function (files) {
         var self = this;
-        var d = $.Deferred();
+        var d = concurrency.Deferred();
         if (files.length !== 0) {
             var file = files.shift();
             var url = self.url(file, null);
@@ -290,14 +290,14 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
         var result = _.extend({}, window.odoo.session_info);
         delete result.session_id;
         _.extend(this, result);
-        return $.when();
+        return concurrency.when();
     },
     check_session_id: function () {
         var self = this;
         if (this.avoid_recursion)
-            return $.when();
+            return concurrency.when();
         if (this.session_id)
-            return $.when(); // we already have the session id
+            return concurrency.when(); // we already have the session id
         if (!this.use_cors && (this.override_session || ! this.origin_server)) {
             // If we don't use the origin server we consider we should always create a new session.
             // Even if some browsers could support cookies when using jsonp that behavior is
@@ -309,7 +309,7 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
                 self.avoid_recursion = false;
             });
         }
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Executes an RPC call, registering the provided callbacks.
@@ -373,7 +373,7 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
                     if (error.code === 100) {
                         self.uid = false;
                     }
-                    return $.Deferred().reject(error, $.Event());
+                    return concurrency.Deferred().reject(error, $.Event());
                 } else {
                     if (! shadow)
                         self.trigger('response_failed');
@@ -382,7 +382,7 @@ var Session = core.Class.extend(mixins.EventDispatcherMixin, {
                         message: "XmlHttpRequestError " + errorThrown,
                         data: {type: "xhr"+textStatus, debug: error.responseText, objects: [error, errorThrown] }
                     };
-                    return $.Deferred().reject(nerror, $.Event());
+                    return concurrency.Deferred().reject(nerror, $.Event());
                 }
             });
             return p.fail(function () { // Allow deferred user to disable rpc_error call in fail

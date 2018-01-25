@@ -1,6 +1,7 @@
 odoo.define('website_form.animation', function (require) {
 'use strict';
 
+    var concurrency = require('web.concurrency');
     var core = require('web.core');
     var time = require('web.time');
     var ajax = require('web.ajax');
@@ -17,7 +18,7 @@ odoo.define('website_form.animation', function (require) {
             if (!$.fn.datetimepicker) {
                 def = ajax.loadJS("/web/static/lib/bootstrap-datetimepicker/src/js/bootstrap-datetimepicker.js");
             }
-            return $.when(this._super.apply(this, arguments), def);
+            return concurrency.when(this._super.apply(this, arguments), def);
         },
 
         start: function () {

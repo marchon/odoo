@@ -1,6 +1,7 @@
 odoo.define('document.tests', function (require) {
     "use strict";
 
+    var concurrency = require('web.concurrency');
     var testUtils = require('web.test_utils');
     var FormView = require('web.FormView');
 
@@ -59,7 +60,7 @@ odoo.define('document.tests', function (require) {
                 viewOptions: {hasSidebar: true},
                 mockRPC: function (route, args) {
                     if (args.method === 'search_read' && args.model === 'ir.attachment') {
-                        return $.when(this.data['ir.attachment'].records);
+                        return concurrency.when(this.data['ir.attachment'].records);
                     }
                     if (route === '/web/dataset/call_kw/ir.attachment/unlink') {
                         assert.strictEqual(args.args[0], 1, "Should have correct id of the attachment to be deleted");

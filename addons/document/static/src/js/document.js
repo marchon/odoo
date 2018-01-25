@@ -1,6 +1,7 @@
 odoo.define('document.document', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
 var framework = require('web.framework');
@@ -105,7 +106,7 @@ Sidebar.include({
         var activeId = this.env.activeIds[0];
         if (!activeId) {
             this.items.files = [];
-            return $.when();
+            return concurrency.when();
         } else {
             var domain = [
                 ['res_model', '=', this.env.model],

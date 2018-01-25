@@ -7,6 +7,7 @@ odoo.define('web.AbstractRenderer', function (require) {
  *
  */
 
+var concurrency = require('web.concurrency');
 var Widget = require('web.Widget');
 
 /**
@@ -34,7 +35,7 @@ return Widget.extend({
      */
     start: function () {
         this.$el.addClass(this.arch.attrs.class);
-        return $.when(this._render(), this._super());
+        return concurrency.when(this._render(), this._super());
     },
 
     //--------------------------------------------------------------------------
@@ -81,7 +82,7 @@ return Widget.extend({
      */
     updateState: function (state, params) {
         this.state = state;
-        return params.noRender ? $.when() : this._render();
+        return params.noRender ? concurrency.when() : this._render();
     },
 
     //--------------------------------------------------------------------------
@@ -96,7 +97,7 @@ return Widget.extend({
      * @returns {Deferred}
      */
     _render: function () {
-        return $.when();
+        return concurrency.when();
     },
 });
 

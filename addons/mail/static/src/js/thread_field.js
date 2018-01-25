@@ -44,7 +44,7 @@ var ThreadField = AbstractField.extend(chat_mixin, {
         var def1 = this.thread.appendTo(this.$el);
         var def2 = this._super.apply(this, arguments);
 
-        return this.alive($.when(def1, def2)).then(function () {
+        return this.alive(concurrency.when(def1, def2)).then(function () {
             // unwrap the thread to remove an unnecessary level on div
             self.setElement(self.thread.$el);
 

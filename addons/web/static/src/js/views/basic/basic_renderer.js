@@ -8,6 +8,7 @@ odoo.define('web.BasicRenderer', function (require) {
  * and modifiers updates mechanism is also shared in the BasicRenderer.
  */
 var AbstractRenderer = require('web.AbstractRenderer');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var dom = require('web.dom');
@@ -65,7 +66,7 @@ var BasicRenderer = AbstractRenderer.extend({
         var defs = _.map(this.allFieldWidgets[recordID], function (widget) {
             return widget.commitChanges();
         });
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * Updates the internal state of the renderer to the new state. By default,
@@ -113,7 +114,7 @@ var BasicRenderer = AbstractRenderer.extend({
         // state before evaluation
         defs.push(this._updateAllModifiers(record));
 
-        return $.when.apply($, defs).then(function () {
+        return concurrency.when.apply(concurrency, defs).then(function () {
             return resetWidgets;
         });
     },
@@ -580,7 +581,7 @@ var BasicRenderer = AbstractRenderer.extend({
      * @returns {Deferred}
      */
     _renderView: function () {
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Instantiate custom widgets
@@ -672,7 +673,7 @@ var BasicRenderer = AbstractRenderer.extend({
         });
         delete this.defs;
 
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
 
     //--------------------------------------------------------------------------

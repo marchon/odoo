@@ -1,6 +1,7 @@
 odoo.define('web.search_inputs', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var Context = require('web.Context');
 var core = require('web.core');
 var Domain = require('web.Domain');
@@ -35,7 +36,7 @@ var Input = Widget.extend( /** @lends instance.web.search.Input# */{
      * @returns {jQuery.Deferred<null|Array>}
      */
     complete: function (value) {
-        return $.when(null);
+        return concurrency.when(null);
     },
     /**
      * Returns a Facet instance for the provided defaults if they apply to
@@ -51,7 +52,7 @@ var Input = Widget.extend( /** @lends instance.web.search.Input# */{
     facet_for_defaults: function (defaults) {
         if (!this.attrs ||
             !(this.attrs.name in defaults && defaults[this.attrs.name])) {
-            return $.when(null);
+            return concurrency.when(null);
         }
         return this.facet_for(defaults[this.attrs.name]);
     },
@@ -101,7 +102,7 @@ var Field = Input.extend( /** @lends instance.web.search.Field# */ {
         this.load_attrs(_.extend({}, field, view_section.attrs));
     },
     facet_for: function (value) {
-        return $.when({
+        return concurrency.when({
             field: this,
             category: this.attrs.string || this.attrs.name,
             values: [{label: String(value), value: value}]
@@ -189,12 +190,12 @@ var Field = Input.extend( /** @lends instance.web.search.Field# */ {
 var CharField = Field.extend( /** @lends instance.web.search.CharField# */ {
     default_operator: 'ilike',
     complete: function (value) {
-        if (_.isEmpty(value)) { return $.when(null); }
+        if (_.isEmpty(value)) { return concurrency.when(null); }
         var label = _.str.sprintf(_.str.escapeHTML(
             _t("Search %(field)s for: %(value)s")), {
                 field: '<em>' + _.escape(this.attrs.string) + '</em>',
                 value: '<strong>' + _.escape(value) + '</strong>'});
-        return $.when([{
+        return concurrency.when([{
             label: label,
             facet: {
                 category: this.attrs.string,
@@ -208,12 +209,12 @@ var CharField = Field.extend( /** @lends instance.web.search.CharField# */ {
 var NumberField = Field.extend(/** @lends instance.web.search.NumberField# */{
     complete: function (value) {
         var val = this.parse(value);
-        if (isNaN(val)) { return $.when(); }
+        if (isNaN(val)) { return concurrency.when(); }
         var label = _.str.sprintf(
             _t("Search %(field)s for: %(value)s"), {
                 field: '<em>' + _.escape(this.attrs.string) + '</em>',
                 value: '<strong>' + _.escape(value) + '</strong>'});
-        return $.when([{
+        return concurrency.when([{
             label: label,
             facet: {
                 category: this.attrs.string,
@@ -307,7 +308,7 @@ var SelectionField = Field.extend(/** @lends instance.web.search.SelectionField#
                     facet: facet_from(self, sel)
                 };
             }).value();
-        if (_.isEmpty(results)) { return $.when(null); }
+        if (_.isEmpty(results)) { return concurrency.when(null); }
         return $.when.call(null, [{
             label: _.escape(this.attrs.string)
         }].concat(results));
@@ -316,8 +317,8 @@ var SelectionField = Field.extend(/** @lends instance.web.search.SelectionField#
         var match = _(this.attrs.selection).detect(function (sel) {
             return sel[0] === value;
         });
-        if (!match) { return $.when(null); }
-        return $.when(facet_from(this, match));
+        if (!match) { return concurrency.when(null); }
+        return concurrency.when(facet_from(this, match));
     }
 });
 
@@ -351,17 +352,17 @@ var DateField = Field.extend(/** @lends instance.web.search.DateField# */{
             t = (this.attrs && this.attrs.type === 'datetime') ? 'datetime' : 'date';
             v = field_utils.parse[t](needle, {type: t}, {timezone: true});
         } catch (e) {
-            return $.when(null);
+            return concurrency.when(null);
         }
 
         var m = moment(v, t === 'datetime' ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD');
-        if (!m.isValid()) { return $.when(null); }
+        if (!m.isValid()) { return concurrency.when(null); }
         var date_string = field_utils.format[t](m, {type: t});
         var label = _.str.sprintf(_.str.escapeHTML(
             _t("Search %(field)s at: %(value)s")), {
                 field: '<em>' + _.escape(this.attrs.string) + '</em>',
                 value: '<strong>' + date_string + '</strong>'});
-        return $.when([{
+        return concurrency.when([{
             label: label,
             facet: {
                 category: this.attrs.string,
@@ -397,12 +398,12 @@ var ManyToOneField = CharField.extend({
     },
 
     complete: function (value) {
-        if (_.isEmpty(value)) { return $.when(null); }
+        if (_.isEmpty(value)) { return concurrency.when(null); }
         var label = _.str.sprintf(_.str.escapeHTML(
             _t("Search %(field)s for: %(value)s")), {
                 field: '<em>' + _.escape(this.attrs.string) + '</em>',
                 value: '<strong>' + _.escape(value) + '</strong>'});
-        return $.when([{
+        return concurrency.when([{
             label: label,
             facet: {
                 category: this.attrs.string,
@@ -450,7 +451,7 @@ var ManyToOneField = CharField.extend({
         var self = this;
         if (value instanceof Array) {
             if (value.length === 2 && _.isString(value[1])) {
-                return $.when(facet_from(this, value));
+                return concurrency.when(facet_from(this, value));
             }
             utils.assert(value.length <= 1,
                    _t("M2O search fields do not currently handle multiple default values"));
@@ -532,7 +533,7 @@ var FilterGroup = Input.extend(/** @lends instance.web.search.FilterGroup# */{
     },
     start: function () {
         this.$el.on('click', 'a', this.proxy('toggle_filter'));
-        return $.when(null);
+        return concurrency.when(null);
     },
     /**
      * Handles change of the search query: any of the group's filter which is
@@ -581,8 +582,8 @@ var FilterGroup = Input.extend(/** @lends instance.web.search.FilterGroup# */{
             }).map(function (f) {
                 return self.make_value(f);
             }).value();
-        if (_.isEmpty(fs)) { return $.when(null); }
-        return $.when(this.make_facet(fs));
+        if (_.isEmpty(fs)) { return concurrency.when(null); }
+        return concurrency.when(this.make_facet(fs));
     },
     /**
      * Fetches contexts for all enabled filters in the group
@@ -675,8 +676,8 @@ var FilterGroup = Input.extend(/** @lends instance.web.search.FilterGroup# */{
             })
             .map(this.make_value)
             .value();
-        if (_(facet_values).isEmpty()) { return $.when(null); }
-        return $.when(_.map(facet_values, function (facet_value) {
+        if (_(facet_values).isEmpty()) { return concurrency.when(null); }
+        return concurrency.when(_.map(facet_values, function (facet_value) {
             return {
                 label: _.str.sprintf(self.completion_label.toString(),
                                      _.escape(facet_value.label)),
@@ -742,7 +743,7 @@ var Filter = Input.extend(/** @lends instance.web.search.Filter# */{
         this._super(parent);
         this.load_attrs(node.attrs);
     },
-    facet_for: function () { return $.when(null); },
+    facet_for: function () { return concurrency.when(null); },
     get_context: function () { },
     get_domain: function () { },
 });

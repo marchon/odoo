@@ -1,6 +1,7 @@
 odoo.define("web.DomainSelectorDialog", function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require("web.core");
 var Dialog = require("web.Dialog");
 var DomainSelector = require("web.DomainSelector");
@@ -41,7 +42,7 @@ return Dialog.extend({
     },
     start: function () {
         this.$el.css("overflow", "visible").closest(".modal-dialog").css("height", "auto"); // This restores default modal height (bootstrap) and allows field selector to overflow
-        return $.when(
+        return concurrency.when(
             this._super.apply(this, arguments),
             this.domainSelector.appendTo(this.$el)
         );

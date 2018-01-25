@@ -8,6 +8,7 @@ odoo.define('web.KanbanRendererMobile', function (require) {
  * Moreover, records in columns are lazy-loaded.
  */
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var core = require('web.core');
 var KanbanRenderer = require('web.KanbanRenderer');
@@ -96,9 +97,9 @@ KanbanRenderer.include({
     _moveToGroup: function (moveToIndex, animate) {
         var self = this;
         if (moveToIndex < 0 || moveToIndex >= this.widgets.length) {
-            return $.when();
+            return concurrency.when();
         }
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         this.activeColumnIndex = moveToIndex;
         var column = this.widgets[this.activeColumnIndex];
         this.trigger_up('kanban_load_records', {

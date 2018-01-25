@@ -1,6 +1,7 @@
 odoo.define('web.Menu', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var session = require('web.session');
 var Widget = require('web.Widget');
@@ -8,7 +9,7 @@ var Widget = require('web.Widget');
 var Menu = Widget.extend({
     init: function() {
         this._super.apply(this, arguments);
-        this.is_bound = $.Deferred();
+        this.is_bound = concurrency.Deferred();
         this.data = {data:{children:[]}};
         core.bus.on('change_menu_section', this, this.on_change_top_menu);
     },

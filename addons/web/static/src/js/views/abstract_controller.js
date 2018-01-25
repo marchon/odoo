@@ -12,6 +12,7 @@ odoo.define('web.AbstractController', function (require) {
  * reading localstorage, ...) has to go through the controller.
  */
 
+var concurrency = require('web.concurrency');
 var ControlPanelMixin = require('web.ControlPanelMixin');
 var core = require('web.core');
 var Widget = require('web.Widget');
@@ -82,7 +83,7 @@ var AbstractController = Widget.extend(ControlPanelMixin, {
         // render the ControlPanel elements (buttons, pager, sidebar...)
         this.controlPanelElements = this._renderControlPanelElements();
 
-        return $.when(
+        return concurrency.when(
             this._super.apply(this, arguments),
             this.renderer.appendTo(this.$el)
         ).then(function () {
@@ -121,7 +122,7 @@ var AbstractController = Widget.extend(ControlPanelMixin, {
      * @returns {Deferred} resolved if properly discarded, rejected otherwise
      */
     discardChanges: function (recordID) {
-        return $.when();
+        return concurrency.when();
     },
     /**
      * Returns any special keys that may be useful when reloading the view to
@@ -211,7 +212,7 @@ var AbstractController = Widget.extend(ControlPanelMixin, {
     update: function (params, options) {
         var self = this;
         var shouldReload = (options && 'reload' in options) ? options.reload : true;
-        var def = shouldReload ? this.model.reload(this.handle, params) : $.when();
+        var def = shouldReload ? this.model.reload(this.handle, params) : concurrency.when();
         return def.then(function (handle) {
             self.handle = handle || self.handle; // update handle if we reloaded
             var state = self.model.get(self.handle);
@@ -331,7 +332,7 @@ var AbstractController = Widget.extend(ControlPanelMixin, {
         });
 
         this._pushState();
-        return $.when();
+        return concurrency.when();
     },
 
     //--------------------------------------------------------------------------

@@ -2,6 +2,7 @@ odoo.define('web.CalendarRenderer', function (require) {
 "use strict";
 
 var AbstractRenderer = require('web.AbstractRenderer');
+var concurrency = require('web.concurrency');
 var relational_fields = require('web.relational_fields');
 var FieldManagerMixin = require('web.FieldManagerMixin');
 var field_utils = require('web.field_utils');
@@ -78,7 +79,7 @@ var SidebarFilter = Widget.extend(FieldManagerMixin, {
             });
             defs.push(def);
         }
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
 
     },
     start: function () {

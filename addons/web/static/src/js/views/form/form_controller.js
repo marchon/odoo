@@ -2,6 +2,7 @@ odoo.define('web.FormController', function (require) {
 "use strict";
 
 var BasicController = require('web.BasicController');
+var concurrency = require('web.concurrency');
 var dialogs = require('web.view_dialogs');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
@@ -394,7 +395,7 @@ var FormController = BasicController.extend({
         }
         var attrs = event.data.attrs;
         if (attrs.confirm) {
-            var d = $.Deferred();
+            var d = concurrency.Deferred();
             Dialog.confirm(this, attrs.confirm, {
                 confirm_callback: saveAndExecuteAction,
             }).on("closed", null, function () {

@@ -1,6 +1,7 @@
 odoo.define('stock.stock_report_generic', function (require) {
 'use strict';
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Widget = require('web.Widget');
 var ControlPanelMixin = require('web.ControlPanelMixin');
@@ -30,7 +31,7 @@ var stock_report_generic = Widget.extend(ControlPanelMixin, {
     },
     set_html: function() {
         var self = this;
-        var def = $.when();
+        var def = concurrency.when();
         if (!this.report_widget) {
             this.report_widget = new ReportWidget(this, this.given_context);
             def = this.report_widget.appendTo(this.$el);
@@ -59,7 +60,7 @@ var stock_report_generic = Widget.extend(ControlPanelMixin, {
                 self.html = result.html;
                 self.renderButtons();
                 defs.push(self.update_cp());
-                return $.when.apply($, defs);
+                return concurrency.when.apply(concurrency, defs);
             });
     },
     // Updates the control panel and render the elements that have yet to be rendered

@@ -1,6 +1,7 @@
 odoo.define('web.search_filters', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var datepicker = require('web.datepicker');
 var field_utils = require('web.field_utils');
@@ -228,7 +229,7 @@ var DateTime = Field.extend({
         return str;
     },
     start: function () {
-        return $.when(
+        return concurrency.when(
             this._super.apply(this, arguments),
             this._create_new_widget("datewidget_0")
         );

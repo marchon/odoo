@@ -25,6 +25,7 @@ odoo.define('web.AbstractView', function (require) {
 
 var ajax = require('web.ajax');
 var Class = require('web.Class');
+var concurrency = require('web.concurrency');
 var Context = require('web.Context');
 var AbstractModel = require('web.AbstractModel');
 var AbstractRenderer = require('web.AbstractRenderer');
@@ -161,7 +162,7 @@ var AbstractView = Class.extend({
      */
     getController: function (parent) {
         var self = this;
-        return $.when(this._loadData(parent), ajax.loadLibs(this)).then(function () {
+        return concurrency.when(this._loadData(parent), ajax.loadLibs(this)).then(function () {
             var model = self.getModel();
             var state = model.get(arguments[0]);
             var renderer = self.getRenderer(parent, state);
@@ -271,7 +272,7 @@ var AbstractView = Class.extend({
                 }
             });
         }
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * We set here the limit for the number of records fetched (in one page).

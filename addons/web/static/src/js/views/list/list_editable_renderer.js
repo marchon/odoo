@@ -11,6 +11,7 @@ odoo.define('web.EditableListRenderer', function (require) {
  * Unlike Odoo v10 and before, this list renderer is independant from the form
  * view. It uses the same widgets, but the code is totally stand alone.
  */
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var dom = require('web.dom');
 var ListRenderer = require('web.ListRenderer');
@@ -275,7 +276,7 @@ ListRenderer.include({
         }
 
         if (rowIndex < 0) {
-            return $.when();
+            return concurrency.when();
         }
         var editMode = (mode === 'edit');
 
@@ -336,7 +337,7 @@ ListRenderer.include({
         // Toggle selected class here so that style is applied at the end
         $row.toggleClass('o_selected_row', editMode);
 
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * This method is called whenever we click/move outside of a row that was
@@ -354,14 +355,14 @@ ListRenderer.include({
     unselectRow: function () {
         // Protect against calling this method when no row is selected
         if (this.currentRow === null) {
-            return $.when();
+            return concurrency.when();
         }
 
         var record = this.state.data[this.currentRow];
         var recordWidgets = this.allFieldWidgets[record.id];
         toggleWidgets(true);
 
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         this.trigger_up('save_line', {
             recordID: record.id,
             onSuccess: def.resolve.bind(def),
@@ -618,7 +619,7 @@ ListRenderer.include({
         options = options || {};
         // Do nothing if the user tries to select current cell
         if (!options.force && rowIndex === this.currentRow && fieldIndex === this.currentFieldIndex) {
-            return $.when();
+            return concurrency.when();
         }
         var wrap = options.wrap === undefined ? true : options.wrap;
 
@@ -627,7 +628,7 @@ ListRenderer.include({
         return this._selectRow(rowIndex).then(function () {
             var record = self.state.data[rowIndex];
             if (fieldIndex >= (self.allFieldWidgets[record.id] || []).length) {
-                return $.Deferred().reject();
+                return concurrency.Deferred().reject();
             }
             // _activateFieldWidget might trigger an onchange,
             // which requires currentFieldIndex to be set
@@ -641,7 +642,7 @@ ListRenderer.include({
             });
             if (fieldIndex < 0) {
                 self.currentFieldIndex = oldFieldIndex;
-                return $.Deferred().reject();
+                return concurrency.Deferred().reject();
             }
             self.currentFieldIndex = fieldIndex;
         });
@@ -655,7 +656,7 @@ ListRenderer.include({
     _selectRow: function (rowIndex) {
         // Do nothing if already selected
         if (rowIndex === this.currentRow) {
-            return $.when();
+            return concurrency.when();
         }
 
         // To select a row, the currently selected one must be unselected first
@@ -665,10 +666,10 @@ ListRenderer.include({
                 // The row to selected doesn't exist anymore (probably because
                 // an onchange triggered when unselecting the previous one
                 // removes rows)
-                return $.Deferred().reject();
+                return concurrency.Deferred().reject();
             }
             // Notify the controller we want to make a record editable
-            var def = $.Deferred();
+            var def = concurrency.Deferred();
             self.trigger_up('edit_line', {
                 index: rowIndex,
                 onSuccess: def.resolve.bind(def),

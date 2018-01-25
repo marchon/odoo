@@ -1,6 +1,7 @@
 odoo.define('mrp.tests', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var FormView = require('web.FormView');
 var testUtils = require("web.test_utils");
 
@@ -68,7 +69,7 @@ QUnit.module('mrp', {
                 '</form>',
             mockRPC: function (route) {
                 if (route.indexOf('/web/static/lib/pdfjs/web/viewer.html') !== -1) {
-                    return $.when();
+                    return concurrency.when();
                 }
                 return this._super.apply(this, arguments);
             }
@@ -123,7 +124,7 @@ QUnit.module('mrp', {
             mockRPC: function (route, args) {
                 if (args.method === 'search_read' && args.model === 'mrp.workcenter.productivity') {
                     assert.ok(true, "the widget should fetch the mrp.workcenter.productivity");
-                    return $.when([{
+                    return concurrency.when([{
                         date_start: '2017-01-01 08:00:00',
                         date_end: '2017-01-01 10:00:00',
                     }, {

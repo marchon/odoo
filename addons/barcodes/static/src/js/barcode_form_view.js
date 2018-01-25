@@ -62,7 +62,7 @@ FormController.include({
         if (this.mode === 'readonly') {
             this.do_warn(_t('Error : Document not editable'),
                 _t('To modify this document, please first start edition.'));
-            return new $.Deferred().reject();
+            return new concurrency.Deferred().reject();
         }
 
         var record = this.model.get(this.handle);
@@ -246,7 +246,7 @@ FormController.include({
     _barcodeActiveScanned: function (method, barcode, activeBarcode) {
         var self = this;
         var methodDef;
-        var def = new $.Deferred();
+        var def = new concurrency.Deferred();
         if (typeof method === 'string') {
             methodDef = this[method](barcode, activeBarcode);
         } else {
@@ -300,7 +300,7 @@ FormController.include({
             if (prefixed && !hasCommand) {
                 self.do_warn(_t('Error : Barcode command is undefined'), barcode);
             }
-            return self.alive($.when.apply($, defs)).then(function () {
+            return self.alive(concurrency.when.apply(concurrency, defs)).then(function () {
                 if (!prefixed) {
                     // redraw the view if we scanned a real barcode (required if
                     // we manually apply the change in JS, e.g. incrementing the
@@ -390,12 +390,12 @@ FormRenderer.include({
      */
     _barcodeButtonHandler: function ($button, node) {
         var commands = {};
-        commands.barcode = function () {return $.when();};
+        commands.barcode = function () {return concurrency.when();};
         commands['O-BTN.' + node.attrs.barcode_trigger] = function () {
             if (!$button.hasClass('o_invisible_modifier')) {
                 $button.click();
             }
-            return $.when();
+            return concurrency.when();
         };
         this.trigger_up('activeBarcode', {
             name: node.attrs.name,

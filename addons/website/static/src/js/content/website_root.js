@@ -16,6 +16,7 @@ odoo.define('website.WebsiteRoot', function (require) {
 'use strict';
 
 var ajax = require('web.ajax');
+var concurrency = require('web.concurrency');
 var core = require('web.core');
 var Dialog = require('web.Dialog');
 var utils = require('web.utils');
@@ -59,7 +60,7 @@ var WebsiteRoot = BodyManager.extend({
      */
     willStart: function () {
         // TODO would be even greater to wait for localeDef only when necessary
-        return $.when(this._super.apply(this, arguments), localeDef);
+        return concurrency.when(this._super.apply(this, arguments), localeDef);
     },
     /**
      * @override

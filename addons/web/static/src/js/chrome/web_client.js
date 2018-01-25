@@ -2,6 +2,7 @@ odoo.define('web.WebClient', function (require) {
 "use strict";
 
 var AbstractWebClient = require('web.AbstractWebClient');
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var data_manager = require('web.data_manager');
 var framework = require('web.framework');
@@ -44,7 +45,7 @@ return AbstractWebClient.extend({
 
         // Start the menu once both systray and user menus are rendered
         // to prevent overflows while loading
-        return $.when(systray_menu_loaded, user_menu_loaded).then(function() {
+        return concurrency.when(systray_menu_loaded, user_menu_loaded).then(function() {
             self.menu.start();
             self.bind_hashchange();
         });
@@ -158,7 +159,7 @@ return AbstractWebClient.extend({
         return this.menu_dm.add(data_manager.load_action(options.action_id))
             .then(function (result) {
                 return self.action_mutex.exec(function() {
-                    var completed = $.Deferred();
+                    var completed = concurrency.Deferred();
                     self.action_manager.doAction(result, {
                         clear_breadcrumbs: true,
                         action_menu_id: self.menu.current_menu,

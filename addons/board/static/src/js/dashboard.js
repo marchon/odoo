@@ -1,6 +1,7 @@
 odoo.define('board.dashboard', function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var Context = require('web.Context');
 var core = require('web.core');
 var dataManager = require('web.data_manager');
@@ -225,7 +226,7 @@ FormRenderer.include({
             .then(function (action) {
                 if (!action) {
                     // the action does not exist anymore
-                    return $.when();
+                    return concurrency.when();
                 }
                 var view = _.find(action.views, function (descr) {
                     return descr[1] === params.viewType;

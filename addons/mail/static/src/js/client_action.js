@@ -6,6 +6,7 @@ var ChatThread = require('mail.ChatThread');
 var composer = require('mail.composer');
 var utils = require('mail.utils');
 
+var concurrency = require('web.concurrency');
 var config = require('web.config');
 var ControlPanelMixin = require('web.ControlPanelMixin');
 var core = require('web.core');
@@ -150,7 +151,7 @@ var ChatAction = Widget.extend(ControlPanelMixin, {
             .then(function (fields_view) {
                 self.fields_view = fields_view;
             });
-        return $.when(this._super(), chat_manager.is_ready, def);
+        return concurrency.when(this._super(), chat_manager.is_ready, def);
     },
     /**
      * @override
@@ -174,7 +175,7 @@ var ChatAction = Widget.extend(ControlPanelMixin, {
         defs.push(this.extended_composer.appendTo(this.$('.o_mail_chat_content')));
         defs.push(this._renderSearchView());
 
-        return $.when.apply($, defs)
+        return concurrency.when.apply(concurrency, defs)
             .then(this._setChannel.bind(this, default_channel))
             .then(this._updateChannels.bind(this))
             .then(function () {

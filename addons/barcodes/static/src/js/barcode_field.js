@@ -3,6 +3,7 @@ odoo.define('barcodes.field', function(require) {
 
 var AbstractField = require('web.AbstractField');
 var basicFields = require('web.basic_fields');
+var concurrency = require('web.concurrency');
 var fieldRegistry = require('web.field_registry');
 
 // Field in which the user can both type normally and scan barcodes
@@ -25,7 +26,7 @@ var FieldFloatScannable = basicFields.FieldFloat.extend({
      */
     _renderEdit: function() {
         var self = this;
-        $.when(this._super()).then(function () {
+        concurrency.when(this._super()).then(function () {
             self.$input.data('enableBarcode', true);
         });
     },

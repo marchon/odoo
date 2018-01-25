@@ -1,6 +1,7 @@
 odoo.define("web.DomainSelector", function (require) {
 "use strict";
 
+var concurrency = require('web.concurrency');
 var core = require("web.core");
 var datepicker = require("web.datepicker");
 var Domain = require("web.Domain");
@@ -196,7 +197,7 @@ var DomainTree = DomainNode.extend({
      */
     start: function () {
         this._postRender();
-        return $.when(this._super.apply(this, arguments), this._renderChildrenTo(this.$childrenContainer));
+        return concurrency.when(this._super.apply(this, arguments), this._renderChildrenTo(this.$childrenContainer));
     },
 
     //--------------------------------------------------------------------------
@@ -377,7 +378,7 @@ var DomainTree = DomainNode.extend({
      */
     _renderChildrenTo: function ($to) {
         var $div = $("<div/>");
-        return $.when.apply($, _.map(this.children, (function (child) {
+        return concurrency.when.apply(concurrency, _.map(this.children, (function (child) {
             return child.appendTo($div);
         }).bind(this))).then((function () {
             _.each(this.children, function (child) {
@@ -476,7 +477,7 @@ var DomainSelector = DomainTree.extend({
      */
     setDomain: function (domain) {
         if (Domain.prototype.arrayToString(domain) === Domain.prototype.arrayToString(this.getDomain())) {
-            return $.when();
+            return concurrency.when();
         }
         return this._redraw(domain);
     },
@@ -686,11 +687,11 @@ var DomainLeaf = DomainNode.extend({
                     }).bind(this)));
                 }
 
-                return $.when.apply($, wDefs);
+                return concurrency.when.apply(concurrency, wDefs);
             }
         }).bind(this)));
 
-        return $.when.apply($, defs);
+        return concurrency.when.apply(concurrency, defs);
     },
     /**
      * @see DomainNode.start

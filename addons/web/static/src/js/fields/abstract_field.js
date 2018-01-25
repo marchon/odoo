@@ -31,6 +31,7 @@ odoo.define('web.AbstractField', function (require) {
  */
 
 var ajax = require('web.ajax');
+var concurrency = require('web.concurrency');
 var field_utils = require('web.field_utils');
 var Widget = require('web.Widget');
 
@@ -198,7 +199,7 @@ var AbstractField = Widget.extend({
      * @override
      */
     willStart: function () {
-        return $.when(ajax.loadLibs(this), this._super.apply(this, arguments));
+        return concurrency.when(ajax.loadLibs(this), this._super.apply(this, arguments));
     },
 
     //--------------------------------------------------------------------------
@@ -301,7 +302,7 @@ var AbstractField = Widget.extend({
      */
     reset: function (record, event) {
         this._reset(record, event);
-        return this._render() || $.when();
+        return this._render() || concurrency.when();
     },
 
     //--------------------------------------------------------------------------
@@ -415,7 +416,7 @@ var AbstractField = Widget.extend({
         // we try to avoid doing useless work, if the value given has not
         // changed.  Note that we compare the unparsed values.
         if (this.lastSetValue === value || (this.value === false && value === '')) {
-            return $.when();
+            return concurrency.when();
         }
         this.lastSetValue = value;
         try {
@@ -424,12 +425,12 @@ var AbstractField = Widget.extend({
         } catch (e) {
             this._isValid = false;
             this.trigger_up('set_dirty', {dataPointID: this.dataPointID});
-            return $.Deferred().reject();
+            return concurrency.Deferred().reject();
         }
         if (!(options && options.forceChange) && this._isSameValue(value)) {
-            return $.when();
+            return concurrency.when();
         }
-        var def = $.Deferred();
+        var def = concurrency.Deferred();
         var changes = {};
         changes[this.name] = value;
         this.trigger_up('field_changed', {
