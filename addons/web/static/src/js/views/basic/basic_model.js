@@ -706,6 +706,9 @@ var BasicModel = AbstractModel.extend({
             });
         }
 
+        if (options.fieldNames !== undefined) {
+            element.fieldNames = options.fieldNames;
+        }
         if (options.context !== undefined) {
             element.context = options.context;
         }
