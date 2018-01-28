@@ -73,14 +73,6 @@ class AccountInvoice(models.Model):
     # Load all unsold PO lines
     @api.onchange('purchase_id')
     def purchase_order_change(self):
-        if not self.purchase_id:
-            return {}
-        if not self.partner_id:
-            self.partner_id = self.purchase_id.partner_id.id
-
-        if not self.invoice_line_ids:
-            #as there's no invoice line yet, we keep the currency of the PO
-            self.currency_id = self.purchase_id.currency_id
         new_lines = self.env['account.invoice.line']
         for line in self.purchase_id.order_line - self.invoice_line_ids.mapped('purchase_line_id'):
             data = self._prepare_invoice_line_from_po_line(line)
@@ -91,6 +83,41 @@ class AccountInvoice(models.Model):
         self.invoice_line_ids += new_lines
         self.payment_term_id = self.purchase_id.payment_term_id
         self.env.context = dict(self.env.context, from_purchase_order_change=True)
+
+        due_dt = datetime.datetime.now()
+        for purchase in self.purchase_id:
+            if not self.partner_id:
+                self.partner_id = self.purchase_id.partner_id.id
+
+            if not self.invoice_line_ids:
+                #as there's no invoice line yet, we keep the currency of the PO
+                self.currency_id = self.purchase_id.currency_id
+            new_lines = self.env['account.invoice.line']
+            for line in purchase.order_line - self.invoice_line_ids.mapped('purchase_line_id'):
+                data = self._prepare_invoice_line_from_po_line(line)
+                new_line = new_lines.new(data)
+                new_line._set_additional_fields(self)
+                new_lines += new_line
+
+            self.invoice_line_ids += new_lines
+            self.env.context = dict(self.env.context, from_purchase_order_change=True)
+            nxt_due = datetime.datetime.now() + timedelta(days=purchase.payment_term_id.days)
+            if nxt_due > due_dt:
+                due_dt = nxt_due
+        self.date_due = due_dt
+        # print ('ONCHANGE CALLING', self, self.purchase_id)
+        # payments = self.purchase_id.mapped('payment_term_id')
+        # payment_lines = payments.mapped('line_ids')
+        # print ('==========', payment_lines)
+        # max_days = max(line for line.days in payment_lines)
+        # print ('---------', max_days)
+        # self.payment_term_id = purchase.payment_term_id.id
+
+        # for date in self.purchase_id:
+        #     date_list = []
+        #     date_list += date.payment_term_id
+        #     print date_list
+
         return {}
 
     @api.onchange('currency_id')
