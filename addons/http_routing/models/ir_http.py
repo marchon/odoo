@@ -419,7 +419,7 @@ class IrHttp(models.AbstractModel):
             _, path = rule.build(arguments)
             assert path is not None
         except Exception as e:
-            return cls._handle_exception(e)
+            return cls._handle_exception(werkzeug.exceptions.NotFound())
 
         if getattr(request, 'is_frontend_multilang', False) and request.httprequest.method in ('GET', 'HEAD'):
             generated_path = werkzeug.url_unquote_plus(path)
