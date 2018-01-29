@@ -3,11 +3,13 @@
 import pytz
 import datetime
 import logging
+import hmac
 
 from collections import defaultdict
 from itertools import chain, repeat
 from lxml import etree
 from lxml.builder import E
+from hashlib import sha1
 
 from odoo import api, fields, models, tools, SUPERUSER_ID, _
 from odoo.exceptions import AccessDenied, AccessError, UserError, ValidationError
@@ -175,6 +177,7 @@ class Users(models.Model):
     _inherits = {'res.partner': 'partner_id'}
     _order = 'name, login'
     __uid_cache = defaultdict(dict)             # {dbname: {uid: password}}
+    __session_token_cache = defaultdict(dict)   # {dbname: {uid: {session_id: token}}}
 
     # User can write on a few of his own fields (but not his groups for example)
     SELF_WRITEABLE_FIELDS = ['signature', 'action_id', 'company_id', 'email', 'name', 'image', 'image_medium', 'image_small', 'lang', 'tz']
@@ -375,6 +378,7 @@ class Users(models.Model):
             db = self._cr.dbname
             for id in self.ids:
                 self.__uid_cache[db].pop(id, None)
+                self._invalid_session(db, id)
 
         return res
 
@@ -385,6 +389,7 @@ class Users(models.Model):
         db = self._cr.dbname
         for id in self.ids:
             self.__uid_cache[db].pop(id, None)
+            self._invalid_session(db, id)
         return super(Users, self).unlink()
 
     @api.model
@@ -509,6 +514,42 @@ class Users(models.Model):
             cls.__uid_cache[db][uid] = passwd
         finally:
             cr.close()
+
+    @classmethod
+    def _compute_session_token(cls, db, sid, uid):
+        if not cls.__session_token_cache[db].get(uid):
+            cls.__session_token_cache[db][uid] = dict()
+
+        if cls.__session_token_cache[db][uid].get(sid):
+            return cls.__session_token_cache[db][uid][sid]
+
+        with cls.pool.cursor() as cr:
+            self = api.Environment(cr, uid, {})[cls._name]
+            # retrieve user's password crypt
+            cr.execute('SELECT password_crypt FROM res_users WHERE id=%s AND active', (uid,))
+            if cr.rowcount != 1:
+                cls._invalid_session(db, uid, sid)
+                return False
+
+            password_crypt = cr.fetchone()[0]
+            db_secret = self.env['ir.config_parameter'].get_param('database.secret')
+            # generate hmac key
+            key = (u'%s-%s-%s' % (db_secret, uid, password_crypt)).encode()
+            # hmac the session id
+            data = sid.encode('ascii')
+            h = hmac.new(key, data, sha1)
+            # keep in the cache the token
+            cls.__session_token_cache[db][uid][sid] = h.hexdigest()
+            return cls.__session_token_cache[db][uid][sid]
+
+
+    @classmethod
+    def _invalid_session(cls, db, uid, sid=None):
+        if cls.__session_token_cache[db].get(uid):
+            if sid:
+                cls.__session_token_cache[db][uid].pop(sid, None)
+            else:
+                cls.__session_token_cache[db][uid] = dict()
 
     @api.model
     def change_password(self, old_passwd, new_passwd):
