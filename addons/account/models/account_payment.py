@@ -17,10 +17,6 @@ MAP_INVOICE_TYPE_PAYMENT_SIGN = {
     'out_refund': 1,
 }
 
-#TODO OCO
-import logging
-_logger = logging.getLogger(__name__)
-
 class account_payment_method(models.Model):
     _name = "account.payment.method"
     _description = "Payment Methods"
@@ -344,7 +340,6 @@ class account_payment(models.Model):
 
     @api.onchange('amount', 'currency_id')
     def _onchange_amount(self):
-        #import pdb; pdb.set_trace() #TODO OCO
         jrnl_filters = self._compute_journal_domain_and_types()
         journal_types = jrnl_filters['journal_types']
         domain_on_types = [('type', 'in', list(journal_types))]
