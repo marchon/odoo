@@ -10,6 +10,7 @@ var AjaxService = AbstractService.extend({
         return $.Deferred(function (def) {
             session.rpc(route, args, options).then(function () {
                 if (!target.isDestroyed()) {
+                    console.log(route);
                     def.resolve.apply(def, arguments);
                 }
             }, function () {

@@ -110,6 +110,9 @@ var KanbanRenderer = BasicRenderer.extend({
 
         this._setState(state);
     },
+    destroy: function () {
+        this._super.apply(this, arguments);
+    },
 
     //--------------------------------------------------------------------------
     // Public

@@ -2442,6 +2442,46 @@ QUnit.module('ActionManager', {
 
         actionManager.destroy();
     });
+
+
+    QUnit.only('BUUUG! AAAAAAAHHHH', function (assert) {
+        assert.expect(3);
+
+        core.action_registry.add('ClientAction', Widget.extend(ControlPanelMixin));
+
+        var def = $.when();
+
+        var actionManager = createActionManager({
+            actions: this.actions,
+            archs: this.archs,
+            data: this.data,
+            debug: true,
+            mockRPC: function (route, args) {
+                var result = this._super.apply(this, arguments);
+                if (route === '/web/dataset/search_read') {
+                    return $.when(def).then(_.constant(result));
+                }
+                return result;
+            }
+        });
+
+        // execute an action in target="new"
+        actionManager.doAction(4);
+
+        // open a record in form view
+        actionManager.$('.o_kanban_record').first().click();
+
+        // go back to kanban view with breadcrumbs
+        def = $.Deferred();
+        $('.o_control_panel .breadcrumb a:first').click();
+
+        actionManager.doAction(9, {clear_breadcrumbs: true});
+
+        def.resolve();
+
+        actionManager.destroy();
+    });
+
 });
 
 });

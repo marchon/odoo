@@ -83,6 +83,8 @@ odoo.define('web.BasicModel', function (require) {
  *   element, so it can be edited later.
  */
 
+window.bm = [];
+
 var AbstractModel = require('web.AbstractModel');
 var concurrency = require('web.concurrency');
 var Context = require('web.Context');
@@ -144,6 +146,7 @@ var BasicModel = AbstractModel.extend({
         this.mutex = new concurrency.Mutex();
 
         this.localData = Object.create(null);
+        bm.push(this);
         this._super.apply(this, arguments);
     },
 
