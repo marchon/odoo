@@ -2,10 +2,14 @@
 
 import logging
 import pytz
+import werkzeug
+
+from datetime import datetime
 
 from odoo import api, fields, models, _
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.exceptions import UserError
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 _logger = logging.getLogger(__name__)
 
@@ -14,6 +18,9 @@ try:
 except ImportError:
     _logger.warning("The `vobject` Python module is not installed, so iCal file generation is unavailable. Please install the `vobject` Python module")
     vobject = None
+
+GOOGLE_CALENDAR_URL = 'https://www.google.com/calendar/render?'
+
 
 class EventType(models.Model):
     _name = 'event.type'
@@ -157,3 +164,20 @@ class Event(models.Model):
                 attendee_add.value = u'MAILTO:' + (attendee.email or u'')
             result[event.id] = cal.serialize().encode('utf-8')
         return result
+
+    def get_urls(self, attendees):
+        url_date_start = datetime.strptime(self.date_begin, DEFAULT_SERVER_DATETIME_FORMAT).strftime('%Y%m%dT%H%M%SZ')
+        url_date_stop = datetime.strptime(self.date_end, DEFAULT_SERVER_DATETIME_FORMAT).strftime('%Y%m%dT%H%M%SZ')
+        params = werkzeug.url_encode({
+            'action': 'TEMPLATE',
+            'text': self.name,
+            'dates': url_date_start + '/' + url_date_stop,
+            'location': self.address_id.contact_address.replace('\n', ' '),
+            'details': self.name,
+        })
+        google_url = GOOGLE_CALENDAR_URL + params
+        params = werkzeug.url_encode({
+            'attendees': dict(('attendee_%s' % attendee, attendee) for attendee in attendees)
+        })
+        iCal_url = '/event/%s/ics/%s.ics?' % (slug(self), self.name) + params
+        return {'google_url': google_url, 'iCal_url': iCal_url}

@@ -11,9 +11,6 @@ from dateutil.relativedelta import relativedelta
 from odoo import fields, http, _
 from odoo.addons.http_routing.models.ir_http import slug
 from odoo.http import request
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-
-GOOGLE_CALENDAR_URL = 'https://www.google.com/calendar/render?'
 
 
 class WebsiteEventController(http.Controller):
@@ -262,26 +259,12 @@ class WebsiteEventController(http.Controller):
             registration['event_id'] = event
             Attendees += Attendees.sudo().create(
                 Attendees._prepare_attendee_values(registration))
-
-        url_date_start = datetime.strptime(event.date_begin, DEFAULT_SERVER_DATETIME_FORMAT).strftime('%Y%m%dT%H%M%SZ')
-        url_date_stop = datetime.strptime(event.date_end, DEFAULT_SERVER_DATETIME_FORMAT).strftime('%Y%m%dT%H%M%SZ')
-        params = werkzeug.url_encode({
-            'action': 'TEMPLATE',
-            'text': event.name,
-            'dates': url_date_start + '/' + url_date_stop,
-            'location': event.address_id.contact_address.replace('\n', ' '),
-            'details': event.name,
-        })
-        google_url = GOOGLE_CALENDAR_URL + params
-        params = werkzeug.url_encode({
-            'attendees': dict(('attendee_%s' % attendee, attendee) for attendee in Attendees.ids)
-        })
-        iCal_url = '/event/%s/ics/%s.ics?' % (slug(event), event.name) + params
+        urls = event.get_urls(Attendees.ids)
         return request.render("website_event.registration_complete", {
             'attendees': Attendees,
             'event': event,
-            'google_url': google_url,
-            'iCal_url': iCal_url
+            'google_url': urls.get('google_url'),
+            'iCal_url': urls.get('iCal_url')
         })
 
     @http.route(['/event/<model("event.event"):event>/ics/<string:name>.ics'], type='http', auth="public", website=True)
