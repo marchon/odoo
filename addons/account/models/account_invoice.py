@@ -1283,7 +1283,7 @@ class AccountInvoice(models.Model):
                 moves += inv.move_id
             if inv.payment_move_line_ids:
                 raise UserError(_('You cannot cancel an invoice which is partially paid. You need to unreconcile related payment entries first.'))
-            if inv.date_invoice:
+            if inv.date_invoice and inv.state != 'draft':
                 invoice_date = fields.Date.from_string(inv.date_invoice)
                 fiscal_dates = inv.company_id.compute_fiscalyear_dates(invoice_date)
                 date_from = fiscal_dates['date_from']
