@@ -41,6 +41,9 @@ class ResConfigSettings(models.TransientModel):
     module_account_batch_payment = fields.Boolean(string='Use batch deposit',
         help='This allows you to group received checks before you deposit them to the bank.\n'
              '-This installs the module account_batch_payment.')
+    module_account_batch_payment = fields.Boolean(string='Use batch payments',
+        help='This allows you grouping payments into a single batch and eases the reconciliation process.\n'
+             '-This installs the account_batch_payment module.')
     module_account_sepa = fields.Boolean(string='Use SEPA payments')
     module_account_sepa_direct_debit = fields.Boolean(string='Use SEPA Direct Debit')
     module_account_plaid = fields.Boolean(string="Plaid Connector")

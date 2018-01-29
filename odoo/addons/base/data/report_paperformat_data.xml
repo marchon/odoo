@@ -33,7 +33,7 @@
             <field name="dpi">90</field>
         </record>
 
-        <record id="paperformat_batch_deposit" model="report.paperformat">
+        <record id="paperformat_batch_payment" model="report.paperformat">
             <field name="name">US Batch Deposit</field>
             <field name="default" eval="False" />
             <field name="format">Letter</field>

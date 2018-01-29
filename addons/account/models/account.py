@@ -403,7 +403,7 @@ class AccountJournal(models.Model):
         domain=[('payment_type', '=', 'outbound')], string='Payment Methods', default=lambda self: self._default_outbound_payment_methods(),
         help="Manual:Pay bill by cash or any other method outside of Odoo.\n"\
              "Check:Pay bill by check and print it from Odoo.\n"\
-             "SEPA Credit Transfer: Pay bill from a SEPA Credit Transfer file you submit to your bank. Enable this option from the settings.")
+             "SEPA Credit Transfer: Pay bill from a SEPA Credit Transfer file you submit to your bank. Enable this option from the settings.") #TODO OCO ajouter les batch payments ?
     at_least_one_inbound = fields.Boolean(compute='_methods_compute', store=True)
     at_least_one_outbound = fields.Boolean(compute='_methods_compute', store=True)
     profit_account_id = fields.Many2one('account.account', string='Profit Account', domain=[('deprecated', '=', False)], help="Used to register a profit when the ending balance of a cash register differs from what the system computes")
