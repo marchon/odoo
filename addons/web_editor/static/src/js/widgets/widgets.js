@@ -145,9 +145,13 @@ var ImageDialog = Widget.extend({
             o.url = this.media.getAttribute('href').replace(/[?].*/, '');
             o.id = +o.url.match(/\/web\/content\/([0-9]*)/, '')[1];
         }
-        this.$('form[action="/web_editor/attachment/add"]')
-            .append('<input type="hidden" name="res_id" value="'+this.options.res_id+'"/>')
-            .append('<input type="hidden" name="res_model" value="'+this.options.res_model+'"/>');
+        var $form = this.$('form[action="/web_editor/attachment/add"]');
+        if (this.options.res_id) {
+            $form.append('<input type="hidden" name="res_id" value="'+this.options.res_id+'"/>');
+        }
+        if (this.options.res_model) {
+            $form.append('<input type="hidden" name="res_model" value="'+this.options.res_model+'"/>');
+        }
         this.parent.$(".pager > li").click(function (e) {
             if (!self.$el.is(':visible')) {
                 return;
