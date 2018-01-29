@@ -45,7 +45,7 @@ class Currency(models.Model):
         ('rounding_gt_zero', 'CHECK (rounding>0)', 'The rounding factor must be greater than 0!')
     ]
 
-    def get_rates(self, company, date):
+    def _get_rates(self, company, date):
         query = """SELECT c.id, (SELECT r.rate FROM res_currency_rate r
                                   WHERE r.currency_id = c.id AND r.name <= %s
                                     AND (r.company_id IS NULL OR r.company_id = %s)
@@ -62,7 +62,7 @@ class Currency(models.Model):
         date = self._context.get('date') or fields.Date.today()
         company = self._context.get('company_id') or self.env['res.users']._get_company()
         # the subquery selects the last rate before 'date' for the given currency/company
-        currency_rates = self.get_rates(company, date)
+        currency_rates = self._get_rates(company, date)
         # import pdb; pdb.set_trace()
         for currency in self:
             currency.rate = currency_rates.get(currency.id) or 1.0
@@ -177,7 +177,7 @@ class Currency(models.Model):
 
     @api.model
     def _get_conversion_rate(self, from_currency, to_currency, company, date):
-        currency_rates = (from_currency + to_currency).get_rates(company, date)
+        currency_rates = (from_currency + to_currency)._get_rates(company, date)
         res = currency_rates.get(to_currency.id) / currency_rates.get(from_currency.id)
         # print (currency_rates.get(to_currency.id), currency_rates.get(from_currency.id), res)
         return res
