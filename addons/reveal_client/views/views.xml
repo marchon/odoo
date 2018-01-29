@@ -19,6 +19,7 @@
                             <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
                         </button>
                     </div>
+                    <div class="badge pull-right"><field name="calculate_credits" class="mb0"/> Credit / Lead</div>
                     <div class="oe_title">
                         <h1 class="o_row">
                             <field name="name"/>
@@ -29,7 +30,6 @@
                             <field name="lead_for"/>
                             <field name="country_ids" widget="many2many_tags"/>
                             <field name="regex_url"/>
-                            <field name="calculate_credits"/>
                         </group>
                     </group>
                     <notebook>

@@ -40,7 +40,7 @@ class CRMLeadRule(models.Model):
     calculate_credits = fields.Integer(compute='_credit_count', string="Credit Used", readonly=True)
 
     # Lead / Opportunity Data
-    lead_for = fields.Selection([('companies', 'Companies'), ('people', 'People')], string='Generate Leads For', required=True, default="people")
+    lead_for = fields.Selection([('companies', 'Companies'), ('people', 'Companies + People')],string='Generate Leads For', required=True, default="people")
     lead_type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity')], string='Type', required=True, default="opportunity")
     suffix = fields.Char(string='Suffix')
     team_id = fields.Many2one('crm.team', string='Sales Channel')
@@ -114,6 +114,7 @@ class CRMLeadRule(models.Model):
 
     def _get_data_for_server(self):
         rule_data = []
+        company_country = self.env.user.company_id.country_id
         for rule in self:
             data = {
                 'rule_id': rule.id,
@@ -122,6 +123,7 @@ class CRMLeadRule(models.Model):
                 'company_size_min': rule.company_size_min,
                 'company_size_max': rule.company_size_max,
                 'industry_tags': rule.industry_tag_ids.mapped('name'),
+                'user_country': company_country and company_country.code or False
             }
             if rule.lead_for == 'people':
                 data.update({
@@ -165,22 +167,32 @@ class CRMLeadRule(models.Model):
         }
         lead_data.update(self._lead_data_from_result(result, rule.suffix))
         lead = self.env['crm.lead'].create(lead_data)
-        lead.message_post_with_view('reveal_client.lead_message_template', values=self._get_data_for_log_message(result))
+        lead.message_post_with_view('reveal_client.lead_message_template', values=self._get_data_for_log_message(result), subtype_id=self.env.ref('mail.mt_note').id)
 
     def _get_data_for_log_message(self, result):
         reveal_data = result['reveal_data']
         people_data = result.get('people_data')
 
-        return {
+        log_data = {
             'twitter': reveal_data['twitter'],
+            'description': reveal_data['description'],
+            'logo': reveal_data['logo'],
+            'name': reveal_data['name'],
+            'phone_numbers': reveal_data['phone_numbers'],
             'facebook': reveal_data['facebook'],
             'linkedin': reveal_data['linkedin'],
             'crunchbase': reveal_data['crunchbase'],
-            'timezone': reveal_data['timezone'],
-            'timezone_link': reveal_data['timezone'].lower().replace('_','-'),
-            'tech': ' , '.join(reveal_data['tech']),
-            'people_data': people_data[1:]
+            'tech': [t.replace('_', ' ').title() for t in reveal_data['tech']],
+            'people_data': people_data,
         }
+
+        if reveal_data['timezone']:
+            log_data.update({
+                'timezone': reveal_data['timezone'].replace('_', ' ').title(),
+                'timezone_link': reveal_data['timezone'].lower().replace('_','-'),
+            })
+
+        return log_data
 
     def _lead_data_from_result(self, result, suffix):
         reveal_data = result['reveal_data']
@@ -214,10 +226,10 @@ class CRMLeadRule(models.Model):
 
         description = ""
 
-        print_rules = ['website_title','sector', 'legal_name', 'twitter_bio', 'twitter_followers', 'twitter_location']
+        print_rules = ['legal_name', 'sector','website_title', 'twitter_bio', 'twitter_followers', 'twitter_location']
         numbers = ['raised', 'market_cap', 'employees', 'estimated_annual_revenue']
         for key in print_rules:
-            if reveal_data[key]:
+            if reveal_data.get(key):
                 description += "%s : %s \n" % ( key.replace('_', ' ').title(), reveal_data[key])
 
         millnames = ['', ' K', ' M', ' B', 'T']
@@ -230,7 +242,7 @@ class CRMLeadRule(models.Model):
                 return n
 
         for key in numbers:
-            if reveal_data[key]:
+            if reveal_data.get(key):
                 description += "%s : %s \n" % (key.replace('_', ' ').title(), millify(reveal_data[key]))
 
         return description
