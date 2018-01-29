@@ -13,6 +13,12 @@ class MrpProductProduce(models.TransientModel):
     _name = "mrp.product.produce"
     _description = "Record Production"
 
+    def _get_todo(self, production):
+        main_product_moves = production.move_finished_ids.filtered(lambda x: x.product_id.id == production.product_id.id)
+        todo_quantity = production.product_qty - sum(main_product_moves.mapped('quantity_done'))
+        todo_quantity = todo_quantity if (todo_quantity > 0) else 0
+        return todo_quantity
+
     @api.model
     def default_get(self, fields):
         res = super(MrpProductProduce, self).default_get(fields)
@@ -22,9 +28,7 @@ class MrpProductProduce(models.TransientModel):
             if serial_finished:
                 todo_quantity = 1.0
             else:
-                main_product_moves = production.move_finished_ids.filtered(lambda x: x.product_id.id == production.product_id.id)
-                todo_quantity = production.product_qty - sum(main_product_moves.mapped('quantity_done'))
-                todo_quantity = todo_quantity if (todo_quantity > 0) else 0
+                todo_quantity = self._get_todo(production)
             if 'production_id' in fields:
                 res['production_id'] = production.id
             if 'product_id' in fields:
@@ -35,6 +39,8 @@ class MrpProductProduce(models.TransientModel):
                 res['serial'] = bool(serial_finished)
             if 'product_qty' in fields:
                 res['product_qty'] = todo_quantity
+            if 'todo_product_qty' in fields:
+                res['todo_product_qty'] = self._get_todo(production)
             if 'produce_line_ids' in fields:
                 lines = []
                 for move in production.move_raw_ids.filtered(lambda x: (x.product_id.tracking != 'none') and x.state not in ('done', 'cancel') and x.bom_line_id):
@@ -81,6 +87,7 @@ class MrpProductProduce(models.TransientModel):
     production_id = fields.Many2one('mrp.production', 'Production')
     product_id = fields.Many2one('product.product', 'Product')
     product_qty = fields.Float(string='Quantity', digits=dp.get_precision('Product Unit of Measure'), required=True)
+    todo_quantity = fields.Float(string='Todo Quantity', digits=dp.get_precision('Product Unit of Measure'))
     product_uom_id = fields.Many2one('product.uom', 'Unit of Measure')
     lot_id = fields.Many2one('stock.production.lot', string='Lot')
     produce_line_ids = fields.One2many('mrp.product.produce.line', 'product_produce_id', string='Product to Track')
@@ -115,6 +122,14 @@ class MrpProductProduce(models.TransientModel):
                 'state': 'progress',
                 'date_start': datetime.now(),
             })
+        # print "self.todo_quantity, quantity", self.todo_quantity, quantity
+        # print "self._get_todo(self.production_id)", self._get_todo(self.production_id)
+        if self._get_todo(self.production_id) > 0:
+            action = self.production_id.open_produce_product()
+            # action['res_id'] = self.id
+            # print ("action >>>>>>>>>>>>>", action)
+            action['context'] = {'active_id': self.production_id.id}
+            return action
         return {'type': 'ir.actions.act_window_close'}
 
     @api.multi
