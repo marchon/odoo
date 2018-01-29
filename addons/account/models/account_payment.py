@@ -17,6 +17,10 @@ MAP_INVOICE_TYPE_PAYMENT_SIGN = {
     'out_refund': 1,
 }
 
+#TODO OCO
+import logging
+_logger = logging.getLogger(__name__)
+
 class account_payment_method(models.Model):
     _name = "account.payment.method"
     _description = "Payment Methods"
@@ -31,6 +35,7 @@ class account_abstract_payment(models.AbstractModel):
     _description = "Contains the logic shared between models which allows to register payments"
 
     payment_type = fields.Selection([('outbound', 'Send Money'), ('inbound', 'Receive Money')], string='Payment Type', required=True)
+    #TODO OCO pour ci-dessous: ajouter les bacth payments (out) ?
     payment_method_id = fields.Many2one('account.payment.method', string='Payment Method Type', required=True, oldname="payment_method",
         help="Manual: Get paid by cash, check or any other method outside of Odoo.\n"\
         "Electronic: Get paid automatically through a payment acquirer by requesting a transaction on a card saved by the customer when buying or subscribing online (payment token).\n"\
@@ -80,6 +85,7 @@ class account_abstract_payment(models.AbstractModel):
             self.payment_method_id = payment_methods and payment_methods[0] or False
             # Set payment method domain (restrict to methods enabled for the journal and to selected payment type)
             payment_type = self.payment_type in ('outbound', 'transfer') and 'outbound' or 'inbound'
+            #import pdb; pdb.set_trace() TODO OCO
             return {'domain': {'payment_method_id': [('payment_type', '=', payment_type), ('id', 'in', payment_methods.ids)]}}
         return {}
 
@@ -338,6 +344,7 @@ class account_payment(models.Model):
 
     @api.onchange('amount', 'currency_id')
     def _onchange_amount(self):
+        #import pdb; pdb.set_trace() #TODO OCO
         jrnl_filters = self._compute_journal_domain_and_types()
         journal_types = jrnl_filters['journal_types']
         domain_on_types = [('type', 'in', list(journal_types))]
