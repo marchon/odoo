@@ -2545,7 +2545,7 @@ var BasicModel = AbstractModel.extend({
                 changes[fieldName] = value ? this.localData[value].res_id : false;
             } else if (type === 'reference' && fieldName in changes) {
                 value = changes[fieldName];
-                changes[fieldName] = value ?
+                changes[fieldName] = value && this.localData[value] ?
                     this.localData[value].model + ',' + this.localData[value].res_id :
                     false;
             } else if (type === 'char' && changes[fieldName] === '') {
