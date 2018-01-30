@@ -3825,6 +3825,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 if old.env.lang and callable(field.translate):
                     # the new value *without lang* must be the old value without lang
                     new_wo_lang[name] = old_wo_lang[name]
+                valses = []
                 for vals in Translation.search_read(domain):
                     del vals['id']
                     del vals['source']      # remove source to avoid triggering _set_src
@@ -3836,7 +3837,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                             vals['source'] = old_wo_lang[name]
                         # the value should be the new value (given by copy())
                         vals['value'] = new_val
-                    Translation.create(vals)
+                    valses.append(vals)
+                Translation.create(valses)
 
     @api.multi
     @api.returns('self', lambda value: value.id)
