@@ -3,25 +3,32 @@
     <data>
         <!-- Account invoice refund reason -->
         <record id="refund_reason_01" model="account.invoice.refund.reason">
-            <field name="name">01-Sales Return</field>
+            <field name="code">01</field>
+            <field name="name">Sales Return</field>
         </record>
         <record id="refund_reason_02" model="account.invoice.refund.reason">
-            <field name="name">02-Post Sale Discount</field>
+            <field name="code">02</field>
+            <field name="name">Post Sale Discount</field>
         </record>
         <record id="refund_reason_03" model="account.invoice.refund.reason">
-            <field name="name">03-Deficiency in services</field>
+            <field name="code">03</field>
+            <field name="name">Deficiency in services</field>
         </record>
         <record id="refund_reason_04" model="account.invoice.refund.reason">
-            <field name="name">04-Correction in Invoice</field>
+            <field name="code">04</field>
+            <field name="name">Correction in Invoice</field>
         </record>
         <record id="refund_reason_05" model="account.invoice.refund.reason">
-            <field name="name">05-Change in POS</field>
+            <field name="code">05</field>
+            <field name="name">Change in POS</field>
         </record>
         <record id="refund_reason_06" model="account.invoice.refund.reason">
-            <field name="name">06-Finalization of Provisional assessment</field>
+            <field name="code">06</field>
+            <field name="name">Finalization of Provisional assessment</field>
         </record>
         <record id="refund_reason_07" model="account.invoice.refund.reason">
-            <field name="name">07-Others</field>
+            <field name="code">07</field>
+            <field name="name">Others</field>
         </record>
 
     </data>

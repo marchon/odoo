@@ -49,10 +49,18 @@ class AccountInvoice(models.Model):
         tax_datas = {}
         cgst_tag_id = self.env.ref('l10n_in.cgst_tag_tax').id
         sgst_tag_id = self.env.ref('l10n_in.sgst_tag_tax').id
+        igst_tag_tax = self.env.ref('l10n_in.sgst_tag_tax').id
+        cess_tag_id = self.env.ref('l10n_in.cess_tag_tax').id
+        cess_amount = 0
+        for line in self.mapped('tax_line_ids').filtered(lambda i: cess_tag_id in i.tax_id.tag_ids.ids):
+            cess_amount += line.amount_total
         for line in self.mapped('tax_line_ids'):
-            tax_rate = line.tax_id.amount
-            if sgst_tag_id in line.tax_id.tag_ids.ids or cgst_tag_id in line.tax_id.tag_ids.ids:
-                tax_rate *= 2
-            tax_datas.setdefault(tax_rate,{}).update({'base_amount':line.base})
+            if sgst_tag_id in line.tax_id.tag_ids.ids or cgst_tag_id in line.tax_id.tag_ids.ids or igst_tag_tax in line.tax_id.tag_ids.ids:
+                tax_rate = line.tax_id.amount
+                if sgst_tag_id in line.tax_id.tag_ids.ids or cgst_tag_id in line.tax_id.tag_ids.ids:
+                    tax_rate *= 2
+                tax_datas.setdefault(tax_rate,{}).update({'base_amount':line.base, 'cess_amount':cess_amount})
+        for invoice_line in self.invoice_line_ids.filtered(lambda i: i.invoice_line_tax_ids.ids == []):
+            tax_datas.setdefault(0,{}).update({'base_amount':invoice_line.price_subtotal, 'cess_amount': 0})
         return tax_datas
 

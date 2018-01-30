@@ -5,6 +5,7 @@
         <field name="priority">1</field>
         <field name="arch" type="xml">
             <tree string="CN/DN/Refund reason" editable="bottom">
+                <field name="code" />
                 <field name="name" />
             </tree>
         </field>

@@ -18,6 +18,6 @@ class AccountChartTemplate(models.Model):
             if journal['code'] == 'INV':
                 journal['name'] = _('Tax Invoices')
 
-        res += [{'type': 'sale', 'name': _('Retail Invoices'), 'code': 'RETINV', 'company_id': company.id, 'show_on_dashboard': True,},
-                {'type': 'sale', 'name': _('Export Invoices'), 'code': 'EXPINV', 'company_id': company.id, 'show_on_dashboard': True,},]
+        res += [{'type': 'sale', 'name': _('Retail Invoices'), 'code': 'RET', 'company_id': company.id, 'show_on_dashboard': True,},
+                {'type': 'sale', 'name': _('Export Invoices'), 'code': 'EXP', 'company_id': company.id, 'show_on_dashboard': True,},]
         return res

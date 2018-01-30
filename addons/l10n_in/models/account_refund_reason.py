@@ -7,8 +7,17 @@ class AccountInvoiceRefundReason(models.Model):
 
     _name = "account.invoice.refund.reason"
 
-    name = fields.Char("Name")
+    code = fields.Char("Sequence Code", required=True)
+    name = fields.Char("Name", required=True)
 
     _sql_constraints = [
-        ('name_uniq', 'unique (name)', 'The refund reason must be unique!')
+        ('code_uniq', 'unique (code)', 'The Sequence Code must be unique!')
     ]
+
+    @api.multi
+    def name_get(self):
+        res = []
+        for reason in self:
+            name = '%s - %s' % (reason.code, reason.name)
+            res.append((reason.id, name))
+        return res
