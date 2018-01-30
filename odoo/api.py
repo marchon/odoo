@@ -52,7 +52,7 @@ from inspect import currentframe, getargspec
 from pprint import pformat
 from weakref import WeakSet
 
-from decorator import decorator
+from decorator import decorate, decorator
 from werkzeug.local import Local, release_local
 
 from odoo.tools import frozendict, classproperty, StackMap
@@ -315,6 +315,8 @@ def model(method):
 
         Notice that no ``ids`` are passed to the method in the traditional style.
     """
+    if method.__name__ == 'create':
+        return create_single(method)
     method._api = 'model'
     return method
 
@@ -416,6 +418,45 @@ def model_cr_context(method):
     """
     method._api = 'model_cr_context'
     return method
+
+
+def _create_single(create, self, arg):
+    # 'create' expects a dict and returns a record
+    if isinstance(arg, Mapping):
+        return create(self, arg)
+    return self.browse().concat(*(create(self, vals) for vals in arg))
+
+
+def create_single(method):
+    """ Decorate a method that takes a dictionary and creates a single record.
+        The method may be called with either a single dict or a list of dicts::
+
+            record = model.create(vals)
+            records = model.create([vals, ...])
+    """
+    wrapper = decorate(method, _create_single)
+    wrapper._api = 'model_create'
+    return wrapper
+
+
+def _create_multi(create, self, arg):
+    # 'create' expects a list of dicts and returns a recordset
+    if isinstance(arg, Mapping):
+        return create(self, [arg])
+    return create(self, arg)
+
+
+def create_multi(method):
+    """ Decorate a method that takes a list of dictionaries and creates multiple
+        records. The method may be called with either a single dict or a list of
+        dicts::
+
+            record = model.create(vals)
+            records = model.create([vals, ...])
+    """
+    wrapper = decorate(method, _create_multi)
+    wrapper._api = 'model_create'
+    return wrapper
 
 
 def cr(method):
@@ -664,15 +705,24 @@ def expected(decorator, func):
     return decorator(func) if not hasattr(func, '_api') else func
 
 
-
-def call_kw_model(method, self, args, kwargs):
+def _call_kw_model(method, self, args, kwargs):
     context, args, kwargs = split_context(method, args, kwargs)
     recs = self.with_context(context or {})
     _logger.debug("call %s.%s(%s)", recs, method.__name__, Params(args, kwargs))
     result = method(recs, *args, **kwargs)
     return downgrade(method, result, recs, args, kwargs)
 
-def call_kw_multi(method, self, args, kwargs):
+
+def _call_kw_model_create(method, self, args, kwargs):
+    # special case for method 'create'
+    context, args, kwargs = split_context(method, args, kwargs)
+    recs = self.with_context(context or {})
+    _logger.debug("call %s.%s(%s)", recs, method.__name__, Params(args, kwargs))
+    result = method(recs, *args, **kwargs)
+    return result.id if isinstance(args[0], Mapping) else result.ids
+
+
+def _call_kw_multi(method, self, args, kwargs):
     ids, args = args[0], args[1:]
     context, args, kwargs = split_context(method, args, kwargs)
     recs = self.with_context(context or {}).browse(ids)
@@ -680,13 +730,17 @@ def call_kw_multi(method, self, args, kwargs):
     result = method(recs, *args, **kwargs)
     return downgrade(method, result, recs, args, kwargs)
 
+
 def call_kw(model, name, args, kwargs):
     """ Invoke the given method ``name`` on the recordset ``model``. """
     method = getattr(type(model), name)
-    if getattr(method, '_api', None) == 'model':
-        return call_kw_model(method, model, args, kwargs)
+    api = getattr(method, '_api', None)
+    if api == 'model':
+        return _call_kw_model(method, model, args, kwargs)
+    elif api == 'model_create':
+        return _call_kw_model_create(method, model, args, kwargs)
     else:
-        return call_kw_multi(method, model, args, kwargs)
+        return _call_kw_multi(method, model, args, kwargs)
 
 
 class Environment(Mapping):
