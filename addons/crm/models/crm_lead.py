@@ -911,7 +911,7 @@ class Lead(models.Model):
         if help:
             help_title = ""
             if self._context.get('default_type') == 'lead':
-                help_title = _('Click here to add new Leads')
+                help_title = _('Add new a lead')
             else:
                 help_title = _('Create a new opportunity to add it to your pipeline')
             alias_record = self.env['mail.alias'].search([
@@ -925,11 +925,11 @@ class Lead(models.Model):
                 email = '%s@%s' % (alias_record.alias_name, alias_record.alias_domain)
                 email_link = "<a href='mailto:%s'>%s</a>" % (email, email)
                 help_title = _('%s or send an email to %s') % (help_title, email_link)
-            return '<p class="o_view_nocontent_smiling_face">%s</p><p>%s</p>' % (help_title, help)
+            return '<p class="o_view_nocontent_smiling_face">%s</p>' % (help_title)
         return super(Lead, self.with_context(
             empty_list_help_model='crm.team',
             empty_list_help_id=self._context.get('default_team_id', False),
-            empty_list_help_document_name= _('leads') if self._context.get('default_type') == 'lead' else _('opportunity'),
+            empty_list_help_document_name= _('lead') if self._context.get('default_type') == 'lead' else _('opportunity'),
         )).get_empty_list_help(help)
 
     @api.multi
