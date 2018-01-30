@@ -3,7 +3,7 @@
 
 import base64
 
-from odoo import http, _
+from odoo import fields, http, _
 from odoo.exceptions import AccessError
 from odoo.http import request
 from odoo.tools import consteq
@@ -53,6 +53,7 @@ class CustomerPortal(CustomerPortal):
         values = {
             'order': order,
             'order_invoice_lines': order_invoice_lines,
+            'portal_layout': True,
         }
         if access_token:
             values['no_breadcrumbs'] = True
@@ -182,6 +183,11 @@ class CustomerPortal(CustomerPortal):
             return request.redirect('/my')
 
         values = self._order_get_page_view_values(order_sudo, access_token, **kw)
+        if order_sudo.validity_date:
+            values.update({
+                'days_valid': (fields.Date.from_string(order_sudo.validity_date) - fields.Date.from_string(fields.Date.today())).days + 1,
+                'order_valid': (not order_sudo.validity_date) or (fields.Date.today() <= order_sudo.validity_date),
+            })
         return request.render("sale.portal_order_page", values)
 
     @http.route(['/my/orders/pdf/<int:order_id>'], type='http', auth="public", website=True)
