@@ -177,7 +177,6 @@ class Users(models.Model):
     _inherits = {'res.partner': 'partner_id'}
     _order = 'name, login'
     __uid_cache = defaultdict(dict)             # {dbname: {uid: password}}
-    __session_token_cache = defaultdict(dict)   # {dbname: {uid: {session_id: token}}}
 
     # User can write on a few of his own fields (but not his groups for example)
     SELF_WRITEABLE_FIELDS = ['signature', 'action_id', 'company_id', 'email', 'name', 'image', 'image_medium', 'image_small', 'lang', 'tz']
@@ -378,7 +377,7 @@ class Users(models.Model):
             db = self._cr.dbname
             for id in self.ids:
                 self.__uid_cache[db].pop(id, None)
-                self._invalid_session(db, id)
+            self._invalidate_session_cache()
 
         return res
 
@@ -389,7 +388,7 @@ class Users(models.Model):
         db = self._cr.dbname
         for id in self.ids:
             self.__uid_cache[db].pop(id, None)
-            self._invalid_session(db, id)
+        self._invalidate_session_cache()
         return super(Users, self).unlink()
 
     @api.model
@@ -515,41 +514,35 @@ class Users(models.Model):
         finally:
             cr.close()
 
-    @classmethod
-    def _compute_session_token(cls, db, sid, uid):
-        if not cls.__session_token_cache[db].get(uid):
-            cls.__session_token_cache[db][uid] = dict()
+    def _get_session_token_fields(self):
+        token_fields = set(USER_PRIVATE_FIELDS + ['active', 'password_crypt'])
+        return set(self.fields_get_keys()).intersection(token_fields)
 
-        if cls.__session_token_cache[db][uid].get(sid):
-            return cls.__session_token_cache[db][uid][sid]
+    @tools.ormcache('uid', 'sid')
+    def _compute_session_token(self, sid, uid):
+        """ Compute a session token given a session id and a user id """
+        # retrieve user's password crypt
+        session_fields = ', '.join(self._get_session_token_fields()) # SQL-i prone
+        self.env.cr.execute("""SELECT %s, (SELECT value FROM ir_config_parameter WHERE key='database.secret')
+                                FROM res_users
+                                WHERE id=%%s""" % (session_fields), (uid,))
+        if self.env.cr.rowcount != 1:
+            self._invalidate_session_cache()
+            return False
+        # 'stringify' the fields to use as the key
+        data_fields = str(sorted(self.env.cr.fetchone()))
+        # generate hmac key
+        key = (u'%s-%s' % (uid, data_fields)).encode('utf-8')
+        # hmac the session id
+        data = sid.encode()
+        h = hmac.new(key, data, sha1)
+        # keep in the cache the token
+        return h.hexdigest()
 
-        with cls.pool.cursor() as cr:
-            self = api.Environment(cr, uid, {})[cls._name]
-            # retrieve user's password crypt
-            cr.execute('SELECT password_crypt FROM res_users WHERE id=%s AND active', (uid,))
-            if cr.rowcount != 1:
-                cls._invalid_session(db, uid, sid)
-                return False
-
-            password_crypt = cr.fetchone()[0]
-            db_secret = self.env['ir.config_parameter'].get_param('database.secret')
-            # generate hmac key
-            key = (u'%s-%s-%s' % (db_secret, uid, password_crypt)).encode()
-            # hmac the session id
-            data = sid.encode('ascii')
-            h = hmac.new(key, data, sha1)
-            # keep in the cache the token
-            cls.__session_token_cache[db][uid][sid] = h.hexdigest()
-            return cls.__session_token_cache[db][uid][sid]
-
-
-    @classmethod
-    def _invalid_session(cls, db, uid, sid=None):
-        if cls.__session_token_cache[db].get(uid):
-            if sid:
-                cls.__session_token_cache[db][uid].pop(sid, None)
-            else:
-                cls.__session_token_cache[db][uid] = dict()
+    @api.multi
+    def _invalidate_session_cache(self):
+        """ Clear the sessions cache """
+        self._compute_session_token.clear_cache(self)
 
     @api.model
     def change_password(self, old_passwd, new_passwd):

@@ -1061,15 +1061,8 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         """
         if not self.db or not self.uid:
             raise SessionExpiredException("Session expired")
-        # if this session still uses a password
-        # we convert it to the new session type
-        if self.get('password'):
-            security.check(self.db, self.uid, self['password'])
-            self.session_token = security.compute_session_token(self.db, self.sid, self.uid)
-            self.pop('password')
-        elif not self.get('session_token'): # if the session is in a "semi-state" where it is not fully converted to the new session type
-            self.session_token = security.compute_session_token(self.db, self.sid, self.uid)
-        elif not security.check_session(self.db, self.sid, self.uid, self.session_token): # here we check if the session is still valid
+        # here we check if the session is still valid
+        if not security.check_session(self.db, self.sid, self.uid, self.session_token):
             raise SessionExpiredException("Session expired")
 
     def logout(self, keep_db=False):
