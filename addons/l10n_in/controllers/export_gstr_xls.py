@@ -80,7 +80,7 @@ class ExportXLS(http.Controller):
         if gst_type == 'b2cl':
             row_data = ['No. of Invoices', '', 'Total Inv Value', '', '', 'Total Taxable Value', 'Total Cess', '']
             column_data = ['Invoice Number', 'Invoice Date', 'Invoice Value', 'Place Of Supply', 'Rate', 'Taxable Value', 'Cess Amount', 'E-Commerce GSTIN']
-            domain += [('amount_total', '>', b2cs_amount),('journal_id.code','=','RETIN')]
+            domain += [('amount_total', '>', b2cs_amount),('journal_id.code','=','RET')]
             invoices = request.env['account.invoice'].search(domain)
             for invoice in invoices:
                 for rate, value in invoice._invoice_line_group_tax_values().items():
@@ -89,7 +89,7 @@ class ExportXLS(http.Controller):
         if gst_type == 'b2cs':
             row_data = ['', '', '', 'Total Taxable  Value', 'Total Cess', '']
             column_data = ['Type', 'Place Of Supply', 'Rate', 'Taxable Value', 'Cess Amount', 'E-Commerce GSTIN']
-            domain += [('amount_total', '<=', b2cs_amount),('journal_id.code','=','RETIN')]
+            domain += [('amount_total', '<=', b2cs_amount),('journal_id.code','=','RET')]
             invoices = request.env['account.invoice'].search(domain)
             for invoice in invoices:
                 for rate, value in invoice._invoice_line_group_tax_values().items():
@@ -109,7 +109,7 @@ class ExportXLS(http.Controller):
             row_data = ['', 'No. of Notes/Vouchers', '', '', 'No. of Invoices', '', '', '', 'Total Note Value', 'Total Taxable Value', 'Total Cess', '']
             column_data = ['UR Type', 'Note/Refund Voucher Number', 'Note/Refund Voucher date', 'Document Type', 'Invoice/Advance Receipt Number', 'Invoice/Advance Receipt date', 'Reason For Issuing document',
             'Place Of Supply', 'Note/Refund Voucher Value', 'Rate', 'Taxable Value', 'Cess Amount', 'Pre GST']
-            domain += [('type', '=', 'out_refund'),('journal_id.code','in',('RETIN','EXPINV'))]
+            domain += [('type', '=', 'out_refund'),('journal_id.code','in',('RET','EXP'))]
             invoices = request.env['account.invoice'].search(domain)
             for invoice in invoices:
                 ur_type = 'B2CL'
@@ -121,7 +121,7 @@ class ExportXLS(http.Controller):
         if gst_type == 'exp':
             row_data = ['', 'No. of Invoices', '', 'Total Invoice Value', '', 'No. of Shipping Bill', '', '', 'Total Taxable Value']
             column_data = ['Export Type', 'Invoice Number', 'Invoice date', 'Invoice Value', 'Port Code', 'Shipping Bill Number', 'Shipping Bill Date', 'Rate', 'Taxable Value']
-            domain += [('journal_id.code','=','EXPINV')]
+            domain += [('journal_id.code','=','EXP')]
             invoices = request.env['account.invoice'].search(domain)
             for invoice in invoices:
                 for rate, value in invoice._invoice_line_group_tax_values().items():
