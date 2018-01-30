@@ -6,7 +6,7 @@
 import logging
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError, AccessError
+from odoo.exceptions import UserError
 from odoo.tools.translate import _
 
 _logger = logging.getLogger(__name__)

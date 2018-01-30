@@ -28,6 +28,7 @@
                     <group>
                         <group name="description" string="Description">
                             <field name="name"/>
+                            <field name="time_type"/>
                             <field name="double_validation"/>
                             <field name="limit"/>
                         </group>

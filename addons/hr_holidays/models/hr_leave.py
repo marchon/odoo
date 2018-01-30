@@ -8,7 +8,7 @@ import math
 from datetime import timedelta
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError, AccessError, ValidationError
+from odoo.exceptions import UserError, ValidationError
 from odoo.tools import float_compare
 from odoo.tools.translate import _
 
@@ -249,7 +249,8 @@ class HolidaysRequest(models.Model):
                 'holiday_id': leave.id,
                 'date_to': leave.date_to,
                 'resource_id': leave.employee_id.resource_id.id,
-                'calendar_id': leave.employee_id.resource_calendar_id.id
+                'calendar_id': leave.employee_id.resource_calendar_id.id,
+                'time_type': leave.holiday_status_id.time_type,
             })
         return True
 

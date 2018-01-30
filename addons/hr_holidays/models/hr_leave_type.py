@@ -56,6 +56,9 @@ class HolidaysType(models.Model):
         help="When selected, the Allocation/Leave Requests for this type require a second validation to be approved.")
     company_id = fields.Many2one('res.company', string='Company', default=lambda self: self.env.user.company_id)
 
+    time_type = fields.Selection([('leave', 'Leave'), ('other', 'Other')], default='leave', string="Kind of Leave",
+                                 help="Whether this should be computed as a holiday or as work time (eg: formation)")
+
     @api.multi
     def get_days(self, employee_id):
         # need to use `dict` constructor to create a dict per id
