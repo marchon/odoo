@@ -14,6 +14,10 @@ The service is provided by the In App Purchase Odoo platform.
     'data': [
         'wizard/send_sms_views.xml',
         'views/res_partner_views.xml',
+        'static/src/xml/templates.xml',
+    ],
+    'qweb': [
+        'static/src/xml/sms_widget.xml',
     ],
     'installable': True,
     'auto_install': True,
