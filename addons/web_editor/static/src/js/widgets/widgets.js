@@ -1040,8 +1040,8 @@ var MediaDialog = Dialog.extend({
         var _super = this._super.bind(this, arguments);
 
         if (this.options.select_images) {
-            return this.active.save().then(function (data) {
-                this.final_data = data;
+            return $.when(this.active.save()).then(function (data) {
+                self.final_data = data;
                 return _super();
             });
         }
