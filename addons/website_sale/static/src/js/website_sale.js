@@ -279,7 +279,7 @@ odoo.define('website_sale.website_sale', function (require) {
                 var $thumbnail = $(event_source).closest('tr.js_product, .oe_website_sale').find('img.js_variant_img_small');
                 if ($thumbnail.length !== 0) { // if only one, thumbnails are not displayed
                     $thumbnail.attr("src", "/web/image/product.product/" + product_id + "/image/90x90");
-                    $('.carousel').carousel(0);
+                    $('.carousel').carousel(1);
                 }
             }
             else {
