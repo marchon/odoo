@@ -259,10 +259,40 @@ function styleToClass($editable) {
     $c.remove();
 }
 
+/**
+ * Converts font icons to images.
+ *
+ * @param {jQuery} $editable - the element in which the font icons have to be
+ *                           converted to images
+ */
+function attachmentThumbnailToLinkImg($editable) {
+    $editable.find('a[href*="/web/content/"][data-mimetype]:empty').each(function () {
+        var $link = $(this);
+        var $img = $('<img/>')
+            .attr('src', $link.css('background-image').replace(/(^url\(['"])|(['"]\)$)/g, ''))
+            .css('height', Math.max(1, $link.height()) + 'px')
+            .css('width', Math.max(1, $link.width()) + 'px');
+        $link.append($img);
+    });
+}
+
+/**
+ * Converts images which were the result of a font icon convertion to a font
+ * icon again.
+ *
+ * @param {jQuery} $editable - the element in which the images will be converted
+ *                           back to font icons
+ */
+function linkImgToAttachmentThumbnail($editable) {
+    $editable.find('a[href*="/web/content/"][data-mimetype] > img').remove();
+}
+
 return {
     fontToImg: fontToImg,
     imgToFont: imgToFont,
     classToStyle: classToStyle,
     styleToClass: styleToClass,
+    attachmentThumbnailToLinkImg: attachmentThumbnailToLinkImg,
+    linkImgToAttachmentThumbnail: linkImgToAttachmentThumbnail,
 };
 });
