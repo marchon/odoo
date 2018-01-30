@@ -52,8 +52,10 @@ class PurchaseOrder(models.Model):
 
             if any(float_compare(line.qty_invoiced, line.product_qty if line.product_id.purchase_method == 'purchase' else line.qty_received, precision_digits=precision) == -1 for line in order.order_line):
                 order.invoice_status = 'to invoice'
-            elif all(float_compare(line.qty_invoiced, line.product_qty if line.product_id.purchase_method == 'purchase' else line.qty_received, precision_digits=precision) >= 0 for line in order.order_line) and order.invoice_ids:
+            elif all(float_compare(line.qty_invoiced, line.product_qty if line.product_id.purchase_method == 'purchase' else line.qty_received, precision_digits=precision) == 0 for line in order.order_line) and order.invoice_ids:
                 order.invoice_status = 'invoiced'
+            elif any(float_compare(line.qty_invoiced, line.product_qty if line.product_id.purchase_method == 'purchase' else line.qty_received, precision_digits=precision) > 0 for line in order.order_line) and order.invoice_ids:
+                order.invoice_status = 'exception'
             else:
                 order.invoice_status = 'no'
 
@@ -135,6 +137,7 @@ class PurchaseOrder(models.Model):
         ('no', 'Nothing to Bill'),
         ('to invoice', 'Waiting Bills'),
         ('invoiced', 'No Bill to Receive'),
+        ('exception', 'Exception'),
         ], string='Billing Status', compute='_get_invoiced', store=True, readonly=True, copy=False, default='no')
 
     picking_count = fields.Integer(compute='_compute_picking', string='Picking count', default=0, store=True)
