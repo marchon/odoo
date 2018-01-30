@@ -183,6 +183,22 @@ class TestORM(TransactionCase):
         group_user.write({'users': [(3, user.id)]})
         self.assertTrue(user.share)
 
+    def test_create_multi(self):
+        """ create for multiple records """
+        valses = [{'name': name} for name in ('Foo', 'Bar', 'Baz')]
+        for vals in valses:
+            record = self.env['res.partner'].create(vals)
+            self.assertEqual(len(record), 1)
+            self.assertEqual(record.name, vals['name'])
+
+        records = self.env['res.partner'].create([])
+        self.assertFalse(records)
+
+        records = self.env['res.partner'].create(valses)
+        self.assertEqual(len(records), len(valses))
+        for record, vals in pycompat.izip(records, valses):
+            self.assertEqual(record.name, vals['name'])
+
 
 class TestInherits(TransactionCase):
     """ test the behavior of the orm for models that use _inherits;
