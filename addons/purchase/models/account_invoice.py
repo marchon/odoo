@@ -214,7 +214,8 @@ class AccountInvoice(models.Model):
     def create(self, vals):
         invoice = super(AccountInvoice, self).create(vals)
         purchase = invoice.invoice_line_ids.mapped('purchase_line_id.order_id')
-        if purchase and not invoice.refund_invoice_id:
+        recurrent_invoice = self.env.context.get('recurrent_invoice')
+        if purchase and not invoice.refund_invoice_id and not recurrent_invoice:
             message = _("This vendor bill has been created from: %s") % (",".join(["<a href=# data-oe-model=purchase.order data-oe-id="+str(order.id)+">"+order.name+"</a>" for order in purchase]))
             invoice.message_post(body=message)
         return invoice
