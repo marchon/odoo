@@ -256,8 +256,7 @@ class Users(models.Model):
         # Alternative: iterate on *all* passwords and use CryptContext.identify
         cr.execute("""
         SELECT id, password FROM res_users
-        WHERE active 
-          AND password IS NOT NULL
+        WHERE password IS NOT NULL
           AND password !~ '^\$[^$]+\$[^$]+\$.'
         """)
         if self.env.cr.rowcount:
