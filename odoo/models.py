@@ -3218,13 +3218,20 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # create or update parent records
         for model_name, parent_name in self._inherits.items():
+            create_datas = []
             for data in datas:
-                parent_record = self.env[model_name].browse(data.store.get(parent_name))
-                parent_vals = data.inherited[model_name]
-                if not parent_record:
-                    data.store[parent_name] = parent_record.create(parent_vals).id
-                elif parent_vals:
-                    parent_record.write(parent_vals)
+                if not data.store.get(parent_name):
+                    create_datas.append(data)
+                elif data.inherited[model_name]:
+                    parent = self.env[model_name].browse(data.store[parent_name])
+                    parent.write(data.inherited[model_name])
+
+            if not create_datas:
+                continue
+            parent_valses = [data.inherited[model_name] for data in create_datas]
+            parents = self.env[model_name].create(parent_valses)
+            for parent, data in pycompat.izip(parents, create_datas):
+                data.store[parent_name] = parent.id
 
         # create records with stored fields
         records = self.browse([self._create(data.store).id for data in datas])
