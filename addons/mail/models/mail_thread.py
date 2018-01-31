@@ -1955,10 +1955,10 @@ class MailThread(models.AbstractModel):
         return composer.send_mail()
 
     def message_notify(self, partner_ids, body='', subject=False, **kwargs):
-        if self._name != 'mail.thread':
-            raise ValueError('CACA')
-        if self.ids:
-            raise ValueError('CACA')
+        # if self._name != 'mail.thread':
+        #     raise ValueError('CACA')
+        # if self.ids:
+        #     raise ValueError('CACA')
 
         kw_author = kwargs.pop('author_id', False)
         if kw_author:
@@ -1982,7 +1982,7 @@ class MailThread(models.AbstractModel):
             'message_id': tools.generate_tracking_message_id('message-notify'),
         }
         msg_values.update(kwargs)
-        return self.message_post(**msg_values)
+        return self.env['mail.thread'].message_post(**msg_values)
 
     def _message_log(self, body='', subject=False, message_type='notification', **kwargs):
         """ Shortcut allowing to post note on a document. It does not perform
