@@ -2132,15 +2132,18 @@ class MailThread(models.AbstractModel):
             ctx.pop('active_domain')
             self = self.with_context(ctx)
 
+        assignation_tpl = self.env.ref('mail.message_user_assigned')
+
         for record in self:
-            record.message_post_with_view(
-                'mail.message_user_assigned',
-                composition_mode='mass_mail',
+            values = {
+                'object': record,
+            }
+            assignation_msg = assignation_tpl.render(values, engine='ir.qweb')
+            record.message_notify(
+                subject='You have been assigned !',
+                body=assignation_msg,
                 partner_ids=[(4, pid) for pid in partner_ids],
-                auto_delete=True,
-                auto_delete_message=True,
-                parent_id=False, # override accidental context defaults
-                subtype_id=self.env.ref('mail.mt_note').id)
+            )
 
     @api.multi
     def message_auto_subscribe(self, updated_fields, values=None):
