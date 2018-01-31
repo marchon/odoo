@@ -334,8 +334,7 @@ class MrpProduction(models.Model):
                 values['name'] = self.env['stock.picking.type'].browse(values['picking_type_id']).sequence_id.next_by_id()
             else:
                 values['name'] = self.env['ir.sequence'].next_by_code('mrp.production') or _('New')
-        if not values.get('procurement_group_id'):
-            values['procurement_group_id'] = self.env["procurement.group"].create({'name': values['name']}).id
+        values['procurement_group_id'] = self.env["procurement.group"].create({'name': values['name']}).id
         production = super(MrpProduction, self).create(values)
         production._generate_moves()
         return production
