@@ -2212,7 +2212,7 @@ class MailThread(models.AbstractModel):
             self.message_subscribe(channel_ids=[cid], subtype_ids=subtypes, force=(subtypes != None))
 
         # remove the current user from the needaction partner to avoid to notify the author of the message
-        user_pids = [user.partner_id.id for user in to_add_users if user != self.env.user and user.notification_type == 'email']
+        user_pids = [user.partner_id.id for user in to_add_users if user != self.env.user]
         self._message_auto_subscribe_notify(user_pids)
 
         return True
