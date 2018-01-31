@@ -45,6 +45,7 @@ class ExportXLS(http.Controller):
         fp.close()
         return data
 
+
     def change_date_to_other_format(self, str_date):
         return str_date and fields.Date.from_string(str_date).strftime('%d-%b-%Y') or ''
 
@@ -55,14 +56,11 @@ class ExportXLS(http.Controller):
         _, num_days = calendar.monthrange(int(year), int(month))
         first_day = datetime.date(int(year), int(month), 1)
         last_day = datetime.date(int(year), int(month), num_days)
-        cgst_group_id = request.env.ref('l10n_in.cgst_tag_tax').id
-        sgst_group_id = request.env.ref('l10n_in.sgst_tag_tax').id
-        igst_group_id = request.env.ref('l10n_in.igst_tag_tax').id
         #Get value from account settings
         ICPSudo = request.env['ir.config_parameter'].sudo()
         b2cs_amount = ICPSudo.get_param('l10n_in.l10n_in_b2cs_max') or 250000
         invoice_data = []
-        domain = [('date_invoice', '>' , first_day), ('date_invoice', '<', last_day), ('state', 'in', ['open', 'paid'])]
+        domain = [('date_invoice', '>=' , first_day), ('date_invoice', '<=', last_day), ('state', 'in', ['open', 'paid'])]
         if gst_type in ['b2b','b2cl','b2cs','exp','hsn']:
             domain += [('type', '=', 'out_invoice')]
 
@@ -133,7 +131,8 @@ class ExportXLS(http.Controller):
             #product_id = request.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
             payments = request.env['account.payment'].search([('payment_date', '>', first_day),
                                                               ('payment_date', '<', last_day),
-                                                              ('state', '=', 'posted'), ('payment_type', '=', 'inbound')])
+                                                              ('state', '=', 'posted'), ('payment_type', '=', 'inbound'),
+                                                              ('journal_id.type','in',('bank','cash'))])
             group_data = {}
             for payment in payments:
                 advance_amount = payment.amount
@@ -150,7 +149,7 @@ class ExportXLS(http.Controller):
             row_data = ['', '', 'Total Advance Adjusted', 'Total Cess']
             column_data = ['Place Of Supply', 'Rate', 'Gross Advance Adjusted', 'Cess Amount']
             group_data = {}
-            #product_id = request.env['ir.config_parameter'].sudo().get_param('sale.default_deposit_product_id')
+            domain += [('journal_id.code','in',('RET','EXP','INV'))]
             invoices = request.env['account.invoice'].search(domain)
             for invoice in invoices:
                 for invoice_payment in invoice._get_payments_vals():
@@ -167,31 +166,26 @@ class ExportXLS(http.Controller):
             row_data = ['No. of HSN', '', '', '', 'Total Value', 'Total Taxable Value', 'Total Integrated Tax', 'Total Central Tax', 'Total State/UT Tax', 'Total Cess']
             column_data = ['HSN', 'Description', 'UQC', 'Total Quantity', 'Total Value', 'Taxable Value', 'Integrated Tax Amount', 'Central Tax Amount', 'State/UT Tax Amount', 'Cess Amount']
             group_data = {}
+            domain += [('journal_id.code','in',('RET','EXP','INV'))]
             invoices = request.env['account.invoice'].search(domain)
             for invoice in invoices:
-                tax_values = invoice._invoice_line_tax_values()
                 for invoice_line in invoice.invoice_line_ids:
-                    igst = sgst = cgst = 0
-                    for tax_value in tax_values[invoice_line.id]:
-                        if igst_group_id in tax_value['tag_ids']:
-                            igst += tax_value['amount']
-                        if cgst_group_id in tax_value['tag_ids']:
-                            cgst += tax_value['amount']
-                        if sgst_group_id in tax_value['tag_ids']:
-                            sgst += tax_value['amount']
+                    tax_data = invoice._invoice_line_group_tax_values(line_id=invoice_line.id)
                     group_key = (invoice_line.product_id.l10n_in_hsn_code or'' , invoice_line.product_id.l10n_in_hsn_description or '', invoice_line.uom_id.name or '')
-                    group_data.setdefault(group_key,[]).append([invoice_line.quantity, invoice_line.price_total, invoice_line.price_subtotal_signed, igst, cgst, sgst,''])
+                    group_data.setdefault(group_key,{}).update({
+                            'hsn_code':invoice_line.product_id.l10n_in_hsn_code or'',
+                            'hsn_description':invoice_line.product_id.l10n_in_hsn_description or '',
+                            'uom':invoice_line.uom_id.name or '',
+                            'quantity': invoice_line.quantity + (group_data[group_key].get('quantity') or 0),
+                            'price_total':invoice_line.price_total + (group_data[group_key].get('price_total') or 0),
+                            'taxable_value':invoice_line.price_subtotal_signed + (group_data[group_key].get('taxable_value') or 0),
+                            'igst': tax_data['igst'] + (group_data[group_key].get('igst') or 0),
+                            'cgst': tax_data['cgst'] + (group_data[group_key].get('cgst') or 0),
+                            'sgst': tax_data['sgst'] + (group_data[group_key].get('sgst') or 0),
+                            'cess': tax_data['cess'] + (group_data[group_key].get('cess') or 0),
+                            })
             for key, values in group_data.items():
-                description = ''
-                total_quantity = total_value = taxable_value = igst = sgst = cgst = 0
-                for value in values:
-                    total_quantity += value[0]
-                    total_value += value[1]
-                    taxable_value += value[2]
-                    igst += value[3]
-                    sgst += value[4]
-                    cgst += value[5]
-                invoice_data.append((key[0], key[1], key[2], total_quantity, total_value, taxable_value, igst, sgst, cgst,''))
+                invoice_data.append((values['hsn_code'], values['hsn_description'], values['uom'], values['quantity'], values['price_total'], values['taxable_value'], values['igst'], values['cgst'], values['sgst'], values['cess']))
 
         if gst_type == 'docs':
             row_data = ['', '', '', 'Total Number', 'Total Cancelled']

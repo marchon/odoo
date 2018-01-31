@@ -44,23 +44,35 @@ class AccountInvoice(models.Model):
         return tax_datas
 
     @api.multi
-    def _invoice_line_group_tax_values(self):
+    def _invoice_line_group_tax_values(self, line_id=False):
         self.ensure_one()
         tax_datas = {}
         cgst_tag_id = self.env.ref('l10n_in.cgst_tag_tax').id
         sgst_tag_id = self.env.ref('l10n_in.sgst_tag_tax').id
-        igst_tag_tax = self.env.ref('l10n_in.sgst_tag_tax').id
+        igst_tag_tax = self.env.ref('l10n_in.igst_tag_tax').id
         cess_tag_id = self.env.ref('l10n_in.cess_tag_tax').id
-        cess_amount = 0
-        for line in self.mapped('tax_line_ids').filtered(lambda i: cess_tag_id in i.tax_id.tag_ids.ids):
-            cess_amount += line.amount_total
-        for line in self.mapped('tax_line_ids'):
-            if sgst_tag_id in line.tax_id.tag_ids.ids or cgst_tag_id in line.tax_id.tag_ids.ids or igst_tag_tax in line.tax_id.tag_ids.ids:
-                tax_rate = line.tax_id.amount
-                if sgst_tag_id in line.tax_id.tag_ids.ids or cgst_tag_id in line.tax_id.tag_ids.ids:
-                    tax_rate *= 2
-                tax_datas.setdefault(tax_rate,{}).update({'base_amount':line.base, 'cess_amount':cess_amount})
-        for invoice_line in self.invoice_line_ids.filtered(lambda i: i.invoice_line_tax_ids.ids == []):
-            tax_datas.setdefault(0,{}).update({'base_amount':invoice_line.price_subtotal, 'cess_amount': 0})
+        TAX = self.env['account.tax']
+        all_tax_data = {'igst':0, 'cgst':0, 'sgst':0, 'cess':0}
+        for line in self.mapped('invoice_line_ids').filtered(lambda i: line_id and line_id == i.id or i.id):
+            rate = 0
+            cess_amount = 0
+            price_unit = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+            tax_lines = line.invoice_line_tax_ids.compute_all(price_unit, line.invoice_id.currency_id, line.quantity, line.product_id, line.invoice_id.partner_id)['taxes']
+            for tax_line in tax_lines:
+                selected_tax_id = TAX.browse(tax_line['id'])
+                if cgst_tag_id in selected_tax_id.tag_ids.ids:
+                    rate += selected_tax_id.amount
+                    all_tax_data['cgst'] += tax_line['amount']
+                if sgst_tag_id in selected_tax_id.tag_ids.ids:
+                    rate += selected_tax_id.amount
+                    all_tax_data['sgst'] += tax_line['amount']
+                if igst_tag_tax in selected_tax_id.tag_ids.ids:
+                    rate = selected_tax_id.amount
+                    all_tax_data['igst'] += tax_line['amount']
+                if cess_tag_id in selected_tax_id.tag_ids.ids:
+                    cess_amount += tax_line['amount']
+                    all_tax_data['cess'] += tax_line['amount']
+            tax_datas.setdefault(rate,{}).update({'base_amount':line.price_subtotal + (tax_datas[rate].get('base_amount') or 0), 'cess_amount': cess_amount + (tax_datas[rate].get('cess_amount') or 0)})
+        if line_id:
+            return all_tax_data
         return tax_datas
-
