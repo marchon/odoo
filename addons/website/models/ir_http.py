@@ -155,10 +155,10 @@ class Http(models.AbstractModel):
         is_website_request = bool(getattr(request, 'is_frontend', False) and getattr(request, 'website', False))
         if not is_website_request:
             # Don't touch non website requests exception handling
-            logger.warning("handle_exception no website_request")
+            logger.warning("handle_exception no website_request: %s", request.httprequest.path)
             return super(Http, cls)._handle_exception(exception)
         else:
-            logger.warning("handle_exception website_request")
+            logger.warning("handle_exception website_request: %s", request.httprequest.path)
             logger.warning(exception)
             try:
                 response = super(Http, cls)._handle_exception(exception)
