@@ -243,6 +243,22 @@ var FormRenderer = BasicRenderer.extend({
         });
     },
     /**
+     * Enable swipe event
+     *
+     * @private
+     */
+    _enableSwipe: function () {
+        var self = this;
+        this.$('.o_form_sheet').swipe({
+            swipeLeft: function () {
+                self.trigger_up('swipe_left');
+            },
+            swipeRight: function () {
+                self.trigger_up('swipe_right');
+            },
+        });
+    },
+    /**
      * @private
      * @param {string} name
      * @returns {string}
@@ -852,22 +868,6 @@ var FormRenderer = BasicRenderer.extend({
                 // rendered
                 widget.renderWithLabel($label);
             }
-        });
-    },
-    /**
-     * Enable swipe event
-     *
-     * @private
-     */
-    _enableSwipe: function () {
-        var self = this;
-        this.$('.o_form_sheet').swipe({
-            swipeLeft: function () {
-                self.trigger_up('swipe_left');
-            },
-            swipeRight: function () {
-                self.trigger_up('swipe_right');
-            },
         });
     },
     /**

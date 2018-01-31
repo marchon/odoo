@@ -43,7 +43,6 @@ var FormView = BasicView.extend({
         this.controllerParams.mode = mode;
 
         this.rendererParams.mode = mode;
-        this.model = params.model;
         if (config.device.isMobile) {
             this.jsLibs.push('/web/static/lib/jquery.touchSwipe/jquery.touchSwipe.js');
         }
