@@ -1955,11 +1955,9 @@ class MailThread(models.AbstractModel):
         return composer.send_mail()
 
     def message_notify(self, partner_ids, body='', subject=False, **kwargs):
-        # if self._name != 'mail.thread':
-        #     raise ValueError('CACA')
-        # if self.ids:
-        #     raise ValueError('CACA')
-
+        """ Shortcut allowing to notify partners of messages not linked to
+        any document. It pushes notifications on inbox or by email depending
+        on the user configuration, like other notifications. """
         kw_author = kwargs.pop('author_id', False)
         if kw_author:
             author = self.env['res.partner'].sudo().browse(kw_author)
