@@ -3272,41 +3272,40 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         parent_store = self._parent_store_create_prepare(vals)
 
         # determine SQL values
-        columns = []                    # list of (column_name, format, value)
-        other_fields = []               # list of non-column fields
+        columns = {}                    # {colname: (format, value)}
+        other_vals = {}                 # non-column field values
+        trans_vals = {}                 # translated field values
         protected_fields = []           # list of fields to not recompute on self
-        translated_names = []           # list of translated field names
 
-        columns.append(('id', "nextval(%s)", self._sequence))
+        columns['id'] = ("nextval(%s)", self._sequence)
 
         for name, val in vals.items():
             field = self._fields[name]
             assert field.store
 
             if field.column_type:
-                column_val = field.convert_to_column(val, self, vals)
-                columns.append((name, field.column_format, column_val))
+                columns[name] = (field.column_format, field.convert_to_column(val, self, vals))
                 if field.translate is True:
-                    translated_names.append(name)
+                    trans_vals[name] = val
             else:
-                other_fields.append(field)
+                other_vals[name] = val
 
             if field.inverse:
                 protected_fields.append(field)
 
         if self._log_access:
-            columns.append(('create_uid', '%s', self._uid))
-            columns.append(('write_uid', '%s', self._uid))
-            columns.append(('create_date', '%s', AsIs("(now() at time zone 'UTC')")))
-            columns.append(('write_date', '%s', AsIs("(now() at time zone 'UTC')")))
+            columns['create_uid'] = ("%s", self._uid)
+            columns['write_uid'] = ("%s", self._uid)
+            columns['create_date'] = ("%s", AsIs("(now() at time zone 'UTC')"))
+            columns['write_date'] = ("%s", AsIs("(now() at time zone 'UTC')"))
 
         # insert a row for this record
         query = """INSERT INTO "%s" (%s) VALUES(%s) RETURNING id""" % (
                 self._table,
-                ', '.join('"%s"' % column[0] for column in columns),
-                ', '.join(column[1] for column in columns),
+                ', '.join('"%s"' % name for name in columns),
+                ', '.join(fmt for fmt, val in columns.values()),
             )
-        cr.execute(query, [column[2] for column in columns])
+        cr.execute(query, [val for fmt, val in columns.values()])
 
         # from now on, self is the new record
         self = self.browse(cr.fetchone()[0])
@@ -3322,7 +3321,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             self.modified(self._fields)
 
             # set the value of non-column fields
-            if other_fields:
+            if other_vals:
                 # discard default values from context
                 other = self.with_context({
                     key: val
@@ -3330,11 +3329,12 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     if not key.startswith('default_')
                 })
 
+                other_fields = [self._fields[name] for name in other_vals]
                 for field in sorted(other_fields, key=attrgetter('_sequence')):
-                    field.write(other, vals[field.name], create=True)
+                    field.write(other, other_vals[field.name], create=True)
 
                 # mark fields to recompute
-                self.modified(field.name for field in other_fields)
+                self.modified(other_vals)
 
             # check Python constraints
             self._validate_fields(vals)
@@ -3343,10 +3343,10 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # add translations
         if self.env.lang and self.env.lang != 'en_US':
-            for name in translated_names:
+            Translations = self.env['ir.translation']
+            for name, val in trans_vals.items():
                 tname = "%s,%s" % (self._name, name)
-                val = vals[name]
-                self.env['ir.translation']._set_ids(tname, 'model', self.env.lang, self.ids, val, val)
+                Translations._set_ids(tname, 'model', self.env.lang, self.ids, val, val)
 
         return self
 
