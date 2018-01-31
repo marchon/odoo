@@ -127,7 +127,7 @@ class Http(models.AbstractModel):
     def _serve_404(cls):
         req_page = request.httprequest.path
         page404 = 'website.%s' % (request.website.is_publisher() and 'page_404' or '404')
-        return request.render(page404, {'path': req_page[1:]})
+        return request.render(page404, {'path': req_page[1:]}, status=404)
 
     @classmethod
     def _serve_redirect(cls):
