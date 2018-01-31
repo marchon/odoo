@@ -286,7 +286,8 @@ class HrExpense(models.Model):
 
             # taxes move lines
             for tax in taxes['taxes']:
-                price = expense.currency_id.with_context(date=account_date).compute(tax['amount'], company_currency)
+                price = expense.currency_id._convert(
+                    tax['amount'], company_currency, expense.company_id, account_date)
                 amount_currency = price if different_currency else False
                 move_line_tax_values = {
                     'name': tax['name'],
