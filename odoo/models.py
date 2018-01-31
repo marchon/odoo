@@ -3225,18 +3225,19 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             record._cache.update(record._convert_to_cache(data.inverse))
 
             # in case several fields use the same inverse method, call it once
-            inv_fields = (self._fields[name] for name in data.inverse)
+            inv_fields = [self._fields[name] for name in data.inverse]
             for _inv, fields in groupby(inv_fields, attrgetter('inverse')):
                 fields[0].determine_inverse(record)
 
-            record.modified(set(data.inverse) - set(data.store))
+            # trick: no need to mark non-stored fields as modified, thanks to
+            # the transitive closure made over non-stored dependencies
 
-            # check Python constraints for inversed fields
-            record._validate_fields(set(data.inverse) - set(data.store))
+            # check Python constraints for non-stored inversed fields
+            record._validate_fields(field.name for field in inv_fields if not field.store)
 
-            # recompute fields
-            if self.env.recompute and self._context.get('recompute', True):
-                self.recompute()
+        # recompute fields
+        if self.env.recompute and self._context.get('recompute', True):
+            self.recompute()
 
         return record
 
