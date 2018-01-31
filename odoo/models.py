@@ -3150,9 +3150,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         return True
 
-    @api.model
+    @api.create_multi
     @api.returns('self', lambda value: value.id)
-    def create(self, vals):
+    def create(self, valses):
         """ create(vals) -> record
 
         Creates a new record for the model.
@@ -3174,35 +3174,40 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         """
         self.check_access_rights('create')
 
-        # add missing defaults
-        vals = self._add_missing_default_values(vals)
-
         bad_names = {'id', 'parent_left', 'parent_right'}
         if self._log_access:
             bad_names.update(LOG_ACCESS_COLUMNS)
         unknown_names = set()
 
-        # distribute fields into sets for various purposes
-        data = Data(
-            store={},                           # vals for stored fields
-            inverse={},                         # vals for inversed fields
-            inherited=defaultdict(dict),        # {mname: {fname: value}}
-            protected=set(),                    # fields to protect
-        )
-        for key, val in vals.items():
-            if key in bad_names:
-                continue
-            field = self._fields.get(key)
-            if not field:
-                unknown_names.add(key)
-                continue
-            if field.store:
-                data.store[key] = val
-            if field.inherited:
-                data.inherited[field.related_field.model_name][key] = val
-            elif field.inverse:
-                data.inverse[key] = val
-                data.protected.update(self._field_computed.get(field, [field]))
+        datas = []
+
+        for vals in valses:
+            # add missing defaults
+            vals = self._add_missing_default_values(vals)
+
+            # distribute fields into sets for various purposes
+            data = Data(
+                store={},                           # vals for stored fields
+                inverse={},                         # vals for inversed fields
+                inherited=defaultdict(dict),        # {mname: {fname: value}}
+                protected=set(),                    # fields to protect
+            )
+            for key, val in vals.items():
+                if key in bad_names:
+                    continue
+                field = self._fields.get(key)
+                if not field:
+                    unknown_names.add(key)
+                    continue
+                if field.store:
+                    data.store[key] = val
+                if field.inherited:
+                    data.inherited[field.related_field.model_name][key] = val
+                elif field.inverse:
+                    data.inverse[key] = val
+                    data.protected.update(self._field_computed.get(field, [field]))
+
+            datas.append(data)
 
         if unknown_names:
             _logger.warning("%s.create() with unknown fields: %s",
@@ -3210,36 +3215,38 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # create or update parent records
         for model_name, parent_name in self._inherits.items():
-            parent_record = self.env[model_name].browse(data.store.get(parent_name))
-            parent_vals = data.inherited[model_name]
-            if not parent_record:
-                data.store[parent_name] = parent_record.create(parent_vals).id
-            elif parent_vals:
-                parent_record.write(parent_vals)
+            for data in datas:
+                parent_record = self.env[model_name].browse(data.store.get(parent_name))
+                parent_vals = data.inherited[model_name]
+                if not parent_record:
+                    data.store[parent_name] = parent_record.create(parent_vals).id
+                elif parent_vals:
+                    parent_record.write(parent_vals)
 
-        # create record with stored fields
-        record = self._create(data.store)
+        # create records with stored fields
+        records = self.browse([self._create(data.store).id for data in datas])
 
-        with self.env.protecting(data.protected, record):
-            # put the values of inverse fields in cache, and inverse them
-            record._cache.update(record._convert_to_cache(data.inverse))
+        for record, data in pycompat.izip(records, datas):
+            with self.env.protecting(data.protected, record):
+                # put the values of inverse fields in cache, and inverse them
+                record._cache.update(record._convert_to_cache(data.inverse))
 
-            # in case several fields use the same inverse method, call it once
-            inv_fields = [self._fields[name] for name in data.inverse]
-            for _inv, fields in groupby(inv_fields, attrgetter('inverse')):
-                fields[0].determine_inverse(record)
+                # in case several fields use the same inverse method, call it once
+                inv_fields = [self._fields[name] for name in data.inverse]
+                for _inv, fields in groupby(inv_fields, attrgetter('inverse')):
+                    fields[0].determine_inverse(record)
 
-            # trick: no need to mark non-stored fields as modified, thanks to
-            # the transitive closure made over non-stored dependencies
+                # trick: no need to mark non-stored fields as modified, thanks
+                # to the transitive closure made over non-stored dependencies
 
-            # check Python constraints for non-stored inversed fields
-            record._validate_fields(field.name for field in inv_fields if not field.store)
+                # check Python constraints for non-stored inversed fields
+                record._validate_fields(field.name for field in inv_fields if not field.store)
 
         # recompute fields
         if self.env.recompute and self._context.get('recompute', True):
             self.recompute()
 
-        return record
+        return records
 
     @api.model
     def _create(self, vals):
