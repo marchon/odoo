@@ -20,6 +20,8 @@
                             <field name="mode"/>
                             <field name="model_data_id"/>
                             <field name="xml_id"/>
+                            <button type="object" name="restore_views"
+                                string="Restore view"/>
                         </group>
                     </group>
                     <notebook>
