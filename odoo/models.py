@@ -3235,22 +3235,27 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # create records with stored fields
         records = self.browse([self._create(data.store).id for data in datas])
-
         for record, data in pycompat.izip(records, datas):
-            with self.env.protecting(data.protected, record):
+            data.record = record
+
+        for names, inv_datas in groupby(datas, lambda data: frozenset(data.inverse)):
+            recs = self.browse().concat(*(data.record for data in inv_datas))
+            with self.env.protecting(inv_datas[0].protected, recs):
                 # put the values of inverse fields in cache, and inverse them
-                record._cache.update(record._convert_to_cache(data.inverse))
+                for data in inv_datas:
+                    record = data.record
+                    record._cache.update(record._convert_to_cache(data.inverse))
 
                 # in case several fields use the same inverse method, call it once
-                inv_fields = [self._fields[name] for name in data.inverse]
+                inv_fields = [self._fields[name] for name in names]
                 for _inv, fields in groupby(inv_fields, attrgetter('inverse')):
-                    fields[0].determine_inverse(record)
+                    fields[0].determine_inverse(recs)
 
                 # trick: no need to mark non-stored fields as modified, thanks
                 # to the transitive closure made over non-stored dependencies
 
                 # check Python constraints for non-stored inversed fields
-                record._validate_fields(field.name for field in inv_fields if not field.store)
+                recs._validate_fields(field.name for field in inv_fields if not field.store)
 
         # recompute fields
         if self.env.recompute and self._context.get('recompute', True):
