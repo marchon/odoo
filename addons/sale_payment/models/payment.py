@@ -88,6 +88,8 @@ class PaymentTransaction(models.Model):
         created_invoice = self.env['account.invoice'].browse(created_invoice).with_context(**ctx_company)
 
         if created_invoice:
+            if hasattr(self, 'account_invoice_id'):
+                self.account_invoice_id = created_invoice.id
             _logger.info('<%s> transaction completed, auto-generated invoice %s (ID %s) for %s (ID %s)',
                          self.acquirer_id.provider, created_invoice.name, created_invoice.id, self.sale_order_id.name, self.sale_order_id.id)
 
