@@ -14,13 +14,13 @@ def check(db, uid, passwd):
 
 def compute_session_token(db, sid, uid):
     with odoo.registry(db).cursor() as cr:
-        self = odoo.api.Environment(cr, uid, {})['res.users']
-        return self._compute_session_token(sid, uid)
+        self = odoo.api.Environment(cr, uid, {})['res.users'].browse(uid)
+        return self._compute_session_token(sid)
 
 def check_session(db, sid, uid, token):
     with odoo.registry(db).cursor() as cr:
-        self = odoo.api.Environment(cr, uid, {})['res.users']
-        if self._compute_session_token(sid, uid) == token:
+        self = odoo.api.Environment(cr, uid, {})['res.users'].browse(uid)
+        if odoo.tools.misc.consteq(self._compute_session_token(sid), token):
             return True
         self._invalidate_session_cache()
         return False
