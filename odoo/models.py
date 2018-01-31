@@ -3172,6 +3172,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         :raise ValidateError: if user tries to enter invalid value for a field that is not in selection
         :raise UserError: if a loop would be created in a hierarchy of objects a result of the operation (such as setting an object as its own parent)
         """
+        if not valses:
+            return self.browse()
+
         self.check_access_rights('create')
 
         bad_names = {'id', 'parent_left', 'parent_right'}
