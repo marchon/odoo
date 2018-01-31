@@ -284,6 +284,17 @@ odoo.define('website_sale.website_sale', function (require) {
                     $thumbnail.attr("src", "/web/image/product.product/" + product_id + "/image/90x90");
                     $('.carousel').carousel(0);
                 }
+
+                // hide/show images based on variant selection
+                $("#o-carousel-product").find("li[data-target='#o-carousel-product']").each(function () {
+                    if ($(this).data('variant_id') && $(this).data('variant_id') !== product_id) {
+                        $(this).addClass('hidden');
+                    } else {
+                        $(this).removeClass('hidden');
+                    }
+                });
+                var slideTo = $("#o-carousel-product").find("li[data-target='#o-carousel-product']:not('.hidden'):first()").data('slide-to');
+                $('#o-carousel-product').carousel(slideTo);
             }
             else {
                 $img = $(event_source).closest('tr.js_product, .oe_website_sale').find('span[data-oe-model^="product."][data-oe-type="image"] img:first, img.product_detail_img');
@@ -305,6 +316,7 @@ odoo.define('website_sale.website_sale', function (require) {
                 $parent.find(".oe_default_price:first .oe_currency_value").html( price_to_str(+$(self).data('lst_price')) );
                 $parent.find(".oe_price:first .oe_currency_value").html(price_to_str(+$(self).data('price')) );
             });
+            $parent.closest("#product_detail").data('id', +$(this).val())
             update_product_image(this, +$(this).val());
         });
 
@@ -369,6 +381,7 @@ odoo.define('website_sale.website_sale', function (require) {
             });
 
             if (product_id) {
+                $parent.closest("#product_detail").data('id', product_id);
                 $parent.removeClass("css_not_available");
                 $product_id.val(product_id);
                 $parent.find("#add_to_cart").removeClass("disabled");

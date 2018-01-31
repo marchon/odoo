@@ -52,7 +52,9 @@ odoo.define('website_sale.editor', function (require) {
 'use strict';
 
 require('web.dom_ready');
+var editor = require('web_editor.editor');
 var options = require('web_editor.snippets.options');
+var widget = require('web_editor.widget');
 
 if (!$('.js_sale').length) {
     return $.Deferred().reject("DOM doesn't contain '.js_sale'");
@@ -60,6 +62,89 @@ if (!$('.js_sale').length) {
 
 $('.oe_website_sale').on('click', '.oe_currency_value:o_editable', function (ev) {
     $(ev.currentTarget).selectContent();
+});
+
+editor.Class.include({
+    start: function () {
+        var self = this;
+        this.toDelete = [];
+        $('#product_detail').on('click', '.o_website_sale_product_add_img', function (e) {
+            var $parent = e.target.closest('li');
+            var $image = $('<img>', {class: 'img img-responsive'});
+            var editor = new widget.MediaDialog(self, {only_images: true}, $image, $image[0]).open();
+            var index = parseInt($parent.dataset.slideTo);
+            editor.on("save", this, function (event) {
+                var $li = $("<li class='o_website_sale_new_img ml4' data-target='#o-carousel-product'/>").attr('data-slide-to', index);
+                $image.appendTo($li);
+                $parent.dataset.slideTo = index + 1;
+                $li.insertBefore($parent);
+            });
+        });
+        $('#product_detail').on('click', '.o_website_sale_delete_img', function (e){
+            var $image = e.target.closest('[data-img-id]');
+            var id = $image.dataset.imgId;
+            if (id) {
+                self.toDelete.push(parseInt(id));
+            }
+            $image.remove();
+        });
+        return this._super();
+    },
+    save: function () {
+        var $target = $('#wrapwrap').find('#product_detail');
+        if ($target && $target.length) {
+            var self = this;
+            var images = $('.o_website_sale_new_img');
+            var id = $('#product_detail').data('id');
+            var $variant = $('#wrapwrap').find('ul.js_add_cart_variants li');
+            if (!$variant.length) {
+                $variant = $('#wrapwrap').find('input.js_product_change');
+            }
+            var imageDefs = [];
+
+            _.each(images, function (image) {
+                var def = $.Deferred();
+                var img = new Image();
+                img.onload = function () {
+                    var canvas = document.createElement("CANVAS");
+                    canvas.width = this.width;
+                    canvas.height = this.height;
+                    canvas.getContext("2d").drawImage(this, 0, 0);
+                    var path = canvas.toDataURL("image/jpeg").replace(/^data:image\/[a-z]+;base64,/, "");
+                    canvas = null;
+                    var args = [{'product_tmpl_id': id, 'image': path}];
+                    if ($variant.length) {
+                        args = [{'product_product_id': id, 'image': path}];
+                    }
+                    self._rpc({
+                        model: 'product.image',
+                        method: 'create',
+                        args: args,
+                    }).then( function () {
+                        def.resolve();
+                    });
+                },
+                img.src = image.children[0].src;
+                imageDefs.push(def);
+            });
+            if (self.toDelete.length) {
+                var def = $.Deferred();
+                this._rpc({
+                    model: 'product.image',
+                    method: 'unlink',
+                    args: [self.toDelete],
+                }).then( function () {
+                    def.resolve();
+                });
+                imageDefs.push(def);
+            }
+
+            $.when.apply($, imageDefs).then(function (){
+                return self._super.apply(self, arguments);
+            });
+        }
+        return this._super.apply(this, arguments);
+    }
 });
 
 options.registry.website_sale = options.Class.extend({

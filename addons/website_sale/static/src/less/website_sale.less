@@ -769,38 +769,91 @@ a.no-decoration {
     }
 
     .carousel-indicators {
-        background-color: transparent;
-        margin: 10px 0 0;
-        overflow-y: hidden;
         position: static;
-        text-align: left;
-        white-space: nowrap;
+        list-style-position: inside;
+        background-color: transparent;
         width: 100%;
         height: 100px !important;
+        margin: 10px 0 0;
+        overflow-y: hidden;
+        white-space: nowrap;
         text-align: center;
-        list-style-position: inside;
 
         li {
             background-color: transparent !important;
-            border-radius: 0;
+            border-radius: 2px;
             display: inline-block;
-            margin: 0 !important;
+            margin: 0;
             width: 54px !important;
             height: 54px !important;
-            border: 0 !important;
-            box-shadow: none !important;
+            border: 1px solid @gray-light;
+            box-shadow: none;
+            text-indent: 0px;
 
             img {
                 display: block;
                 opacity: 0.5;
             }
 
-            &.active img {
+            &.active {
+                border-color: @color-orange;
+            }
+
+            &:hover {
+                border-color: @color-orange;
+                box-shadow: 0 0 3px 2px lighten(@color-orange, 20%);
+                outline: 0;
+            }
+
+            &.active img, &:hover img, &:hover .o_website_sale_delete_img {
                 opacity: 1;
             }
+
+            .o_website_sale_delete_img {
+                position: relative;
+                top: -3px;
+                right: -20px;
+                background-color: @gray-lighter;
+                opacity: 0;
+                z-index: 101;
+
+                &:hover {
+                    background-color: white;
+                    color: red;
+                }
+            }
+            &.o_website_sale_new_img {
+                position: sticky;
+                top: 39px;
+
+                img {
+                    top: 5px !important;
+                    width: auto !important;
+                    max-height: 48px !important;
+                }
+            }
+        }
+        .o_website_sale_product_add_img {
+            position: relative;
+            top: 16px;
+            padding-top: 10px;
+            border: 2px dashed @gray-light;
+            color: @color-blue-light;
+            font-size: 10px;
         }
     }
 }
+
+.editor_enable #o-carousel-product .carousel-indicators {
+    li img {
+        position: relative;
+        top: -20px;
+    }
+    .css_non_editable_mode_hidden {
+        display: inline-block !important;
+    }
+} 
+    
 
 .ecom-zoomable img[data-zoom] {
     cursor: zoom-in;
