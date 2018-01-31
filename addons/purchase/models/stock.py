@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    purchase_id = fields.Many2one('purchase.order', related='move_lines.purchase_line_id.order_id',
+    purchase_id = fields.Many2many('purchase.order', related='move_lines.purchase_line_id.order_id',
         string="Purchase Orders", readonly=True)
 
     @api.model

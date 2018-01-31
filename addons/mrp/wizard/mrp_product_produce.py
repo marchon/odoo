@@ -122,12 +122,9 @@ class MrpProductProduce(models.TransientModel):
                 'state': 'progress',
                 'date_start': datetime.now(),
             })
-        # print "self.todo_quantity, quantity", self.todo_quantity, quantity
-        # print "self._get_todo(self.production_id)", self._get_todo(self.production_id)
         if self._get_todo(self.production_id) > 0:
             action = self.production_id.open_produce_product()
             # action['res_id'] = self.id
-            # print ("action >>>>>>>>>>>>>", action)
             action['context'] = {'active_id': self.production_id.id}
             return action
         return {'type': 'ir.actions.act_window_close'}

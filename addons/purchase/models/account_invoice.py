@@ -8,7 +8,7 @@ from odoo.tools.float_utils import float_compare
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
-    purchase_id = fields.Many2one(
+    purchase_id = fields.Many2many(
         comodel_name='purchase.order',
         string='Add Purchase Order',
         readonly=True, states={'draft': [('readonly', False)]},
