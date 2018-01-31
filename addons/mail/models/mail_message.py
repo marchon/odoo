@@ -814,6 +814,44 @@ class Message(models.Model):
         # have a sudoed copy to manipulate partners (public can go here with website modules like forum / blog / ... )
         self_sudo = self.sudo()
 
+        pids = self_sudo.partner_ids.ids
+        cids = self_sudo.channel_ids.ids
+
+        if self_sudo.subtype_id:
+            query = """
+WITH sub_followers AS (
+    SELECT id, partner_id, channel_id
+    FROM mail_followers fol
+    RIGHT JOIN mail_followers_mail_message_subtype_rel subrel ON subrel.mail_followers_id = fol.id
+    WHERE subrel.mail_message_subtype_id = %s AND fol.res_model = %s AND fol.res_id = %s
+)
+SELECT NULL AS channel_id, partner.id as partner_id, partner.partner_share as partner_share, users.notification_type AS notification_type
+    FROM res_partner partner
+    LEFT JOIN res_users users ON users.partner_id = partner.id
+    WHERE partner.id = ANY(%s)
+    OR EXISTS (
+        SELECT partner_id FROM sub_followers WHERE sub_followers.channel_id IS NULL AND sub_followers.partner_id = partner.id
+    )
+UNION
+SELECT channel.id AS channel_id, NULL AS partner_id, NULL AS partner_share, NULL AS notification_type
+    FROM mail_channel channel
+    WHERE channel.id = ANY (%s)
+    OR EXISTS (
+        SELECT channel_id FROM sub_followers WHERE partner_id IS NULL
+    )
+"""
+            self.env.cr.execute(query, (self_sudo.subtype_id.id, self_sudo.model, self_sudo.res_id, pids, cids,))
+            res = self.env.cr.fetchall()
+            print(res)
+            # for pid, cid, share, notif in res:
+            #     if pid and (share or notif == 'email'):
+            #         email_pids.append(pid)
+            #     elif pid:
+            #         inbox_pids.append(pid)
+            #     elif cid:
+            #         cids.append(cid)
+
+
         self.ensure_one()
         partners_sudo = self_sudo.partner_ids
         channels_sudo = self_sudo.channel_ids
