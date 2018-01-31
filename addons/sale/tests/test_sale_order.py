@@ -5,6 +5,7 @@ import odoo
 from odoo.exceptions import UserError, AccessError
 
 from .test_sale_common import TestCommonSaleNoChart
+from odoo.tests import Form
 
 
 class TestSaleOrder(TestCommonSaleNoChart):
@@ -196,3 +197,50 @@ class TestSaleOrder(TestCommonSaleNoChart):
         sol = so.order_line.filtered(lambda l: l.product_id == serv_cost)
         self.assertTrue(sol, 'Sale: cost invoicing does not add lines when confirming vendor invoice')
         self.assertEquals((sol.price_unit, sol.qty_delivered, sol.product_uom_qty, sol.qty_invoiced), (160, 2, 0, 0), 'Sale: line is wrong after confirming vendor invoice')
+
+    def test_sale_with_pricelist_multi_price_per_product(self):
+        # create pricelist
+        pricelist = Form(self.env['product.pricelist'])
+        pricelist.name = 'Pricelist A'
+        pricelist.discount_policy = 'with_discount'
+        with pricelist.item_ids.new() as item:
+            item.applied_on = '1_product'
+            item.product_tmpl_id = self.product_order.product_tmpl_id
+            item.compute_price = 'percentage'
+            item.percent_price = 10
+        with pricelist.item_ids.new() as item:
+            item.applied_on = '1_product'
+            item.product_tmpl_id = self.service_deliver.product_tmpl_id
+            item.compute_price = 'percentage'
+            item.percent_price = 10
+        pricelist_a = pricelist.save()
+
+        pricelist = Form(self.env['product.pricelist'])
+        pricelist.name = 'Pricelist B'
+        pricelist.discount_policy = 'without_discount'
+        with pricelist.item_ids.new() as item:
+            item.applied_on = '1_product'
+            item.product_tmpl_id = self.service_order.product_tmpl_id
+            item.compute_price = 'percentage'
+            item.percent_price = 20
+        with pricelist.item_ids.new() as item:
+            item.applied_on = '1_product'
+            item.product_tmpl_id = self.product_deliver.product_tmpl_id
+            item.compute_price = 'percentage'
+            item.percent_price = 20
+        pricelist_b = pricelist.save()
+
+        # create sale order with pricelist
+        order_form = Form(self.env['sale.order'])
+        order_form.partner_id = self.partner_customer_usd
+        order_form.pricelist_id = pricelist_a
+        with order_form.order_line.new() as line:
+            line.product_id = self.product_order
+        with order_form.order_line.new() as line:
+            line.product_id = self.service_deliver
+        with order_form.order_line.new() as line:
+            line.product_id = self.service_order
+        with order_form.order_line.new() as line:
+            line.product_id = self.product_deliver
+
+        order = order_form.save()
