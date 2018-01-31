@@ -1954,6 +1954,36 @@ class MailThread(models.AbstractModel):
             composer.write(update_values)
         return composer.send_mail()
 
+    def message_notify(self, partner_ids, body='', subject=False, **kwargs):
+        if self._name != 'mail.thread':
+            raise ValueError('CACA')
+        if self.ids:
+            raise ValueError('CACA')
+
+        kw_author = kwargs.pop('author_id', False)
+        if kw_author:
+            author = self.env['res.partner'].sudo().browse(kw_author)
+            email_from = formataddr((author.name, author.email))
+        else:
+            author = self.env.user.partner_id
+            email_from = formataddr((author.name, author.email))
+
+        msg_values = {
+            'subject': subject,
+            'body': body,
+            'author_id': author.id,
+            'email_from': email_from,
+            'message_type': 'notification',
+            'partner_ids': partner_ids,
+            'model': False,
+            'subtype_id': self.env.ref('mail.mt_note').id,
+            'record_name': False,
+            'reply_to': self.env['mail.thread'].sudo()._notify_get_reply_to([0])[0],
+            'message_id': tools.generate_tracking_message_id('message-notify'),
+        }
+        msg_values.update(kwargs)
+        return self.message_post(**msg_values)
+
     def _message_log(self, body='', subject=False, message_type='notification', **kwargs):
         """ Shortcut allowing to post note on a document. It does not perform
         any notification and pre-computes some values to have a short code
