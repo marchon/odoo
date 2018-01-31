@@ -128,6 +128,13 @@ def fix_import_export_id_paths(fieldname):
     return fixed_external_id.split('/')
 
 
+class Data(object):
+    """ Plain object to store data. """
+    def __init__(self, **kwargs):
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+
+
 class MetaModel(api.Meta):
     """ The metaclass of all model classes.
         Its main purpose is to register the models per module.
@@ -3173,29 +3180,29 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         bad_names = {'id', 'parent_left', 'parent_right'}
         if self._log_access:
             bad_names.update(LOG_ACCESS_COLUMNS)
+        unknown_names = set()
 
         # distribute fields into sets for various purposes
-        store_vals = {}
-        inverse_vals = {}
-        inherited_vals = defaultdict(dict)      # {modelname: {fieldname: value}}
-        unknown_names = []
-        inverse_fields = []
-        protected_fields = []
+        data = Data(
+            store={},                           # vals for stored fields
+            inverse={},                         # vals for inversed fields
+            inherited=defaultdict(dict),        # {mname: {fname: value}}
+            protected=set(),                    # fields to protect
+        )
         for key, val in vals.items():
             if key in bad_names:
                 continue
             field = self._fields.get(key)
             if not field:
-                unknown_names.append(key)
+                unknown_names.add(key)
                 continue
             if field.store:
-                store_vals[key] = val
+                data.store[key] = val
             if field.inherited:
-                inherited_vals[field.related_field.model_name][key] = val
+                data.inherited[field.related_field.model_name][key] = val
             elif field.inverse:
-                inverse_vals[key] = val
-                inverse_fields.append(field)
-                protected_fields.extend(self._field_computed.get(field, [field]))
+                data.inverse[key] = val
+                data.protected.update(self._field_computed.get(field, [field]))
 
         if unknown_names:
             _logger.warning("%s.create() with unknown fields: %s",
@@ -3203,28 +3210,29 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # create or update parent records
         for model_name, parent_name in self._inherits.items():
-            parent_record = self.env[model_name].browse(store_vals.get(parent_name))
-            parent_vals = inherited_vals[model_name]
+            parent_record = self.env[model_name].browse(data.store.get(parent_name))
+            parent_vals = data.inherited[model_name]
             if not parent_record:
-                store_vals[parent_name] = parent_record.create(parent_vals).id
+                data.store[parent_name] = parent_record.create(parent_vals).id
             elif parent_vals:
                 parent_record.write(parent_vals)
 
         # create record with stored fields
-        record = self._create(store_vals)
+        record = self._create(data.store)
 
-        with self.env.protecting(protected_fields, record):
+        with self.env.protecting(data.protected, record):
             # put the values of inverse fields in cache, and inverse them
-            record._cache.update(record._convert_to_cache(inverse_vals))
+            record._cache.update(record._convert_to_cache(data.inverse))
 
             # in case several fields use the same inverse method, call it once
-            for _inv, fields in groupby(inverse_fields, attrgetter('inverse')):
+            inv_fields = (self._fields[name] for name in data.inverse)
+            for _inv, fields in groupby(inv_fields, attrgetter('inverse')):
                 fields[0].determine_inverse(record)
 
-            record.modified(set(inverse_vals) - set(store_vals))
+            record.modified(set(data.inverse) - set(data.store))
 
             # check Python constraints for inversed fields
-            record._validate_fields(set(inverse_vals) - set(store_vals))
+            record._validate_fields(set(data.inverse) - set(data.store))
 
             # recompute fields
             if self.env.recompute and self._context.get('recompute', True):
