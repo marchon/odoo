@@ -169,6 +169,34 @@ class CRMLeadRule(models.Model):
         lead = self.env['crm.lead'].create(lead_data)
         lead.message_post_with_view('reveal_client.lead_message_template', values=self._get_data_for_log_message(result), subtype_id=self.env.ref('mail.mt_note').id)
 
+    def _lead_data_from_result(self, result, suffix):
+        reveal_data = result['reveal_data']
+        people_data = result.get('people_data')
+        name = reveal_data['name']
+        if suffix:
+            name += ' - ' + suffix
+        data = {
+            'name': name,
+            'iap_credits': result['credit'],
+            'partner_name': reveal_data['legal_name'] or reveal_data['name'],
+            'phone': reveal_data['phone'],
+            'website': reveal_data['domain'],
+            'street': reveal_data['location'],
+            'city': reveal_data['city'],
+            'zip': reveal_data['postal_code'],
+            'country_id': self._find_country_id(reveal_data['country_code']),
+            'state_id': self._find_state_id(reveal_data),
+            'description': self._get_lead_description(reveal_data),
+        }
+        if people_data:
+            data.update({
+                'contact_name': people_data[0]['full_name'],
+                'email_from': people_data[0]['email'],
+                'function': people_data[0]['role'],
+            })
+
+        return data
+
     def _get_data_for_log_message(self, result):
         reveal_data = result['reveal_data']
         people_data = result.get('people_data')
@@ -188,50 +216,28 @@ class CRMLeadRule(models.Model):
 
         if reveal_data['timezone']:
             log_data.update({
-                'timezone': reveal_data['timezone'].replace('_', ' ').title(),
-                'timezone_link': reveal_data['timezone'].lower().replace('_','-'),
+                'timezone': result['ip_time_zone'].replace('_', ' ').title(),
+                'timezone_link': result['ip_time_zone'].lower().replace('_', '-'),
             })
 
         return log_data
 
-    def _lead_data_from_result(self, result, suffix):
-        reveal_data = result['reveal_data']
-        people_data = result.get('people_data')
-        name = reveal_data['name']
-        if suffix:
-            name += ' - ' + suffix
-        data = {
-            'name': name,
-            'iap_credits': result['credit'],
-            'partner_name': reveal_data['name'],
-            'phone': reveal_data['phone'],
-            'website': reveal_data['domain'],
-            'street': reveal_data['location'],
-            'city': reveal_data['city'],
-            'zip': reveal_data['postal_code'],
-            'country_id': self._find_country_id(reveal_data['country_code']),
-            'state_id': self._find_state_id(reveal_data),
-            'description': self._get_lead_description(reveal_data),
-        }
-        if people_data:
-            data.update({
-                'contact_name': people_data[0]['full_name'],
-                'email_from': people_data[0]['email'],
-                'function': people_data[0]['role'],
-            })
-
-        return data
-
     def _get_lead_description(self, reveal_data):
 
         description = ""
+        if reveal_data['sector']:
+            description += reveal_data['sector']
 
-        print_rules = ['legal_name', 'sector','website_title', 'twitter_bio', 'twitter_followers', 'twitter_location']
+        if reveal_data['website_title']:
+            description += "\n" + reveal_data['website_title']
+
+        if reveal_data['twitter_bio']:
+            description += "\n" + "Twitter Bio: " + reveal_data['twitter_bio']
+
+        if reveal_data['twitter_followers']:
+            description += ("\nTwitter %s followers, %s \n") % (reveal_data['twitter_followers'], reveal_data['twitter_location'] or '')
+
         numbers = ['raised', 'market_cap', 'employees', 'estimated_annual_revenue']
-        for key in print_rules:
-            if reveal_data.get(key):
-                description += "%s : %s \n" % ( key.replace('_', ' ').title(), reveal_data[key])
-
         millnames = ['', ' K', ' M', ' B', 'T']
         def millify(n):
             try:
@@ -243,7 +249,7 @@ class CRMLeadRule(models.Model):
 
         for key in numbers:
             if reveal_data.get(key):
-                description += "%s : %s \n" % (key.replace('_', ' ').title(), millify(reveal_data[key]))
+                description += "%s : %s, " % (key.replace('_', ' ').title(), millify(reveal_data[key]))
 
         return description
 
