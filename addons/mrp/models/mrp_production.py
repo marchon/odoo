@@ -554,7 +554,8 @@ class MrpProduction(models.Model):
             finish_moves = production.move_finished_ids.filtered(lambda x: x.state not in ('done', 'cancel'))
             raw_moves = production.move_raw_ids.filtered(lambda x: x.state not in ('done', 'cancel'))
             (finish_moves | raw_moves)._action_cancel()
-
+            picking_ids = production.picking_ids.filtered(lambda x: x.state not in ('done', 'cancel'))
+            picking_ids.action_cancel()
         self.write({'state': 'cancel', 'is_locked': True})
         return True
 
