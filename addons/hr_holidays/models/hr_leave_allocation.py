@@ -125,8 +125,8 @@ class HolidaysAllocation(models.Model):
                 df = datetime.combine(today, time(0, 0, 0)) - delta
                 dt = datetime.combine(today, time(0, 0, 0))
 
-                worked = holiday.employee_id.get_work_days_count(df, dt)
-                left = holiday.employee_id.get_leaves_days_count(df, dt)
+                worked = holiday.employee_id.get_work_days_count(df, dt, domain=[('holiday_id.holiday_status_id.unpaid', '=', True)])
+                left = holiday.employee_id.get_leaves_days_count(df, dt, domain=[('holiday_id.holiday_status_id.unpaid', '=', True)])
                 prorata = worked / (left + worked)
 
                 holiday.number_of_days_temp += leaves * prorata
