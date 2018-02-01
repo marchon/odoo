@@ -280,6 +280,5 @@
         <field name="view_id" ref="mail.mail_activity_view_kanban"/>
         <field name="view_mode">kanban,form</field>
         <field name="domain">[('user_id', '=', uid), ('res_id', '=', False), ('res_model', '=', False)]</field>
-        <field name="context" eval="{'is_reminder': 1}"/>
     </record>
 </odoo>

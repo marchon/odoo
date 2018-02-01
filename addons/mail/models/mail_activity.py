@@ -207,12 +207,17 @@ class MailActivity(models.Model):
         if values.get('user_id'):
             pre_responsibles = self.mapped('user_id.partner_id')
 
+        res = False
+        activities = self.filtered(lambda a: a.res_id and a.res_model)
+        if activities:
+            res = super(MailActivity, activities.sudo()).write(values)
+
         # Reminder have no summary (for display name) It will add first line of note to summary
-        if self._context.get('is_reminder') and 'note' in values:
+        reminders = self.filtered(lambda a: not a.res_id and not a.res_model)
+        if reminders:
             text = html2plaintext(values.get('note', _('Reminder')))
             values['summary'] = text.strip().replace('*', '').split("\n")[0]
-
-        res = super(MailActivity, self.sudo()).write(values)
+            res = super(MailActivity, reminders.sudo()).write(values)
 
         if values.get('user_id'):
             for activity in self:
