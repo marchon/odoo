@@ -540,10 +540,6 @@ var FormController = BasicController.extend({
      * @private
      */
     _onSwipeLeft: function () {
-        this.$(".o_form_sheet").css({
-            transform: 'translateX(-360px)',
-            transition: '350ms'
-        });
         this.pager.next();
     },
     /**
@@ -552,10 +548,6 @@ var FormController = BasicController.extend({
      * @private
      */
     _onSwipeRight: function () {
-        this.$(".o_form_sheet").css({
-            transform: 'translateX(360px)',
-            transition: '350ms'
-        });
         this.pager.previous();
     },
     /**

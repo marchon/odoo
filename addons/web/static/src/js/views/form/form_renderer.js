@@ -251,9 +251,17 @@ var FormRenderer = BasicRenderer.extend({
         var self = this;
         this.$('.o_form_sheet').swipe({
             swipeLeft: function () {
+                this.css({
+                    transform: 'translateX(-360px)',
+                    transition: '350ms'
+                });
                 self.trigger_up('swipe_left');
             },
             swipeRight: function () {
+                this.css({
+                    transform: 'translateX(360px)',
+                    transition: '350ms'
+                });
                 self.trigger_up('swipe_right');
             },
         });
