@@ -77,7 +77,7 @@ class Digest(models.Model):
             kpis = {}
             for field_name, field in self._fields.items():
                 if field.type == 'boolean' and (field_name.startswith('kpi_') or field_name.startswith('x_kpi_')) and self[field_name]:
-                    kpis.update({field_name: self[field_name + '_value']})
+                    kpis.update({field_name: self.with_context(timeframe=tf_name)[field_name + '_value']})
             res.update({tf_name: kpis})
         return res
 
@@ -96,7 +96,7 @@ class Digest(models.Model):
     @api.model
     def _cron_send_digest_email(self):
         _logger.debug('Sending automatic digests')
-        self.search([('next_run_date', '<=', fields.Date.today())]).send_digests_now()
+        self.search([('next_run_date', '=', fields.Date.today())]).send_digests_now()
 
     #
     # Default KPIs
@@ -111,8 +111,10 @@ class Digest(models.Model):
     @api.depends('start_date', 'end_date')
     def _compute_kpi_res_users_connected_value(self):
         for record in self:
-            user_connected = self.env['res.users'].search_count([("login_date", ">=", self.start_date),
-                                                                 ("login_date", "<", self.end_date)])
+            date_domain = [("login_date", ">=", record.start_date), ("login_date", "<=", record.end_date)]
+            if self._context.get('timeframe') == 'yesterday':
+                date_domain = [("login_date", ">=", record.start_date), ("login_date", "<", record.end_date)]
+            user_connected = self.env['res.users'].search_count(date_domain)
             record.kpi_res_users_connected_value = user_connected
 
     kpi_mail_message_total = fields.Boolean(string='Messages')
@@ -121,6 +123,8 @@ class Digest(models.Model):
     @api.depends('start_date', 'end_date')
     def _compute_kpi_mail_message_total_value(self):
         for record in self:
-            total_messages = self.env['mail.message'].search_count([("create_date", ">=", self.start_date),
-                                                                    ("create_date", "<", self.end_date)])
+            date_domain = [("create_date", ">=", record.start_date), ("create_date", "<=", record.end_date)]
+            if self._context.get('timeframe') == 'yesterday':
+                date_domain = [("create_date", ">=", record.start_date), ("create_date", "<", record.end_date)]
+            total_messages = self.env['mail.message'].search_count(date_domain)
             record.kpi_mail_message_total_value = total_messages

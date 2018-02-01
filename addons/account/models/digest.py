@@ -8,7 +8,7 @@ class Digest(models.Model):
 
     kpi_account_bank_cash = fields.Boolean(string='Bank & Cash')
     kpi_account_bank_cash_value = fields.Integer(compute='_compute_kpi_account_total_revenue_value')
-    kpi_account_total_revenue = fields.Boolean(string='Revenues')
+    kpi_account_total_revenue = fields.Boolean(string='Revenue')
     kpi_account_total_revenue_value = fields.Integer(compute='_compute_kpi_account_total_revenue_value')
 
     @api.depends('start_date', 'end_date')
@@ -18,8 +18,10 @@ class Digest(models.Model):
             return sum(account_moves.filtered(lambda r: r.journal_id.type in journal_type).mapped('amount'))
 
         for record in self:
-            account_moves = self.env['account.move'].search([('journal_id.type', 'in', ['sale', 'cash', 'bank']),
-                                                             ('date', '>=', self.start_date),
-                                                             ('date', '<', self.end_date)])
+            date_domain = [("create_date", ">=", record.start_date), ("create_date", "<=", record.end_date)]
+            if self._context.get('timeframe') == 'yesterday':
+                date_domain = [("create_date", ">=", record.start_date), ("create_date", "<", record.end_date)]
+            date_domain += [('journal_id.type', 'in', ['sale', 'cash', 'bank'])]
+            account_moves = self.env['account.move'].search(date_domain)
             record.kpi_account_total_revenue_value = _account_move_amount(['sale'])
             record.kpi_account_bank_cash_value = _account_move_amount(['bank', 'cash'])

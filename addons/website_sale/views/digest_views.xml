@@ -6,7 +6,7 @@
     <field name="inherit_id" ref="digest.digest_view_form"/>
     <field name="arch" type="xml">
       <xpath expr="//group[@name='kpi_sales']" position="attributes">
-        <attribute name="string">Sales &amp; eCommerce</attribute>
+        <attribute name="string">Sales</attribute>
       </xpath>
       <xpath expr="//group[@name='kpi_sales']" position="inside">
         <field name="kpi_website_sale_total"/>

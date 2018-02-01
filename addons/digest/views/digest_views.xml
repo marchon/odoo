@@ -20,7 +20,7 @@
     <field name="arch" type="xml">
       <form string="KPI Digest">
         <header>
-          <button type="object" name="send_digests_now" string="Send digest now" class="oe_highlight"/>
+          <button type="object" name="send_digests_now" string="Send Now" class="oe_highlight"/>
         </header>
         <sheet>
           <div class="oe_button_box" name="button_box">

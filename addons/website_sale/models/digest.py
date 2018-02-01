@@ -12,8 +12,9 @@ class Digest(models.Model):
     @api.depends('start_date', 'end_date')
     def _compute_kpi_website_sale_total_value(self):
         for record in self:
-            confirmed_website_sales = self.env['sale.order'].search([('state', 'not in', ['draft', 'cancel', 'sent']),
-                                                                     ('team_id.team_type', '=', 'website'),
-                                                                     ('date_order', '>=', self.start_date),
-                                                                     ('date_order', '>=', self.end_date)])
+            date_domain = [("date_order", ">=", record.start_date), ("date_order", "<=", record.end_date)]
+            if self._context.get('timeframe') == 'yesterday':
+                date_domain = [("date_order", ">=", record.start_date), ("date_order", "<", record.end_date)]
+            date_domain += [('state', 'not in', ['draft', 'cancel', 'sent']), ('team_id.team_type', '=', 'website')]
+            confirmed_website_sales = self.env['sale.order'].search(date_domain)
             record.kpi_website_sale_total_value = sum(confirmed_website_sales.mapped('amount_total'))

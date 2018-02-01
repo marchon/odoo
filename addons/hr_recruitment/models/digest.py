@@ -12,6 +12,8 @@ class Digest(models.Model):
     @api.depends('start_date', 'end_date')
     def _compute_kpi_hr_recruitment_new_colleagues_value(self):
         for record in self:
-            new_colleagues = self.env['hr.employee'].search_count([("create_date", ">=", self.start_date),
-                                                                   ("create_date", "<", self.end_date)])
+            date_domain = [("create_date", ">=", record.start_date), ("create_date", "<=", record.end_date)]
+            if self._context.get('timeframe') == 'yesterday':
+                date_domain = [("create_date", ">=", record.start_date), ("create_date", "<", record.end_date)]
+            new_colleagues = self.env['hr.employee'].search_count(date_domain)
             record.kpi_hr_recruitment_new_colleagues_value = new_colleagues

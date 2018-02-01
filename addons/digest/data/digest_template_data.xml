@@ -81,8 +81,6 @@
               <table style="border-left-color: #e7e7e7; border-left-style: solid;border-left-width: 1px;border-bottom-color: #e7e7e7; border-bottom-style: solid;border-bottom-width: 3px;border-right-color: #e7e7e7; border-right-style: solid;border-right-width: 1px;color:#6e7172;font-size:15px;width:600px;">
                 <tr>
                   <td style="border-collapse:collapse;margin:0;padding:0;padding-top:10px;padding-right:40px;padding-bottom:10px;padding-left:40px">
-                    <div style="margin-top:29px;">Thank you,</div>
-                    <div>The Odoo Team</div>
                     <div style="margin-top:20px;">
                       <strong>Do you want to see other KPIs in this email? Edit this digest <a href="/web#view_type=form&amp;model=digest.digest&amp;id=${object.id}" target="_blank">here</a>.
                     </strong>
