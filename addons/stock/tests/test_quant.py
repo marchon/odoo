@@ -4,11 +4,11 @@
 from datetime import datetime, timedelta
 
 from odoo.exceptions import ValidationError
-from odoo.tests.common import TransactionCase
+from odoo.addons.stock.tests.common import TestStockBase
 from odoo.exceptions import AccessError, UserError
 
 
-class StockQuant(TransactionCase):
+class StockQuant(TestStockBase):
     def setUp(self):
         super(StockQuant, self).setUp()
         Users = self.env['res.users'].with_context({'no_reset_password': True, 'mail_create_nosubscribe': True})

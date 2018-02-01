@@ -2,10 +2,10 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
 from odoo.exceptions import UserError
-from odoo.tests.common import TransactionCase
+from odoo.addons.stock.tests.common import TestStockBase
 
 
-class StockMove(TransactionCase):
+class StockMove(TestStockBase):
     def setUp(self):
         super(StockMove, self).setUp()
         self.stock_location = self.env.ref('stock.stock_location_stock')

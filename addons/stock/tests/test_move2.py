@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo.addons.stock.tests.common import TestStockCommon
+from odoo.addons.stock.tests.common import TestStockBase, TestStockCommon
 from odoo.exceptions import UserError
 from odoo import api, registry
-from odoo.tests.common import TransactionCase
 
 
 class TestPickShip(TestStockCommon):
@@ -1775,7 +1774,7 @@ class TestStockUOM(TestStockCommon):
         self.assertEqual(back_order_in.move_lines.product_qty, 91640.00, 'There should be one back order created')
 
 
-class TestRoutes(TransactionCase):
+class TestRoutes(TestStockBase):
     def test_pick_ship_1(self):
         """ Enable the pick ship route, force a procurement group on the
         pick. When a second move is added, make sure the `partner_id` and

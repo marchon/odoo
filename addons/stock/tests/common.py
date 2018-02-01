@@ -3,7 +3,17 @@
 from odoo.tests import common
 
 
-class TestStockCommon(common.TransactionCase):
+class TestStockBase(common.TransactionCase):
+
+    def setUp(self):
+        super(TestStockBase, self).setUp()
+        # pretend the pool has finished loading to avoid deferring parent_store
+        # computation; this makes all tests work in "real" situation
+        self.patch(self.registry, '_init', False)
+        self.registry.do_parent_store(self.cr)
+
+
+class TestStockCommon(TestStockBase):
 
     def setUp(self):
         super(TestStockCommon, self).setUp()
