@@ -852,7 +852,7 @@ var FormRenderer = BasicRenderer.extend({
 
         // Enable swipe for mobile when formview is in readonly mode
         // and there are multiple records
-        if (config.device.isMobile && this.mode === 'readonly' && this.state.count > 1) {
+        if (config.device.touch && this.mode === 'readonly' && this.state.count > 1) {
             this._enableSwipe();
         }
 

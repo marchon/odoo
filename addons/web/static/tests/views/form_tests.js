@@ -6343,7 +6343,7 @@ QUnit.module('Views', {
         assert.expect(6);
 
         // Mimic touchSwipe library's swipe method
-        config.device.isMobile = true;
+        config.device.touch = true;
         createAsyncView({
             View: FormView,
             model: 'partner',
