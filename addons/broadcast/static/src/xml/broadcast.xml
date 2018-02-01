@@ -12,7 +12,7 @@
             <div>
                 <audio class="o_local_audio hidden"/>
                 <video class="o_local_video hidden"/>
-                <video class="o_remote_audio hidden"/>
+                <audio class="o_remote_audio hidden"/>
                 <video class="o_remote_video hidden"/>
                 <video class="o_remote_screen hidden"/>
             </div>

@@ -147,8 +147,12 @@ var Broadcast = Class.extend(mixins.EventDispatcherMixin, {
         });
         promise.then(function () {
             clearTimeout(self._makeOfferTimeout);
-            self._makeOfferTimeout = setTimeout(self.destroy.bind(self), TIMEOUT_OFFER);
-            self._createAndSendDescription(type);
+            if (type === 'offer') {
+                self._makeOfferTimeout = setTimeout(self.destroy.bind(self), TIMEOUT_OFFER);
+            }
+            if (self.peerConnection) { // if the connection is already open
+                self._createAndSendDescription(self.type);
+            }
         });
     },
     _openCall: function () {
@@ -409,19 +413,21 @@ var Broadcast = require('Broadcast');
 var Widget = require('web.Widget');
 
 
-function srcStream (video, stream) {
+function srcStream (media, stream) {
+    media.autoplay = true;
     if ('createObjectURL' in URL) {
         try {
-            video.src = URL.createObjectURL(stream);
+            media.src = URL.createObjectURL(stream);
+            media.play();
             return;
         } catch (e) {}
     }
-    if (!video) debugger
-    if ('srcObject' in video) {
-        video.srcObject = stream;
-    } else if ('mozSrcObject' in video) {
-        video.mozSrcObject = stream;
+    if ('srcObject' in media) {
+        media.srcObject = stream;
+    } else if ('mozSrcObject' in media) {
+        media.mozSrcObject = stream;
     }
+    media.play();
 }
 
 
@@ -479,13 +485,11 @@ var BroadcastWidget = Widget.extend({
     _onClickAudio: function (event) {
         this.audio = !this.audio;
         this.$('.fa.o_audio').toggleClass('active', this.audio);
-        if (this.audio || this.video) {
-            Broadcast.openCall(this.partnerID, {
-                audio: this.audio,
-                video: this.video,
-                screen: this.screen,
-            });
-        }
+        Broadcast.openCall(this.partnerID, {
+            audio: this.audio,
+            video: this.video,
+            screen: this.screen,
+        });
     },
     /**
      *
@@ -499,13 +503,11 @@ var BroadcastWidget = Widget.extend({
         }
         this.$('.fa.o_audio').toggleClass('active', this.audio);
         this.$('.fa.o_video').toggleClass('active', this.video);
-        if (this.audio || this.video) {
-            Broadcast.openCall(this.partnerID, {
-                audio: this.audio,
-                video: this.video,
-                screen: this.screen,
-            });
-        }
+        Broadcast.openCall(this.partnerID, {
+            audio: this.audio,
+            video: this.video,
+            screen: this.screen,
+        });
     },
     /**
      *
@@ -515,13 +517,11 @@ var BroadcastWidget = Widget.extend({
     _onClickScreen: function (event) {
         this.screen = !this.screen;
         this.$('.fa.o_screen').toggleClass('active', this.screen);
-        if (this.audio || this.video) {
-            Broadcast.openCall(this.partnerID, {
-                audio: this.audio,
-                video: this.video,
-                screen: this.screen,
-            });
-        }
+        Broadcast.openCall(this.partnerID, {
+            audio: this.audio,
+            video: this.video,
+            screen: this.screen,
+        });
     },
     /**
      *
@@ -545,9 +545,15 @@ var BroadcastWidget = Widget.extend({
      * @param {Stream} stream
      */
     _onLocalVideoStream: function (stream) {
+        if (!this.video) {
+            this.audio = true;
+            this.video = true;
+            this.$('.fa.o_audio').toggleClass('active', this.audio);
+            this.$('.fa.o_video').toggleClass('active', this.video);
+        }
+        return;
         var $video = this.$('.o_local_video').removeClass('hidden');
         srcStream($video[0], stream);
-        $video[0].play();
     },
     /**
      *
@@ -555,9 +561,13 @@ var BroadcastWidget = Widget.extend({
      * @param {Stream} stream
      */
     _onLocalAudioStream: function (stream) {
+        if (!this.video) {
+            this.audio = true;
+            this.$('.fa.o_audio').toggleClass('active', this.audio);
+        }
+        return;
         var $audio = this.$('.o_local_audio').removeClass('hidden');
         srcStream($audio[0], stream);
-        $audio[0].play();
     },
     /**
      *
@@ -573,7 +583,6 @@ var BroadcastWidget = Widget.extend({
     _onRemoteVideoStream: function (stream) {
         var $video = this.$('.o_remote_video').removeClass('hidden');
         srcStream($video[0], stream);
-        $video[0].play();
     },
     /**
      *
@@ -583,7 +592,6 @@ var BroadcastWidget = Widget.extend({
     _onRemoteAudioStream: function (stream) {
         var $audio = this.$('.o_remote_audio').removeClass('hidden');
         srcStream($audio[0], stream);
-        $audio[0].play();
     },
     /**
      *
@@ -593,20 +601,21 @@ var BroadcastWidget = Widget.extend({
     _onRemoteScreenStream: function (stream) {
         var $video = this.$('.o_remote_screen').removeClass('hidden');
         srcStream($video[0], stream);
-        $video[0].play();
     },
 
 });
 
 (function autoAdd() {
     if ($('.o_home_menu').size()) {
-        if ($('.o_user_menu').text().indexOf('aaa') !== -1)
-        {
-        new BroadcastWidget(this, 3).prependTo($('.o_home_menu'));
-        new BroadcastWidget(this, 6).prependTo($('.o_home_menu'));
+        if ($('body').html().indexOf('chm') !== -1) {
+            new BroadcastWidget(this, 3).prependTo($('.o_home_menu'));
+            new BroadcastWidget(this, 6).prependTo($('.o_home_menu'));
 
+        } else if ($('body').html().indexOf('Demo User') !== -1)  {
+            new BroadcastWidget(this, 3).prependTo($('.o_home_menu'));
+            new BroadcastWidget(this, 45).prependTo($('.o_home_menu'));
         } else {
-            new BroadcastWidget(this, $('.o_user_menu').text().indexOf('Admin') !== -1 ? 6 : 3).prependTo($('.o_home_menu'));
+            new BroadcastWidget(this, 6).prependTo($('.o_home_menu'));
             new BroadcastWidget(this, 45).prependTo($('.o_home_menu'));
         }
     } else {
