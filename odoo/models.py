@@ -3269,7 +3269,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         cr = self.env.cr
 
         # prepare the update of parent_left, parent_right
-        parent_store = self._parent_store_create_prepare(vals)
+        parent_store = self._parent_store_create_prepare([vals])
 
         # determine SQL values
         formats = {}                    # {colname: format}
@@ -3354,8 +3354,8 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         return self
 
-    def _parent_store_create_prepare(self, vals):
-        """ Prepare the creation of a record, and return whether its
+    def _parent_store_create_prepare(self, valses):
+        """ Prepare the creation of records, and return whether their
             parent_left/parent_right fields must be updated after creation.
         """
         if not self._parent_store or self._context.get('defer_parent_store_computation'):
@@ -3368,10 +3368,11 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         # temporarily put the node at the top-level rightmost position
         query = "SELECT COALESCE(MAX(parent_right) + 1, 0) FROM {}"
         self._cr.execute(query.format(self._table))
-        parent_left = self._cr.fetchone()[0]
-        vals.setdefault(self._parent_name, False)
-        vals['parent_left'] = parent_left
-        vals['parent_right'] = parent_left + 1
+        count = itertools.count(self._cr.fetchone()[0])
+        for vals in valses:
+            vals.setdefault(self._parent_name, False)
+            vals['parent_left'] = next(count)
+            vals['parent_right'] = next(count) + 1
         return True
 
     def _parent_store_update_prepare(self, vals):
