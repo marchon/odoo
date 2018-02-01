@@ -3272,14 +3272,16 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         parent_store = self._parent_store_create_prepare([vals])
 
         # determine SQL values
+        protected = set()               # fields to not recompute on record
         formats = {}                    # {colname: format}
-        columns = {}                    # {colname: value}
-        other_vals = {}                 # non-column field values
-        trans_vals = {}                 # translated field values
-        protected_fields = []           # list of fields to not recompute on self
+        data = Data(
+            columns={},                 # {colname: value}
+            other={},                   # non-column field values
+            trans={},                   # translated field values
+        )
 
         formats['id'] = "nextval(%s)"
-        columns['id'] = self._sequence
+        data.columns['id'] = self._sequence
 
         for name, val in vals.items():
             field = self._fields[name]
@@ -3287,20 +3289,24 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
             if field.column_type:
                 formats[name] = field.column_format
-                columns[name] = field.convert_to_column(val, self, vals)
+                data.columns[name] = field.convert_to_column(val, self, vals)
                 if field.translate is True:
-                    trans_vals[name] = val
+                    data.trans[name] = val
             else:
-                other_vals[name] = val
+                data.other[name] = val
 
             if field.inverse:
-                protected_fields.append(field)
+                protected.add(field)
 
         if self._log_access:
-            formats['create_uid'] = formats['write_uid'] = "%s"
-            columns['create_uid'] = columns['write_uid'] = self._uid
-            formats['create_date'] = formats['write_date'] = "%s"
-            columns['create_date'] = columns['write_date'] = AsIs("(now() at time zone 'UTC')")
+            formats['create_uid'] = "%s"
+            formats['write_uid'] = "%s"
+            formats['create_date'] = "%s"
+            formats['write_date'] = "%s"
+            data.columns['create_uid'] = self._uid
+            data.columns['write_uid'] = self._uid
+            data.columns['create_date'] = AsIs("(now() at time zone 'UTC')")
+            data.columns['write_date'] = AsIs("(now() at time zone 'UTC')")
 
         # insert a row for this record
         names = list(formats)
@@ -3309,7 +3315,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 ', '.join('"%s"' % name for name in names),
                 ', '.join(formats[name] for name in names),
             )
-        cr.execute(query, [columns[name] for name in names])
+        cr.execute(query, [data.columns[name] for name in names])
 
         # the new record
         record = self.browse(cr.fetchone()[0])
@@ -3318,14 +3324,14 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         if parent_store:
             record._parent_store_update(vals)
 
-        with self.env.protecting(protected_fields, record):
+        with self.env.protecting(protected, record):
             # mark fields to recompute; do this before setting other fields,
             # because the latter can require the value of computed fields, e.g.,
             # a one2many checking constraints on records
             record.modified(self._fields)
 
             # set the value of non-column fields
-            if other_vals:
+            if data.other:
                 # discard default values from context
                 other = record.with_context({
                     key: val
@@ -3333,12 +3339,12 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     if not key.startswith('default_')
                 })
 
-                other_fields = [self._fields[name] for name in other_vals]
+                other_fields = [self._fields[name] for name in data.other]
                 for field in sorted(other_fields, key=attrgetter('_sequence')):
-                    field.write(other, other_vals[field.name], create=True)
+                    field.write(other, data.other[field.name], create=True)
 
                 # mark fields to recompute
-                record.modified(other_vals)
+                record.modified(data.other)
 
             # check Python constraints
             record._validate_fields(vals)
@@ -3348,7 +3354,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         # add translations
         if self.env.lang and self.env.lang != 'en_US':
             Translations = self.env['ir.translation']
-            for name, val in trans_vals.items():
+            for name, val in data.trans.items():
                 tname = "%s,%s" % (self._name, name)
                 Translations._set_ids(tname, 'model', self.env.lang, record.ids, val, val)
 
