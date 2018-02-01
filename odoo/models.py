@@ -3234,7 +3234,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 data.store[parent_name] = parent.id
 
         # create records with stored fields
-        records = self.browse([self._create(data.store).id for data in datas])
+        records = self._create([data.store for data in datas])
         for record, data in pycompat.izip(records, datas):
             data.record = record
 
@@ -3264,101 +3264,117 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         return records
 
     @api.model
-    def _create(self, vals):
+    def _create(self, valses):
+        assert valses
         self = self.browse()
         cr = self.env.cr
 
         # prepare the update of parent_left, parent_right
-        parent_store = self._parent_store_create_prepare([vals])
+        parent_store = self._parent_store_create_prepare(valses)
 
         # determine SQL values
-        protected = set()               # fields to not recompute on record
+        protected = set()               # fields to not recompute on records
         formats = {}                    # {colname: format}
-        data = Data(
-            columns={},                 # {colname: value}
-            other={},                   # non-column field values
-            trans={},                   # translated field values
-        )
+        datas = []
 
-        formats['id'] = "nextval(%s)"
-        data.columns['id'] = self._sequence
+        for vals in valses:
+            data = Data(
+                columns={},             # {colname: value}
+                other={},               # non-column field values
+                trans={},               # translated field values
+            )
 
-        for name, val in vals.items():
-            field = self._fields[name]
-            assert field.store
+            formats['id'] = "nextval(%s)"
+            data.columns['id'] = self._sequence
 
-            if field.column_type:
-                formats[name] = field.column_format
-                data.columns[name] = field.convert_to_column(val, self, vals)
-                if field.translate is True:
-                    data.trans[name] = val
-            else:
-                data.other[name] = val
+            for name, val in vals.items():
+                field = self._fields[name]
+                assert field.store
 
-            if field.inverse:
-                protected.add(field)
+                if field.column_type:
+                    formats[name] = field.column_format
+                    data.columns[name] = field.convert_to_column(val, self, vals)
+                    if field.translate is True:
+                        data.trans[name] = val
+                else:
+                    data.other[name] = val
+
+                if field.inverse:
+                    assert field.column_type
+                    protected.add(field)
+
+            datas.append(data)
 
         if self._log_access:
             formats['create_uid'] = "%s"
             formats['write_uid'] = "%s"
             formats['create_date'] = "%s"
             formats['write_date'] = "%s"
-            data.columns['create_uid'] = self._uid
-            data.columns['write_uid'] = self._uid
-            data.columns['create_date'] = AsIs("(now() at time zone 'UTC')")
-            data.columns['write_date'] = AsIs("(now() at time zone 'UTC')")
+            for data in datas:
+                data.columns['create_uid'] = self._uid
+                data.columns['write_uid'] = self._uid
+                data.columns['create_date'] = AsIs("(now() at time zone 'UTC')")
+                data.columns['write_date'] = AsIs("(now() at time zone 'UTC')")
 
-        # insert a row for this record
-        names = list(formats)
-        query = """INSERT INTO "%s" (%s) VALUES(%s) RETURNING id""" % (
-                self._table,
-                ', '.join('"%s"' % name for name in names),
-                ', '.join(formats[name] for name in names),
-            )
-        cr.execute(query, [data.columns[name] for name in names])
+        # insert rows for these records
+        names = ['id'] + sorted(name for name in formats if name != 'id')
+        query = """INSERT INTO "{}" ({}) VALUES {} RETURNING id""".format(
+            self._table,
+            ", ".join('"%s"' % name for name in names),
+            ", ".join(["(%s)" % ", ".join(formats[name] for name in names)] * len(datas)),
+        )
+        # values default to None (NULL) if the column is not present
+        params = [data.columns.get(name) for data in datas for name in names]
+        cr.execute(query, params)
 
-        # the new record
-        record = self.browse(cr.fetchone()[0])
+        # the new records
+        records = self.browse([row[0] for row in cr.fetchall()])
 
         # update parent_left, parent_right
         if parent_store:
-            record._parent_store_update(vals)
+            for record, vals in pycompat.izip(records, valses):
+                record._parent_store_update(vals)
 
-        with self.env.protecting(protected, record):
+        with self.env.protecting(protected, records):
             # mark fields to recompute; do this before setting other fields,
             # because the latter can require the value of computed fields, e.g.,
             # a one2many checking constraints on records
-            record.modified(self._fields)
+            records.modified(self._fields)
 
-            # set the value of non-column fields
-            if data.other:
-                # discard default values from context
-                other = record.with_context({
-                    key: val
-                    for key, val in self._context.items()
-                    if not key.startswith('default_')
-                })
+            for record, data in pycompat.izip(records, datas):
+                # set the value of non-column fields
+                if data.other:
+                    # discard default values from context
+                    other = record.with_context({
+                        key: val
+                        for key, val in self._context.items()
+                        if not key.startswith('default_')
+                    })
 
-                other_fields = [self._fields[name] for name in data.other]
-                for field in sorted(other_fields, key=attrgetter('_sequence')):
-                    field.write(other, data.other[field.name], create=True)
+                    other_fields = [self._fields[name] for name in data.other]
+                    for field in sorted(other_fields, key=attrgetter('_sequence')):
+                        field.write(other, data.other[field.name], create=True)
 
-                # mark fields to recompute
-                record.modified(data.other)
+                    # mark fields to recompute
+                    record.modified(data.other)
+
+                    # check Python constraints
+                    record._validate_fields(data.other)
 
             # check Python constraints
-            record._validate_fields(vals)
+            records._validate_fields(names)
 
-        record.check_access_rule('create')
+        records.check_access_rule('create')
 
         # add translations
         if self.env.lang and self.env.lang != 'en_US':
             Translations = self.env['ir.translation']
-            for name, val in data.trans.items():
-                tname = "%s,%s" % (self._name, name)
-                Translations._set_ids(tname, 'model', self.env.lang, record.ids, val, val)
+            for record, data in pycompat.izip(records, datas):
+                for name, val in data.trans.items():
+                    tname = "%s,%s" % (self._name, name)
+                    Translations._set_ids(tname, 'model', self.env.lang, record.ids, val, val)
 
-        return record
+        return records
 
     def _parent_store_create_prepare(self, valses):
         """ Prepare the creation of records, and return whether their
