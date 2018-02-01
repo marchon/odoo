@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates>
 
-    <t t-name="broadcast.main">
+    <t t-name="broadcast.widget">
         <div class="o_broadcast">
-            <h3>call</h3>
-            <i class="o_audio fa fa-phone"/> <i class="o_video fa fa-video-camera"/> 
-            <div></div>
+            <h3>call <t t-esc="widget.partnerID"/></h3>
+            <span>
+	            <i class="o_audio fa fa-phone"/>
+	            <i class="o_video fa fa-video-camera"/>
+	            <i class="o_screen fa fa-desktop"/> 
+            </span>
+            <div>
+                <audio class="o_local_audio hidden"/>
+                <video class="o_local_video hidden"/>
+                <video class="o_remote_audio hidden"/>
+                <video class="o_remote_video hidden"/>
+                <video class="o_remote_screen hidden"/>
+            </div>
         </div>
     </t>
 

@@ -1,227 +1,111 @@
+odoo.define('Broadcast', function(require) {
 
-odoo.define('broadcast', function(require) {
-var Widget = require('web.Widget');
 var bus = require('bus.bus').bus;
+var Class = require('web.Class');
+var mixins = require('web.mixins');
 var rpc = require('web.rpc');
 
+var TIMEOUT_OFFER = 5000;
 
-var Broadcast = Widget.extend({
-    template: 'broadcast.main',
-    events: {
-        'click .fa.o_audio:not(.active),.fa.o_video:not(.active)': '_onOpenMedia',
-        'click .fa.o_audio.active,.fa.o_video.active': '_onCloseMedia',
-    },
+var Broadcast = Class.extend(mixins.EventDispatcherMixin, {
+    init: function (parent, partnerID, mediaConfig, peerConfig) {
+        mixins.EventDispatcherMixin.init.call(this);
+        this.setParent(parent);
 
-    mediaConfig: {
-        audio: true,
-        video: { width: 400, height: 300 },
-        preview: true,
-    },
-    peerConfig: {iceServers: [
-        {url: 'stun:stun.l.google.com:19302'},
-        {url: 'stun:stun1.l.google.com:19302'},
-        {url: 'stun:stun2.l.google.com:19302'},
-        {url: 'stun:stun3.l.google.com:19302'},
-        {url: 'stun:stun4.l.google.com:19302'},
-        {url: 'stun:stun.services.mozilla.com'}
-    ]},
-
-    init: function (parent, partner_id) {
-        this.partner_id = partner_id;
-        $(window).on('beforeunload', this.destroy.bind(this));
-        this.local = {};
-        this.remote = {};
         this.localStream = new MediaStream();
         this.remoteStream = new MediaStream();
-        return this._super(parent);
-    },
-    start: function () {
-        var self = this;
-        bus.start_polling();
-        this.__onNodifications = function (notifications) {
-            notifications = _.filter(notifications, function (notification) {
-                return notification[0][1] === "broadcast";
-            });
-            var broadcasts = _.map(notifications, function (notification) {
-                return JSON.parse(notification[1]);
-            });
-            broadcasts = _.filter(broadcasts, function (broadcast) {
-                return broadcast.partner_id === self.partner_id;
-            });
-            var index = _.findIndex(broadcasts, {type: 'call'});
-            if (index !== -1) {
-                broadcasts.splice(index+1);
-            }
 
-            broadcasts.reverse();
-            _.each(broadcasts, function (broadcast) {
-                if (broadcast) {
-                    if (broadcast.type === 'disconnect') {
-                        self._onEnd();
-                    } else {
-                        self._onCall(broadcast);
-                    }
-                }
-            });
-        };
-        bus.on('notification', this, this.__onNodifications);
+        this.partnerID = partnerID;
+        this.peerConfig = peerConfig;
     },
+
     destroy: function () {
-        this._super();
-        bus.off('notification', this, this.__onNodifications);
-        this._endCall();
+        rpc.query({
+            route: '/broadcast/disconnect',
+            params: {
+                partner_id: this.partnerID
+            }
+        });
+
+        this._closeCall();
+
+        this.trigger_up('call_disconnected');
+        mixins.EventDispatcherMixin.destroy.call(this);
+    },
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
+    createOffer: function (mediaConfig) {
+        if (this.peerConnection) {
+            this._closeCall();
+        }
+        this.mediaConfig = mediaConfig;
+        this._openCall();
+        this._makeOffer(this.type || 'offer');
+    },
+    /**
+     * When the offer arrives, this function is triggered, and given our "video-offer" message
+     */
+    receiveOffer: function (data) {
+        var self = this;
+
+        clearTimeout(this._makeOfferTimeout);
+
+        if (data.desc && data.desc.type === 'offer') {
+            this._closeCall();
+
+            if (data.mediaConfig) {
+                this.mediaConfig = this.mediaConfig || {};
+                if (this.mediaConfig.audio === undefined && data.mediaConfig.audio) {
+                    this.mediaConfig.audio = true;
+                }
+                if (this.mediaConfig.video === undefined && data.mediaConfig.video) {
+                    this.mediaConfig.video = data.mediaConfig.video;
+                }
+                if (data.mediaConfig.remoteScreen) { // can ask to receive screen sharing
+                    this.mediaConfig.screen = true;
+                }
+            }
+        }
+
+        if (!this.peerConnection) {
+            this._openCall();
+        }
+
+        if (data.desc && data.desc.sdp) {
+            console.log("Received SDP from remote peer.");
+            var session = new RTCSessionDescription(data.desc);
+            var promise = this.peerConnection.setRemoteDescription(session);
+            if (data.desc.type === 'offer') {
+                promise.then(this._makeOffer.bind(this, 'answer'));
+            }
+        } else if (data.candidate) {
+            console.log("Received ICECandidate from remote peer.");
+            var candidate = new RTCIceCandidate(data.candidate);
+            this.peerConnection.addIceCandidate(candidate);
+        }
     },
 
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
 
-    _endCall: function (type, media) {
-        if (!this.peerConnection) {
-            return;
-        }
-
-        if (type !== 'remote') {
-            this._endLocalCall();
-        }
-        if (type !== 'local') {
-            this._endRemoteCall();
-        }
-
-        if (!_.isEmpty(this.remote) || !_.isEmpty(this.local)) {
-            return;
-        }
-
-        this.peerConnection.close();
-        this.peerConnection = null;
-    },
-    _endLocalCall: function () {
+    _closeCall: function () {
         var self = this;
-        rpc.query({
-            route: '/broadcast/disconnect',
-            params: {partner_id: this.partner_id}
-        });
-
         this.localStream.getTracks().forEach(function (track) {
             track.stop();
             self.localStream.removeTrack(track);
         });
-
-        var video = this.remote.video;
-        if (video && video !== true) {
-            video.pause();
-            video.src = "";
-            $(video).remove();
-        }
-        delete this.local.video;
-
-        this.$('.fa.o_audio.active,.fa.o_video.active').removeClass('active');
-    },
-    _endRemoteCall: function () {
-        var self = this;
         this.remoteStream.getTracks().forEach(function (track) {
             track.stop();
             self.remoteStream.removeTrack(track);
         });
-
-        var video = this.remote.video;
-        if (video && video !== true) {
-            video.pause();
-            video.src = "";
-            $(video).remove();
-        }
-        delete this.remote.video;
-    },
-    _prepareCall: function (kill) {
-        var self = this;
         if (this.peerConnection) {
-            if (kill) {
-                this.peerConnection.close();
-                this.peerConnection = null;
-            } else {
-                return this.peerConnection;
-            }
+            this.peerConnection.close();
+            this.peerConnection = null;
         }
-
-        var pc = this.peerConnection = new RTCPeerConnection(this.peerConfig);
-
-        pc.addStream(this.localStream);
-
-        pc.onicecandidate = this._onIceCandidate.bind(this);
-        pc.onaddstream = this._onAddStream.bind(this);
-        pc.onremovestream = function (event) {
-            console.log(event.type);
-        };
-        pc.oniceconnectionstatechange = function (event) {
-            console.log(event);
-            if (self.isDestroyed()) {
-                return;
-            }
-            switch(this.iceConnectionState) {
-                case "closed":
-                case "failed":
-                case "disconnected": self._endCall('remote');
-            }
-        };
-        pc.onicegatheringstatechange = function (event) {
-            console.log(event.type);
-        };
-        pc.onsignalingstatechange = function (event) {
-            console.log(event.type);
-        };
-        pc.onnegotiationneeded = function (event) {
-            console.log(event.type);
-        };
-        return pc;
-    },
-    _addVideo: function (stream, video) {
-        if (!video || video === true) {
-            video = document.createElement('video');
-            $(video).appendTo(this.$('div'));
-        }
-
-        (function () {
-            if ('srcObject' in video) {
-                try {
-                    video.srcObject = stream;
-                } catch(e) {}
-            }
-            if ('mozSrcObject' in video) {
-                try {
-                   video.mozSrcObject = stream;
-                } catch(e) {}
-            }
-            if ('createObjectURL' in URL) {
-                video.src = URL.createObjectURL(stream);
-            }
-        })();
-        video.autoplay = true;
-        video.play();
-        return video;
-    },
-    _addAudio: function (stream, audio) {
-        if (!audio || audio === true) {
-            audio = document.createElement('video');
-        }
-
-        (function () {
-            if ('srcObject' in audio) {
-                try {
-                    audio.srcObject = stream;
-                } catch(e) {}
-            }
-            if ('mozSrcObject' in audio) {
-                try {
-                   audio.mozSrcObject = stream;
-                } catch(e) {}
-            }
-            if ('createObjectURL' in URL) {
-                audio.src = URL.createObjectURL(stream);
-            }
-        })();
-        audio.autoplay = true;
-        audio.play();
-        return audio;
     },
     _createAndSendDescription: function (type) {
         var self = this;
@@ -234,127 +118,496 @@ var Broadcast = Widget.extend({
                             route: '/broadcast/call',
                             params: {
                                 type: 'call',
-                                partner_id: self.partner_id,
-                                desc: description
+                                partner_id: self.partnerID,
+                                desc: description,
+                                mediaConfig: self.mediaConfig,
                             }
                         });
                     });
             })
             .catch(function (err) {
                 console.error(err);
-                self._endCall();
+                self.destroy();
             });
+    },
+    _makeOffer: function (type) {
+        var self = this;
+        this.type = type;
+        var mediaConfig = this.mediaConfig;
+        var promise = navigator.mediaDevices.getUserMedia(mediaConfig);
+        promise.then(function (stream) {
+            if (mediaConfig.video) {
+                self.trigger_up('local_video', {stream: stream});
+            } else if (mediaConfig.audio) {
+                self.trigger_up('local_audio', {stream: stream});
+            }
+            stream.getTracks().forEach(function(track) {
+                self.localStream.addTrack(track);
+            });
+        });
+        promise.then(function () {
+            clearTimeout(self._makeOfferTimeout);
+            self._makeOfferTimeout = setTimeout(self.destroy.bind(self), TIMEOUT_OFFER);
+            self._createAndSendDescription(type);
+        });
+    },
+    _openCall: function () {
+        this.peerConnection = new RTCPeerConnection(this.peerConfig);
+        this.peerConnection.addStream(this.localStream);
+        this.peerConnection.onicecandidate = this._onIceCandidate.bind(this);
+        this.peerConnection.onaddstream = this._onAddStream.bind(this);
+        this.peerConnection.oniceconnectionstatechange = this._onIceConnectionStateChange.bind(this);
     },
 
     //--------------------------------------------------------------------------
     // Handlers
     //--------------------------------------------------------------------------
 
+    // once remote stream arrives, show it in the remote video element
+    _onAddStream: function (event) {
+        var self = this;
+        var tracks = event.stream.getTracks();
+        tracks.forEach(function(track) {
+            self.remoteStream.addTrack(track);
+        });
+        var medias = _.pluck(tracks, 'kind');
+
+        if (medias.indexOf('video') !== -1) {
+            this.trigger_up('remote_video', {stream: event.stream});
+        } else if (medias.indexOf('audio') !== -1) {
+            this.trigger_up('remote_audio', {stream: event.stream});
+        }
+    },
     // send any ice candidates to the other peer
     _onIceCandidate: function (event) {
-        var self = this;
-
-        console.log('_onIceCandidate', event);
-
         if (!event.candidate) {
             return;
         }
         return rpc.query({
             route: '/broadcast/call',
             params: {
-                partner_id: self.partner_id,
+                partner_id: this.partnerID,
                 type: 'candidate',
                 candidate: event.candidate
             }
         });
     },
-    // once remote stream arrives, show it in the remote video element
-    _onAddStream: function (evt) {
-        var self = this;
-        var tracks = evt.stream.getTracks();
-        tracks.forEach(function(track) {
-            self.remoteStream.addTrack(track);
+    _onIceConnectionStateChange: function (event) {
+        if (this.isDestroyed()) {
+            return;
+        }
+        switch(this.peerConnection.iceConnectionState) {
+            case "closed":
+            case "failed":
+            case "disconnected": this.destroy();
+        }
+    },
+});
+
+var BroadcastCollector = Class.extend(mixins.EventDispatcherMixin, {
+    custom_events: {
+        local_video: '_onStream',
+        local_audio: '_onStream',
+        local_screen: '_onStream',
+        remote_video: '_onStream',
+        remote_audio: '_onStream',
+        remote_screen: '_onStream',
+        call_disconnected: '_onDisconnect',
+    },
+
+    mediaConfig: {
+        audio: true,
+        video: {
+            small: {width: 256, height: 192 },
+            medium: {width: 512, height: 384 },
+            big: {width: 1024, height: 768 },
+        }
+    },
+    peerConfig: {iceServers: [
+        {url: 'stun:stun.l.google.com:19302'},
+        {url: 'stun:stun1.l.google.com:19302'},
+        {url: 'stun:stun2.l.google.com:19302'},
+        {url: 'stun:stun3.l.google.com:19302'},
+        {url: 'stun:stun4.l.google.com:19302'},
+        {url: 'stun:stun.services.mozilla.com'}
+    ]},
+
+    init: function () {
+        mixins.EventDispatcherMixin.init.call(this);
+        this.broadcasts = {};
+        $(window).on('beforeunload', this.destroy.bind(this));
+        
+        bus.start_polling();
+        this.__onNodifications = this._onNodifications.bind(this);
+        bus.on('notification', this, this.__onNodifications);
+    },
+
+    destroy: function () {
+        bus.off('notification', this, this.__onNodifications);
+        mixins.EventDispatcherMixin.destroy.call(this);
+    },
+
+    //--------------------------------------------------------------------------
+    // Public
+    //--------------------------------------------------------------------------
+
+    /**
+     * Open a new rtc call and begin to stream.
+     *
+     * @param {Integer} partnerID
+     * @param {Object} [mediaConfig] use default value if not set
+     * @param {false|'small'|'medium'|'big'} [mediaConfig.video] medium size by default
+     * @param {Boolean} [mediaConfig.audio] true by default (and true when video is enable)
+     * @returns {Deferred}
+     */
+    openCall: function (partnerID, mediaConfig) {
+        if (!mediaConfig.audio && !mediaConfig.video && !mediaConfig.screen) {
+            this.closeCall(partnerID);
+            return;
+        }
+
+        if (!this.broadcasts[partnerID]) {
+            this.broadcasts[partnerID] = new Broadcast(this, partnerID, this.peerConfig);
+        }
+        this.broadcasts[partnerID].createOffer(this._config(mediaConfig));
+    },
+    closeCall: function (partnerID) {
+        var broadcast = this.broadcasts[partnerID];
+        if (broadcast) {
+            this.broadcasts[partnerID].destroy();
+        }
+    },
+
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
+
+    /**
+     * A partner rtc calls was destroyed
+     *
+     * @private
+     * @param {odooEvent} event
+     */
+    _onDisconnect: function (event) {
+        event.stopPropagation();
+        var partnerID = event.target.partnerID;
+        var broadcast = this.broadcasts[partnerID];
+        if (!broadcast) {
+            return;
+        }
+        delete this.broadcasts[partnerID];
+        this.trigger('disconnect', {partnerID: partnerID});
+    },
+    /**
+     * 
+     *
+     * @private
+     */
+    _onStream: function (event) {
+        event.stopPropagation();
+        this.trigger(_.str.camelize(event.name), {
+            partnerID: event.target.partnerID,
+            data: event.data.stream,
         });
-        var medias = _.pluck(tracks, 'kind');
-
-        console.log('_onAddStream', medias);
-
-        if (medias.indexOf('video') !== -1) {
-            if (this.remote.audio) {
-                this.remote.audio.stop();
+    },
+    /**
+     * 
+     *
+     * @private
+     */
+    _onNodifications: function (notifications) {
+        var self = this;
+        var data = {};
+        _.each(notifications, function (notification) {
+            if (notification[0][1] === "broadcast") {
+                var broadcast = JSON.parse(notification[1]);
+                if (!data[broadcast.partnerID]) {
+                    data[broadcast.partnerID] = [];
+                }
+                data[broadcast.partnerID].push(broadcast);
             }
-            this.remote.video = this._addVideo(evt.stream, this.remote.video);
-        } else if (medias.indexOf('audio') !== -1) {
-            this.remote.audio = this._addAudio(evt.stream, this.remote.audio);
+        });
+
+        _.each(data, function (broadcasts) {
+            var index = _.findIndex(broadcasts, {type: 'call'});
+            if (index !== -1) {
+                broadcasts.splice(index+1);
+            }
+            if (!broadcasts.length) {
+                return;
+            }
+            broadcasts.reverse();
+
+            _.each(broadcasts, function (bc) {
+                var partnerID = bc.partner_id;
+                var broadcast = self.broadcasts[partnerID];
+                if (bc.type === 'disconnect') {
+                    if (broadcast) {
+                        console.log("Received 'close call' signal from remote peer.");
+                        broadcast.destroy();
+                    }
+                } else {
+                    if (!broadcast) {
+                        // in the event that a communication is received without this
+                        // being provided, the configuration will be identical to that
+                        // of the incoming offer.
+                        // (eg: press F5 just after responding to a communication request)
+                        broadcast = new Broadcast(self, partnerID, self.peerConfig);
+                        self.broadcasts[partnerID] = broadcast;
+                    }
+                    broadcast.receiveOffer(bc);
+                }
+            });
+        });
+    },
+    /**
+     * 
+     *
+     * @private
+     * @param {Object} mediaConfig
+     * @param {false|'small'|'medium'|'big'} [mediaConfig.video] medium size by default
+     * @param {Boolean} [mediaConfig.audio] true by default (and true when video is enable)
+     * @returns {Object}
+     */
+    _config: function (mediaConfig) {
+        mediaConfig = mediaConfig || {video: 'medium'};
+        var config = {};
+        if(mediaConfig.video !== false) {
+            config.audio = true;
+            config.video = this.mediaConfig.video[mediaConfig.video] || this.mediaConfig.video.medium;
+        } else if (mediaConfig.audio !== false) {
+            config.audio = true;
+        }
+        return config;
+    },
+});
+
+
+var broadcastCollector = new BroadcastCollector();
+
+return {
+    closeCall: broadcastCollector.closeCall.bind(broadcastCollector),
+    openCall: broadcastCollector.openCall.bind(broadcastCollector),
+    on: function (events, dest, func) {
+        return broadcastCollector.on(events, dest, function (data) {
+            if (data.partnerID === dest.partnerID) {
+                func.call(dest, data.data);
+            }
+        });
+    },
+    off: function () {
+        return broadcastCollector.off.apply(broadcastCollector, arguments);
+    }
+};
+
+});
+
+
+odoo.define('broadcast.widget', function(require) {
+
+var Broadcast = require('Broadcast');
+var Widget = require('web.Widget');
+
+
+function srcStream (video, stream) {
+    if ('createObjectURL' in URL) {
+        try {
+            video.src = URL.createObjectURL(stream);
+            return;
+        } catch (e) {}
+    }
+    if (!video) debugger
+    if ('srcObject' in video) {
+        video.srcObject = stream;
+    } else if ('mozSrcObject' in video) {
+        video.mozSrcObject = stream;
+    }
+}
+
+
+var BroadcastWidget = Widget.extend({
+    template: 'broadcast.widget',
+
+    events: {
+        'click .fa.o_audio': '_onClickAudio',
+        'click .fa.o_video': '_onClickVideo',
+        'click .fa.o_screen': '_onClickScreen',
+    },
+
+    init: function (parent, partnerID) {
+        this.audio = false;
+        this.video = false;
+        this.screen = false;
+        this.partnerID = partnerID;
+        return this._super(parent);
+    },
+
+    start: function () {
+        Broadcast.on('localVideo', this, this._onLocalVideoStream);
+        Broadcast.on('localAudio', this, this._onLocalAudioStream);
+        Broadcast.on('localScreen', this, this._onLocalScreenStream);
+        Broadcast.on('remoteVideo', this, this._onRemoteVideoStream);
+        Broadcast.on('remoteAudio', this, this._onRemoteAudioStream);
+        Broadcast.on('remoteScreen', this, this._onRemoteScreenStream);
+        Broadcast.on('disconnect', this, this._onDisconnect);
+
+        this._super();
+    },
+
+    destroy: function () {
+        Broadcast.off('localVideo', this, this._onLocalVideoStream);
+        Broadcast.off('localAudio', this, this._onLocalAudioStream);
+        Broadcast.off('localScreen', this, this._onLocalScreenStream);
+        Broadcast.off('remoteVideo', this, this._onRemoteVideoStream);
+        Broadcast.off('remoteAudio', this, this._onRemoteAudioStream);
+        Broadcast.off('remoteScreen', this, this._onRemoteScreenStream);
+
+        Broadcast.closeCall(this.partnerID);
+
+        Broadcast.off('disconnect', this, this._onDisconnect);
+    },
+
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
+
+    /**
+     *
+     * @private
+     * @param {mouseEvent} event
+     */
+    _onClickAudio: function (event) {
+        this.audio = !this.audio;
+        this.$('.fa.o_audio').toggleClass('active', this.audio);
+        if (this.audio || this.video) {
+            Broadcast.openCall(this.partnerID, {
+                audio: this.audio,
+                video: this.video,
+                screen: this.screen,
+            });
         }
     },
     /**
-     * When the offer arrives, this function is triggered, and given our "video-offer" message
      *
-     * returns: {Promise}
+     * @private
+     * @param {mouseEvent} event
      */
-    _onCall: function (data) {
-        var self = this;
-        var pc = this._prepareCall(data.desc && data.desc.type === 'offer');
-
-        if (data.desc && data.desc.sdp) {
-            console.log("Received SDP from remote peer.");
-            var session = new RTCSessionDescription(data.desc);
-            var promise = pc.setRemoteDescription(session);
-            if (data.desc.type === 'offer') {
-                promise.then(this._createAndSendDescription.bind(this, 'answer'));
-            }
-        } else if (data.candidate) {
-            console.log("Received ICECandidate from remote peer.");
-            var candidate = new RTCIceCandidate(data.candidate);
-            pc.addIceCandidate(candidate);
+    _onClickVideo: function (event) {
+        this.video = !this.video;
+        if (this.video && !this.audio) {
+            this.audio = true;
+        }
+        this.$('.fa.o_audio').toggleClass('active', this.audio);
+        this.$('.fa.o_video').toggleClass('active', this.video);
+        if (this.audio || this.video) {
+            Broadcast.openCall(this.partnerID, {
+                audio: this.audio,
+                video: this.video,
+                screen: this.screen,
+            });
         }
     },
-    _onEnd: function (data) {
-        console.log("Received 'close call' signal from remote peer.");
-        this._endCall('remote');
-    },
-    _onOpenMedia: function (event) {
-        var self = this;
-        var pc = this._prepareCall(true);
-
-        var media = $(event.target).addClass('active').hasClass('o_audio') ? 'audio' : 'video';
-
-        this.local[media] = true;
-
-        var mediaConfig = _.pick(this.mediaConfig, media === 'video' ? ['video', 'audio'] : ['audio']);
-        var promise = navigator.mediaDevices.getUserMedia(mediaConfig);
-        promise.then(function (stream) {
-                if (self.mediaConfig.preview) {
-                    if (media === 'video') {
-                        self.local.video = self._addVideo(stream);
-                    } else {
-                        self.local.audio = self._addAudio(stream);
-                    }
-                }
-                stream.getTracks().forEach(function(track) {
-                    self.localStream.addTrack(track);
-                });
+    /**
+     *
+     * @private
+     * @param {mouseEvent} event
+     */
+    _onClickScreen: function (event) {
+        this.screen = !this.screen;
+        this.$('.fa.o_screen').toggleClass('active', this.screen);
+        if (this.audio || this.video) {
+            Broadcast.openCall(this.partnerID, {
+                audio: this.audio,
+                video: this.video,
+                screen: this.screen,
             });
+        }
+    },
+    /**
+     *
+     * @private
+     */
+    _onDisconnect: function () {
+        this.audio = false;
+        this.video = false;
+        this.screen = false;
+        this.$('.fa').removeClass('active');
+        this.$('video, audio')
+            .addClass('hidden')
+            .each(function () {
+                this.pause();
+                this.src = "";
+            });
+    },
+    /**
+     *
+     * @private
+     * @param {Stream} stream
+     */
+    _onLocalVideoStream: function (stream) {
+        var $video = this.$('.o_local_video').removeClass('hidden');
+        srcStream($video[0], stream);
+        $video[0].play();
+    },
+    /**
+     *
+     * @private
+     * @param {Stream} stream
+     */
+    _onLocalAudioStream: function (stream) {
+        var $audio = this.$('.o_local_audio').removeClass('hidden');
+        srcStream($audio[0], stream);
+        $audio[0].play();
+    },
+    /**
+     *
+     * @private
+     * @param {Stream} stream
+     */
+    _onLocalScreenStream: function (stream) {},
+    /**
+     *
+     * @private
+     * @param {odooEvent} event
+     */
+    _onRemoteVideoStream: function (stream) {
+        var $video = this.$('.o_remote_video').removeClass('hidden');
+        srcStream($video[0], stream);
+        $video[0].play();
+    },
+    /**
+     *
+     * @private
+     * @param {Stream} stream
+     */
+    _onRemoteAudioStream: function (stream) {
+        var $audio = this.$('.o_remote_audio').removeClass('hidden');
+        srcStream($audio[0], stream);
+        $audio[0].play();
+    },
+    /**
+     *
+     * @private
+     * @param {Stream} stream
+     */
+    _onRemoteScreenStream: function (stream) {
+        var $video = this.$('.o_remote_screen').removeClass('hidden');
+        srcStream($video[0], stream);
+        $video[0].play();
+    },
 
-        promise.then(this._createAndSendDescription.bind(this, 'offer'));
-    },
-    _onCloseMedia: function (event) {
-        var media = $(event.target).addClass('active').hasClass('o_audio') ? 'audio' : 'video';
-        this._endCall('local', media);
-    },
 });
 
 (function autoAdd() {
     if ($('.o_home_menu').size()) {
         if ($('.o_user_menu').text().indexOf('aaa') !== -1)
         {
-        new Broadcast(this, 3).prependTo($('.o_home_menu'));
-        new Broadcast(this, 6).prependTo($('.o_home_menu'));
+        new BroadcastWidget(this, 3).prependTo($('.o_home_menu'));
+        new BroadcastWidget(this, 6).prependTo($('.o_home_menu'));
 
         } else {
-            new Broadcast(this, $('.o_user_menu').text().indexOf('Admin') !== -1 ? 6 : 3).prependTo($('.o_home_menu'));
-            new Broadcast(this, 45).prependTo($('.o_home_menu'));
+            new BroadcastWidget(this, $('.o_user_menu').text().indexOf('Admin') !== -1 ? 6 : 3).prependTo($('.o_home_menu'));
+            new BroadcastWidget(this, 45).prependTo($('.o_home_menu'));
         }
     } else {
         setTimeout(autoAdd, 500);
