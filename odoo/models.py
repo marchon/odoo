@@ -3272,19 +3272,22 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         parent_store = self._parent_store_create_prepare(vals)
 
         # determine SQL values
-        columns = {}                    # {colname: (format, value)}
+        formats = {}                    # {colname: format}
+        columns = {}                    # {colname: value}
         other_vals = {}                 # non-column field values
         trans_vals = {}                 # translated field values
         protected_fields = []           # list of fields to not recompute on self
 
-        columns['id'] = ("nextval(%s)", self._sequence)
+        formats['id'] = "nextval(%s)"
+        columns['id'] = self._sequence
 
         for name, val in vals.items():
             field = self._fields[name]
             assert field.store
 
             if field.column_type:
-                columns[name] = (field.column_format, field.convert_to_column(val, self, vals))
+                formats[name] = field.column_format
+                columns[name] = field.convert_to_column(val, self, vals)
                 if field.translate is True:
                     trans_vals[name] = val
             else:
@@ -3294,18 +3297,19 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 protected_fields.append(field)
 
         if self._log_access:
-            columns['create_uid'] = ("%s", self._uid)
-            columns['write_uid'] = ("%s", self._uid)
-            columns['create_date'] = ("%s", AsIs("(now() at time zone 'UTC')"))
-            columns['write_date'] = ("%s", AsIs("(now() at time zone 'UTC')"))
+            formats['create_uid'] = formats['write_uid'] = "%s"
+            columns['create_uid'] = columns['write_uid'] = self._uid
+            formats['create_date'] = formats['write_date'] = "%s"
+            columns['create_date'] = columns['write_date'] = AsIs("(now() at time zone 'UTC')")
 
         # insert a row for this record
+        names = list(formats)
         query = """INSERT INTO "%s" (%s) VALUES(%s) RETURNING id""" % (
                 self._table,
-                ', '.join('"%s"' % name for name in columns),
-                ', '.join(fmt for fmt, val in columns.values()),
+                ', '.join('"%s"' % name for name in names),
+                ', '.join(formats[name] for name in names),
             )
-        cr.execute(query, [val for fmt, val in columns.values()])
+        cr.execute(query, [columns[name] for name in names])
 
         # from now on, self is the new record
         self = self.browse(cr.fetchone()[0])
