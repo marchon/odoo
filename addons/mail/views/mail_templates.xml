@@ -48,6 +48,7 @@
                 <script type="text/javascript" src="/mail/static/tests/systray_tests.js"></script>
                 <script type="text/javascript" src="/mail/static/tests/helpers/mock_server.js"></script>
                 <script type="text/javascript" src="/mail/static/tests/helpers/test_utils.js"></script>
+       <!--          <script type="text/javascript" src="/mail/static/tests/moderation_tests.js"></script>   -->
             </xpath>
         </template>
 

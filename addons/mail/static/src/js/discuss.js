@@ -358,24 +358,6 @@ var Discuss = Widget.extend(ControlPanelMixin, {
         };
     },
     /**
-     * @private
-     * @param {number[]} messageIDs ids of messages to moderate
-     * @param {string} decision of the moderator
-     */
-     _handleModeratorDecision: function (messageIDs, decision) {
-        if (messageIDs) {
-            if (decision === 'reject') {
-                this._rejectMessages(messageIDs);
-            } else if (decision === 'discard') {
-                this._discardMessages(messageIDs);
-            } else if (decision === 'ban') {
-                this._banAuthorsFromMessageIDs(messageIDs);
-            } else {
-                this.call('chat_manager', 'moderateMessages', messageIDs, decision);
-            } 
-        }   
-     },
-    /**
      * Load more messages for the current thread
      *
      * @private
@@ -400,6 +382,23 @@ var Discuss = Widget.extend(ControlPanelMixin, {
                 self.thread.scroll_to({offset: offset});
             });
     },
+    /** @private
+     * @param {number[]} messageIDs ids of messages to moderate
+     * @param {string} decision of the moderator
+     */
+     _handleModeratorDecision: function (messageIDs, decision) {
+        if (messageIDs) {
+            if (decision === 'reject') {
+                this._rejectMessages(messageIDs);
+            } else if (decision === 'discard') {
+                this._discardMessages(messageIDs);
+            } else if (decision === 'ban') {
+                this._banAuthorsFromMessageIDs(messageIDs);
+            } else {
+                this.call('chat_manager', 'moderateMessages', messageIDs, decision);
+            } 
+        }   
+     },
     /**
      * Binds handlers on the given $input to make them autocomplete and/or
      * create channels.
