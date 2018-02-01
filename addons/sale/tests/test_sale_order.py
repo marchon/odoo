@@ -199,6 +199,7 @@ class TestSaleOrder(TestCommonSaleNoChart):
         self.assertEquals((sol.price_unit, sol.qty_delivered, sol.product_uom_qty, sol.qty_invoiced), (160, 2, 0, 0), 'Sale: line is wrong after confirming vendor invoice')
 
     def test_sale_with_pricelist_multi_price_per_product(self):
+        """ Test pricelist apply or not on order line's products when pricelist on SO """
         # create pricelist
         pricelist = Form(self.env['product.pricelist'])
         pricelist.name = 'Pricelist A'
@@ -212,7 +213,7 @@ class TestSaleOrder(TestCommonSaleNoChart):
             item.applied_on = '1_product'
             item.product_tmpl_id = self.service_deliver.product_tmpl_id
             item.compute_price = 'percentage'
-            item.percent_price = 10
+            item.percent_price = 20
         pricelist_a = pricelist.save()
 
         pricelist = Form(self.env['product.pricelist'])
@@ -227,9 +228,8 @@ class TestSaleOrder(TestCommonSaleNoChart):
             item.applied_on = '1_product'
             item.product_tmpl_id = self.product_deliver.product_tmpl_id
             item.compute_price = 'percentage'
-            item.percent_price = 20
+            item.percent_price = 10
         pricelist_b = pricelist.save()
-
         # create sale order with pricelist
         order_form = Form(self.env['sale.order'])
         order_form.partner_id = self.partner_customer_usd
@@ -242,5 +242,46 @@ class TestSaleOrder(TestCommonSaleNoChart):
             line.product_id = self.service_order
         with order_form.order_line.new() as line:
             line.product_id = self.product_deliver
+
+        order = order_form.save()
+
+        # check only pricelist of sale order should be applied on products of sale order line
+        for line in order.order_line:
+            if order.pricelist_id in line.product_id.item_ids.mapped('pricelist_id'):
+                for i in order.pricelist_id.item_ids:
+                    if i.product_tmpl_id == line.product_id.product_tmpl_id:
+                        price = i.percent_price
+                self.assertEquals(price, (line.product_id.list_price - line.price_unit)/line.product_id.list_price*100, 'Pricelist A should be applied on product')
+            else:
+                self.assertEquals(line.price_unit, line.product_id.list_price, 'Pricelist should not be applied on product.')
+
+    def test_sale_with_pricelist_formulas(self):
+        """ Test sale order with a pricelist which one have compute price formula"""
+        pricelist = Form(self.env['product.pricelist'])
+        pricelist.name = 'Pricelist A'
+        pricelist.discount_policy = 'without_discount'
+        with pricelist.item_ids.new() as item:
+            item.applied_on = '2_product_category'
+            item.categ_id = self.product_category
+            item.compute_price = 'formula'
+            item.price_discount = 15
+        pricelist_a = pricelist.save()
+
+        pricelist = Form(self.env['product.pricelist'])
+        pricelist.name = 'Pricelist B'
+        pricelist.discount_policy = 'with_discount'
+        with pricelist.item_ids.new() as item:
+            item.applied_on = '3_global'
+            item.compute_price = 'percentage'
+            item.price_discount = 10
+        pricelist_b = pricelist.save()
+
+        order_form = Form(self.env['sale.order'])
+        order_form.partner_id = self.partner_customer_usd
+        order_form.pricelist_id = pricelist_a
+        with order_form.order_line.new() as line:
+            line.product_id = self.product_order
+        with order_form.order_line.new() as line:
+            line.product_id = self.service_deliver
 
         order = order_form.save()
