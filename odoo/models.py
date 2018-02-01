@@ -3311,23 +3311,23 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             )
         cr.execute(query, [columns[name] for name in names])
 
-        # from now on, self is the new record
-        self = self.browse(cr.fetchone()[0])
+        # the new record
+        record = self.browse(cr.fetchone()[0])
 
         # update parent_left, parent_right
         if parent_store:
-            self._parent_store_update(vals)
+            record._parent_store_update(vals)
 
-        with self.env.protecting(protected_fields, self):
+        with self.env.protecting(protected_fields, record):
             # mark fields to recompute; do this before setting other fields,
             # because the latter can require the value of computed fields, e.g.,
             # a one2many checking constraints on records
-            self.modified(self._fields)
+            record.modified(self._fields)
 
             # set the value of non-column fields
             if other_vals:
                 # discard default values from context
-                other = self.with_context({
+                other = record.with_context({
                     key: val
                     for key, val in self._context.items()
                     if not key.startswith('default_')
@@ -3338,21 +3338,21 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                     field.write(other, other_vals[field.name], create=True)
 
                 # mark fields to recompute
-                self.modified(other_vals)
+                record.modified(other_vals)
 
             # check Python constraints
-            self._validate_fields(vals)
+            record._validate_fields(vals)
 
-        self.check_access_rule('create')
+        record.check_access_rule('create')
 
         # add translations
         if self.env.lang and self.env.lang != 'en_US':
             Translations = self.env['ir.translation']
             for name, val in trans_vals.items():
                 tname = "%s,%s" % (self._name, name)
-                Translations._set_ids(tname, 'model', self.env.lang, self.ids, val, val)
+                Translations._set_ids(tname, 'model', self.env.lang, record.ids, val, val)
 
-        return self
+        return record
 
     def _parent_store_create_prepare(self, valses):
         """ Prepare the creation of records, and return whether their
