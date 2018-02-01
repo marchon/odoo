@@ -21,7 +21,7 @@ var ProductCatalog = Widget.extend({
      */
     init: function (options) {
         this._super.apply(this, arguments);
-        this.options = _.pick(options, 'catalog_type', 'product_selection', 'product_ids', 'sortby', 'x', 'y', 'category_id');
+        this.options = _.pick(options, 'catalog_type', 'product_selection', 'product_ids', 'order', 'x', 'y', 'category_id');
         this.isMobile = config.device.isMobile;
         this.isGrid = this.options.catalog_type === 'grid';
         this.size = this.isGrid ? 12 / this.options.x : 12 / config.device.size_class;
@@ -38,7 +38,7 @@ var ProductCatalog = Widget.extend({
             route: '/get_product_catalog_details',
             params: {
                 domain: this._getDomain(),
-                sortby: this._getSortby(),
+                order: this._getOrder(),
                 limit: this._getLimit(),
             }
         }).then(function (result) {
@@ -101,8 +101,8 @@ var ProductCatalog = Widget.extend({
      * @private
      * @returns {string}
      */
-    _getSortby: function () {
-        var sortBy = {
+    _getOrder: function () {
+        var order = {
             price_asc: 'list_price asc',
             price_desc: 'list_price desc',
             name_asc: 'name asc',
@@ -110,7 +110,7 @@ var ProductCatalog = Widget.extend({
             newest_to_oldest: 'create_date asc',
             oldest_to_newest: 'create_date desc',
         };
-        return sortBy[this.options.sortby];
+        return order[this.options.order];
     },
     /**
      * Number of products to display
@@ -135,7 +135,7 @@ var ProductCatalog = Widget.extend({
         });
     },
     /**
-     * Reordering products when sortby Reorder option is selected
+     * Reordering products when order Reorder option is selected
      *
      * @private
      */

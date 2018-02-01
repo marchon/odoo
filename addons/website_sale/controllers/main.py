@@ -1035,10 +1035,10 @@ class WebsiteSale(http.Controller):
         )
 
     @http.route('/get_product_catalog_details', type='json', auth='public', website=True)
-    def get_product_catalog_details(self, domain, sortby=None, limit=None):
+    def get_product_catalog_details(self, domain, order=None, limit=None):
         ProductTemplate = request.env['product.template']
         product_details = []
-        products = ProductTemplate.search(domain, order=sortby, limit=limit)
+        products = ProductTemplate.search(domain, order=order, limit=limit)
         if products:
             products_available = True
             currency_id = request.website.get_current_pricelist().currency_id
