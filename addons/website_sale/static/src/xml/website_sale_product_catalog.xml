@@ -16,7 +16,7 @@
                 </div>
             </t>
             <t t-else="">
-                <t t-if="widget.options.catalog_type === 'grid'">
+                <t t-if="widget.isGrid">
                     <t t-set="products" t-value="widget.products"/>
                     <t t-set="size" t-value="widget.size"/>
                     <t t-call="website_sale.product_box"/>
@@ -54,7 +54,7 @@
     </div>
     <t t-name="website_sale.product_box">
         <t t-foreach="products" t-as="product">
-            <div t-attf-class="col-md-#{size} col-sm-#{size} o_product_item" t-att-data-product-id="product.id">
+            <div t-attf-class="col-md-#{size} col-sm-#{size} o_product_item" t-att-data-product-id="product.id" t-att-data-product-name="product.name">
                 <div class="o_product_wrapper mb8">
                     <div class="o_product_image">
                         <a t-attf-href="/shop/product/#{product.id}">

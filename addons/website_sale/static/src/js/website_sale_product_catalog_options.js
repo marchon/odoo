@@ -19,7 +19,6 @@ options.registry.product_catalog = options.Class.extend({
         this.productCatalogData = _.pick(this.$target.data(), 'catalog_type', 'product_selection', 'product_ids', 'sort_by', 'x', 'y', 'category_id');
         this._setGrid();
         this._bindGridEvents();
-        this._renderProducts();
         return this._super.apply(this, arguments);
     },
 
@@ -55,9 +54,16 @@ options.registry.product_catalog = options.Class.extend({
             this._renderProducts();
         }
         if (value === 'reorder_products') {
+            var products = [];
+            _.each(this.$target.find('.o_product_item'), function(product) {
+                products.push({
+                    id: $(product).data('product-id'),
+                    name: $(product).data('product-name'),
+                });
+            });
             var $dialog = new Dialog(null, {
                 title: _t('Drag a product to re-arrange display sequence'),
-                $content: $(QWeb.render('website_sale.reorderProducts', {'products': this.productCatalog.products})),
+                $content: $(QWeb.render('website_sale.reorderProducts', {'products': products})),
                 buttons: [
                     {text: _t('Save'), classes: 'btn-primary', close: true, click: function () {
                         self.productCatalogData.sort_by = value;
@@ -222,7 +228,7 @@ options.registry.product_catalog = options.Class.extend({
             dialog.$content.find('[name="selection"]').select2({
                 width: '100%',
                 multiple: true,
-                maximumSelectionSize: self.productCatalog._getLimit(),
+                maximumSelectionSize: self.productCatalogData.catalog_type === 'grid' ? self.productCatalogData.x * self.productCatalogData.y : 16,
                 data: _.map(result, function (r) {
                     return {'id': r.id, 'text': r.name};
                 }),
@@ -285,13 +291,9 @@ options.registry.product_catalog = options.Class.extend({
             self.$target.attr('data-' + key, value);
             self.$target.data(key, value);
         });
-        this.productCatalog = new productCatalog.ProductCatalog(this.productCatalogData);
-        this.$target.find('.products_container').remove();
-        this.productCatalog.appendTo(this.$target.find('.container')).then(function () {
-            if (self.$target.attr('data-sortby') !== 'reorder_products') {
-                self.$target.attr('data-productids', self._getProductIds());
-            }
-            self.trigger_up('cover_update');
+        this.trigger_up('animation_start_demand', {
+            editableMode: true,
+            $target: self.$target,
         });
     },
 });

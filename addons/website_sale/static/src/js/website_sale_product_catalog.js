@@ -1,10 +1,10 @@
 odoo.define('website_sale.product_catalog', function (require) {
 'use strict';
 
-var base = require('web_editor.base');
 var config = require('web.config');
 var core = require('web.core');
 var rpc = require('web.rpc');
+var sAnimation = require('website.content.snippets.animation');
 var Widget = require('web.Widget');
 
 var QWeb = core.qweb;
@@ -22,9 +22,9 @@ var ProductCatalog = Widget.extend({
     init: function (options) {
         this._super.apply(this, arguments);
         this.options = _.pick(options, 'catalog_type', 'product_selection', 'product_ids', 'sort_by', 'x', 'y', 'category_id');
-        this.isRatingActive = false;
         this.isMobile = config.device.isMobile;
-        this.size = this.options.catalog_type === 'grid' ? 12 / this.options.x : 12 / config.device.size_class;
+        this.isGrid = this.options.catalog_type === 'grid';
+        this.size = this.isGrid ? 12 / this.options.x : 12 / config.device.size_class;
         this.carouselID = _.uniqueId('product-catalog-carousel-');
     },
     /**
@@ -42,13 +42,13 @@ var ProductCatalog = Widget.extend({
                 limit: this._getLimit(),
             }
         }).then(function (result) {
-            self.products = self.options.catalog_type === 'grid' ? result.products : self._getCarouselProducts(result.products);
             self.isRatingActive = result.is_rating_active;
             self.productsAvailable = result.products_available;
             self.isSalesManager = result.is_sales_manager;
             if (self.options.sort_by === 'reorder_products') {
-                self._reorderingProducts();
+                result.products = self._reorderingProducts(result.products);
             }
+            self.products = self.isGrid ? result.products : self._getCarouselProducts(result.products);
         });
         return $.when(this._super.apply(this, arguments), def);
     },
@@ -120,7 +120,7 @@ var ProductCatalog = Widget.extend({
      * @returns {integer} Limit
      */
     _getLimit: function () {
-        return this.options.catalog_type === 'grid' ? this.options.x * this.options.y : 16;
+        return this.isGrid ? this.options.x * this.options.y : 16;
     },
     /**
      * Render rating for each product
@@ -129,9 +129,10 @@ var ProductCatalog = Widget.extend({
      */
     _renderRating: function () {
         var self = this;
-        this.$('.o_product_item').each(function () {
-            var product = _.findWhere(self.products, {id: $(this).data('product-id')});
-            $(QWeb.render('website_rating.rating_stars_static', {val: product.rating.avg})).appendTo($(this).find('.rating'));
+        _.each(this.$('.o_product_item'), function (product) {
+            var $product = $(product);
+            var productInfo = _.findWhere(self.products, {id: $product.data('product-id')});
+            $(QWeb.render('website_rating.rating_stars_static', {val: productInfo.rating.avg})).appendTo($product.find('.rating'));
         });
     },
     /**
@@ -139,20 +140,26 @@ var ProductCatalog = Widget.extend({
      *
      * @private
      */
-    _reorderingProducts: function () {
+    _reorderingProducts: function (products) {
         var reorderIDs = this.options.product_ids.split(',').map(Number);
-        this.products = _.sortBy(this.products, function (product) {
+        return _.sortBy(products, function (product) {
             return _.indexOf(reorderIDs, product.id);
         });
     },
 });
 
-base.ready().then(function () {
-    $('.s_product_catalog').each(function () {
-        var productCatalog = new ProductCatalog($(this).data());
-        $(this).find('.products_container').remove();
-        productCatalog.appendTo($(this).find('.container'));
-    });
+sAnimation.registry.productCatalog = sAnimation.Class.extend({
+    selector: '.s_product_catalog',
+
+    /**
+     * @override
+     */
+    start: function () {
+        var productCatalog = new ProductCatalog(this.$el.data());
+        this.$el.find('.products_container').remove();
+        productCatalog.appendTo(this.$el.find('.container'));
+        return this._super.apply(this, arguments);
+    },
 });
 
 return {

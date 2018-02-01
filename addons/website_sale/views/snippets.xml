@@ -68,7 +68,7 @@
             <li class="dropdown-submenu">
                 <a tabindex="-1" href="#"><i class="fa fa-bars" aria-hidden="true"/>Mode</a>
                 <ul class="dropdown-menu">
-                    <li data-catalog-type="horizontal" data-no-preview="true"><a href="#">Horizontal</a></li>
+                    <li data-catalog-type="horizontal" data-no-preview="true"><a href="#">Slider</a></li>
                     <li data-catalog-type="grid" data-no-preview="true"><a href="#">Grid</a></li>
                 </ul>
             </li>
