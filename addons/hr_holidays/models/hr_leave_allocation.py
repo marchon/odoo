@@ -61,6 +61,7 @@ class HolidaysAllocation(models.Model):
         help='This area is automaticly filled by the user who validate the leave with second level (If Leave type need second validation)')
     double_validation = fields.Boolean('Apply Double Validation', related='holiday_status_id.double_validation')
     can_reset = fields.Boolean('Can reset', compute='_compute_can_reset')
+    can_approve = fields.Boolean('Can Aproove', compute='_compute_can_approve')
 
     _sql_constraints = [
         ('type_value', "CHECK( (holiday_type='employee' AND employee_id IS NOT NULL) or (holiday_type='category' AND category_id IS NOT NULL) or (holiday_type='department' AND department_id IS NOT NULL) )",
@@ -84,6 +85,17 @@ class HolidaysAllocation(models.Model):
         for holiday in self:
             if group_hr_manager in user.groups_id or holiday.employee_id and holiday.employee_id.user_id == user:
                 holiday.can_reset = True
+
+    @api.depends('employee_id', 'department_id')
+    def _compute_can_approve(self):
+        """ User can not approve a leave request if is its own leave request
+            except if he is hr_manager and he has no manager
+        """
+        for holiday in self:
+            manager = self.user_has_groups('hr_holidays.group_hr_holidays_manager') \
+                        and not holiday.employee_id.parent_id \
+                        and not holiday.department_id.manager_id
+            holiday.can_approve = (holiday.employee_id.user_id.id != self.env.uid) or manager
 
     @api.onchange('holiday_type')
     def _onchange_type(self):
@@ -288,3 +300,19 @@ class HolidaysAllocation(models.Model):
             })
 
         return [new_group] + groups
+
+    @api.multi
+    def message_subscribe(self, partner_ids=None, channel_ids=None, subtype_ids=None, force=True):
+        # due to record rule can not allow to add follower and mention on validated leave so subscribe through sudo
+        if self.state in ['validate', 'validate1']:
+            return super(HolidaysAllocation, self.sudo()).message_subscribe(partner_ids=partner_ids, channel_ids=channel_ids, subtype_ids=subtype_ids, force=force)
+        return super(HolidaysAllocation, self).message_subscribe(partner_ids=partner_ids, channel_ids=channel_ids, subtype_ids=subtype_ids, force=force)
+
+    @api.multi
+    def _message_notification_recipients(self, message, recipients):
+        result = super(HolidaysAllocation, self)._message_notification_recipients(message, recipients)
+        title = _("See Allocation")
+        for res in result:
+            if result[res].get('button_access'):
+                result[res]['button_access']['title'] = title
+        return result

@@ -33,6 +33,12 @@ class TestHrHolidaysBase(common.TransactionCase):
             'email': 'david.employee@example.com',
             'groups_id': [(6, 0, [group_employee_id])]
         }).id
+        self.user_hrmanager_2_id = Users.create({
+            'name': 'Florence HrManager',
+            'login': 'florence',
+            'email': 'florence.hrmanager@example.com',
+            'groups_id': [(6, 0, [group_employee_id, self.ref('hr_holidays.group_hr_holidays_manager')])]
+        }).id
 
         # Hr Data
         self.employee_emp_id = self.env['hr.employee'].create({
@@ -42,4 +48,13 @@ class TestHrHolidaysBase(common.TransactionCase):
         self.employee_hruser_id = self.env['hr.employee'].create({
             'name': 'Armande HrUser',
             'user_id': self.user_hruser_id,
+        }).id
+        self.employee_hrmanager_id = self.env['hr.employee'].create({
+            'name': 'Bastien HrManager',
+            'user_id': self.user_hrmanager_id,
+        }).id
+        self.employee_hrmanager_2_id = self.env['hr.employee'].create({
+            'name': 'Florence HrManager',
+            'user_id': self.user_hrmanager_2_id,
+            'parent_id': self.employee_hrmanager_id,
         }).id

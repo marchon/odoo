@@ -105,14 +105,14 @@ class HolidaysRequest(models.Model):
 
     @api.depends('employee_id', 'department_id')
     def _compute_can_approve(self):
-        """ User can not approve a leave request if it is its own leave request
-             or if he is an Hr Manager.
+        """ User can not approve a leave request if is its own leave request
+            except if he is hr_manager and he has no manager
         """
-        if self.user_has_groups('hr_holidays.group_hr_holidays_user'):
-            for holiday in self:
-                if (self.user_has_groups('hr_holidays.group_hr_holidays_manager') and not holiday.employee_id.parent_id and not holiday.department_id.manager_id) \
-                   or (holiday.employee_id.user_id.id != self.env.uid):
-                    holiday.can_approve = True
+        for holiday in self:
+            manager = self.user_has_groups('hr_holidays.group_hr_holidays_manager') \
+                        and not holiday.employee_id.parent_id \
+                        and not holiday.department_id.manager_id
+            holiday.can_approve = (holiday.employee_id.user_id.id != self.env.uid) or manager
 
     @api.onchange('holiday_type')
     def _onchange_type(self):
@@ -352,6 +352,9 @@ class HolidaysRequest(models.Model):
         if any(holiday.state != 'confirm' for holiday in self):
             raise UserError(_('Leave request must be confirmed ("To Approve") in order to approve it.'))
 
+        if any(not holiday.can_approve for holiday in self):
+            raise UserError(_('You cannot approve your own leaves'))
+
         self.filtered(lambda hol: hol.double_validation).write({'state': 'validate1', 'first_approver_id': current_employee.id})
         self.filtered(lambda hol: not hol.double_validation).action_validate()
         return True
@@ -360,6 +363,9 @@ class HolidaysRequest(models.Model):
     def action_validate(self):
         if not self.env.user.has_group('hr_holidays.group_hr_holidays_user'):
             raise UserError(_('Only an HR Officer or Manager can approve leave requests.'))
+
+        if any(not holiday.can_approve for holiday in self):
+            raise UserError(_('You cannot approve your own leaves'))
 
         current_employee = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
         for holiday in self:
