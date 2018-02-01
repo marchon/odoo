@@ -2,25 +2,25 @@
 
 // Since rows and containers are used inside cards, we're
 // forced to set the padding relative to the grid system.
-@o-kanban-dashboard-hpadding: @grid-gutter-width*0.5;
-@o-kanban-dashboard-vpadding: @grid-gutter-width*0.25;
+$o-kanban-dashboard-hpadding: $grid-gutter-width*0.5;
+$o-kanban-dashboard-vpadding: $grid-gutter-width*0.25;
 
 // Used to manage spacing in complex dropdown menu
-@o-kanban-dashboard-dropdown-complex-gap: 5px;
+$o-kanban-dashboard-dropdown-complex-gap: 5px;
 
 // Emulate dropdown links
-.o-kanban-dashboard-dropdown-link(@link-padding-gap: @odoo-dropdown-hpadding) {
+.o-kanban-dashboard-dropdown-link($link-padding-gap: $odoo-dropdown-hpadding) {
     padding: 0;
 
     > a {
-        margin: auto auto auto -@link-padding-gap;
-        padding: 3px @link-padding-gap;
-        color: @text-color;
+        margin: auto auto auto -$link-padding-gap;
+        padding: 3px $link-padding-gap;
+        color: $text-color;
         display: block;
 
         &:hover {
-            background-color: @gray-lighter-dark;
-            color: @headings-color;
+            background-color: $gray-lighter-dark;
+            color: $headings-color;
         }
     }
     &:last-child {
@@ -37,9 +37,9 @@
         .o-flex-display();
         .o-flex-flow(column, nowrap);
         .o-justify-content(space-between);
-        padding: @o-kanban-dashboard-vpadding @o-kanban-dashboard-hpadding;
+        padding: $o-kanban-dashboard-vpadding $o-kanban-dashboard-hpadding;
 
-        @media (max-width: @screen-xs-max) {
+        @media (max-width: $screen-xs-max) {
             margin-bottom: 10px;
         }
 
@@ -49,11 +49,11 @@
         }
 
         // ------- Dropdown toggle & menu -------
-        @o-kanban-manage-toggle-height: 35px;
+        $o-kanban-manage-toggle-height: 35px;
 
         .o_kanban_manage_toggle_button {
-            .o-kanban-dropdown(@o-kanban-dashboard-hpadding);
-            height: @o-kanban-manage-toggle-height;
+            .o-kanban-dropdown($o-kanban-dashboard-hpadding);
+            height: $o-kanban-manage-toggle-height;
         }
 
         .o_kanban_card_manage_pane {
@@ -62,7 +62,7 @@
 
             // Arbitrary value to place the dropdown-menu exactly below the
             // dropdown-toggle (height is forced so that it works on Firefox)
-            top: @o-kanban-manage-toggle-height - 1;
+            top: $o-kanban-manage-toggle-height - 1;
 
             > div:not(.o_no_padding_kanban_colorpicker) {
                 padding: 3px 0 3px 20px;
@@ -71,7 +71,7 @@
             }
 
             > .o_kanban_card_manage_section {
-                border-bottom: 1px solid @gray-lighter-dark;
+                border-bottom: 1px solid $gray-lighter-dark;
                 margin-bottom: 10px;
 
                 > div {
@@ -90,27 +90,27 @@
                     .o-justify-content(space-between);
                     margin-left: 0;
                     margin-right: 0;
-                    padding-left: @o-kanban-dashboard-dropdown-complex-gap*2;
-                    padding-right: @o-kanban-dashboard-dropdown-complex-gap*2;
+                    padding-left: $o-kanban-dashboard-dropdown-complex-gap*2;
+                    padding-right: $o-kanban-dashboard-dropdown-complex-gap*2;
                 }
 
                 div[class*="col-"] {
                     .o-flex(1, 1, percentage(100/3));
-                    padding-left: @o-kanban-dashboard-dropdown-complex-gap;
-                    padding-right: @o-kanban-dashboard-dropdown-complex-gap;
+                    padding-left: $o-kanban-dashboard-dropdown-complex-gap;
+                    padding-right: $o-kanban-dashboard-dropdown-complex-gap;
 
                     > .o_kanban_card_manage_title {
                         .h5;
                         font-weight: 500;
                     }
                     > div:not(.o_kanban_card_manage_title) {
-                        .o-kanban-dashboard-dropdown-link(@link-padding-gap: @o-kanban-dashboard-dropdown-complex-gap);
+                        .o-kanban-dashboard-dropdown-link($link-padding-gap: $o-kanban-dashboard-dropdown-complex-gap);
                     }
                 }
 
                 .row.o_kanban_card_manage_settings {
-                    border-top: 1px solid @gray-lighter-dark;
-                    padding-top: @o-kanban-dashboard-dropdown-complex-gap*3;
+                    border-top: 1px solid $gray-lighter-dark;
+                    padding-top: $o-kanban-dashboard-dropdown-complex-gap*3;
 
                     .oe_kanban_colorpicker {
                         max-width: none;
@@ -118,7 +118,7 @@
                     }
 
                     div[class*="col-"] + div[class*="col-"] {
-                        border-left: 1px solid @gray-lighter-dark;
+                        border-left: 1px solid $gray-lighter-dark;
                     }
 
                     // Default options box
@@ -150,27 +150,27 @@
 
         // Provide enough room for the dropdown-toggle
         .o_primary {
-            padding-right: @o-kanban-dashboard-hpadding*2;
+            padding-right: $o-kanban-dashboard-hpadding*2;
         }
 
         // Uniform titles
         .o_kanban_card_header_title .o_primary,
         .o_kanban_primary_left .o_primary > span:first-child,
         .oe_kanban_content > .o_title > h3 {
-            .o-kanban-record-title(@font-size: 16px);
+            .o-kanban-record-title($font-size: 16px);
             display: block;
         }
 
         // Identify subtitles without classes
         .o_kanban_primary_left .o_primary > span:nth-child(2) > strong {
             font-weight: 500;
-            font-size: @font-size-small;
-            color: @text-muted;
+            font-size: $font-size-small;
+            color: $text-muted;
         }
 
         // Provide enough room to add an icon before the title
         &.o_has_icon .o_primary {
-            padding-left: @o-kanban-record-margin*1.5;
+            padding-left: $o-kanban-record-margin*1.5;
         }
 
         // -------  Kanban Content -------
@@ -185,7 +185,7 @@
             .o-flex-display();
             .o-flex-flow(column, nowrap);
             .o-justify-content(space-between);
-            margin-top: @o-kanban-dashboard-vpadding * 2;
+            margin-top: $o-kanban-dashboard-vpadding * 2;
             padding-right: 0;
             padding-left: 0;
 
@@ -199,27 +199,27 @@
             }
 
             .o_kanban_primary_bottom {
-                margin-top: @o-kanban-dashboard-vpadding;
-                margin-bottom: -@o-kanban-dashboard-vpadding;
+                margin-top: $o-kanban-dashboard-vpadding;
+                margin-bottom: -$o-kanban-dashboard-vpadding;
 
                 &.bottom_block {
-                    border-top: 1px solid @gray-lighter-dark;
-                    background-color: @gray-lighter;
-                    padding-top: @o-kanban-dashboard-vpadding;
-                    padding-bottom: @o-kanban-dashboard-vpadding;
+                    border-top: 1px solid $gray-lighter-dark;
+                    background-color: $gray-lighter;
+                    padding-top: $o-kanban-dashboard-vpadding;
+                    padding-bottom: $o-kanban-dashboard-vpadding;
                 }
             }
         }
 
         .o_dashboard_graph {
             overflow: hidden;
-            margin: (@o-kanban-dashboard-vpadding * 2) -@o-kanban-dashboard-hpadding;
+            margin: ($o-kanban-dashboard-vpadding * 2) -$o-kanban-dashboard-hpadding;
         }
     }
 
     .o_favorite, .o_kanban_manage_toggle_button {
         .o-position-absolute(0, 0);
-        padding: @o-kanban-record-margin;
+        padding: $o-kanban-record-margin;
     }
 
     .o_favorite {
@@ -229,6 +229,6 @@
 
     // Emphasize records' colors when necessary
     &.o_emphasize_colors .o_kanban_record::after {
-        width: @o-kanban-color-border-width * 2;
+        width: $o-kanban-color-border-width * 2;
     }
 }

@@ -1,13 +1,13 @@
 // VARIABLES
-@o-base-settings-mobile-tabs-height: 40px;
-@o-base-settings-mobile-tabs-overflow-gap: 3%;
+$o-base-settings-mobile-tabs-height: 40px;
+$o-base-settings-mobile-tabs-overflow-gap: 3%;
 
 // MIXINS
-.o-base-settings-horizontal-padding(@padding-base: @padding-small-vertical) {
-    padding: @padding-base @odoo-horizontal-padding;
+.o-base-settings-horizontal-padding($padding-base: $padding-small-vertical) {
+    padding: $padding-base $odoo-horizontal-padding;
 
-    @media (min-width: @screen-lg-min) {
-        padding-left: @odoo-horizontal-padding*2;;
+    @media (min-width: $screen-lg-min) {
+        padding-left: $odoo-horizontal-padding*2;;
     }
 }
 
@@ -22,7 +22,7 @@
 .o_base_settings {
     height: 100%;
 
-    @media (max-width: @screen-xs-max) {
+    @media (max-width: $screen-xs-max) {
         .o-flex-flow(column, nowrap);
     }
 
@@ -30,12 +30,12 @@
         .o_panel {
             .o-flex-display();
             .o-flex-flow(row, wrap);
-            margin-bottom: @odoo-sheet-vpadding*0.5;
+            margin-bottom: $odoo-sheet-vpadding*0.5;
             width: 100%;
 
             .title, .o_setting_search {
                 .o-flex(1, 0, auto);
-                width: @screen-xs-min*0.5;
+                width: $screen-xs-min*0.5;
             }
 
             .o_setting_search {
@@ -45,15 +45,15 @@
                     height: 28px;
                     padding: 0px;
                     border: 0px;
-                    border-bottom: 1px solid @gray-lighter-darker;
-                    border-color: @gray;
+                    border-bottom: 1px solid $gray-lighter-darker;
+                    border-color: $gray;
                     box-shadow: none;
                     font-weight: 500;
                 }
 
                 .searchIcon {
                     .o-position-absolute(4px, 0);
-                    color: @gray;
+                    color: $gray;
                 }
             }
         }
@@ -64,11 +64,11 @@
             border: 0;
 
             .oe_highlight, .oe_link  {
-                padding: @padding-small-vertical @padding-small-horizontal;
+                padding: $padding-small-vertical $padding-small-horizontal;
             }
 
             .oe_link {
-                .o-hover-text-color(@link-color, @link-hover-color);
+                .o-hover-text-color($link-color, $link-hover-color);
             }
         }
     }
@@ -79,7 +79,7 @@
 
         overflow: auto;
 
-        @media (max-width: @screen-xs-max) {
+        @media (max-width: $screen-xs-max) {
             .o-flex-flow(column, nowrap);
         }
 
@@ -87,12 +87,12 @@
             .o-flex-display();
             .o-flex(0, 0, auto);
             .o-flex-flow(column, nowrap);
-            background: @gray-dark;
+            background: $gray-dark;
             overflow: auto;
-            padding-top: @odoo-horizontal-padding*0.5;
+            padding-top: $odoo-horizontal-padding*0.5;
 
-            @media (max-width: @screen-xs-max) {
-                .o-flex(0, 0, @o-base-settings-mobile-tabs-height);
+            @media (max-width: $screen-xs-max) {
+                .o-flex(0, 0, $o-base-settings-mobile-tabs-height);
                 .o-inline-flex-display();
                 position: relative;
                 overflow: hidden;
@@ -100,8 +100,8 @@
             }
 
             .selected {
-                background-color: @gray-darker;
-                box-shadow: inset 3px 0 0 @odoo-brand-optional;
+                background-color: $gray-darker;
+                box-shadow: inset 3px 0 0 $odoo-brand-optional;
 
                 .app_name {
                     color: white;
@@ -110,9 +110,9 @@
 
             .tab {
                 .o-flex-display();
-                padding: 0 @odoo-horizontal-padding*2 0 @odoo-horizontal-padding;
+                padding: 0 $odoo-horizontal-padding*2 0 $odoo-horizontal-padding;
                 height: 40px;
-                color: @gray-lighter-darker;
+                color: $gray-lighter-darker;
                 font-size: 13px;
                 line-height: 40px;
                 cursor: pointer;
@@ -123,11 +123,11 @@
                 }
 
                 // Mobile Tabs
-                @media (max-width: @screen-xs-max) {
+                @media (max-width: $screen-xs-max) {
                     display: block;
-                    .o-position-absolute(@left:100%);
-                    .size(auto, @o-base-settings-mobile-tabs-height);
-                    padding: @o-base-settings-mobile-tabs-height*0.25 @o-base-settings-mobile-tabs-height*0.4;
+                    .o-position-absolute($left:100%);
+                    .size(auto, $o-base-settings-mobile-tabs-height);
+                    padding: $o-base-settings-mobile-tabs-height*0.25 $o-base-settings-mobile-tabs-height*0.4;
                     text-align: center;
                     font-size: 14px;
                     font-weight: 500;
@@ -142,7 +142,7 @@
 
                     &:after {
                         content: '';
-                        background: @odoo-brand-optional;
+                        background: $odoo-brand-optional;
                         opacity: 0;
                         .o-position-absolute(auto, 0, 0, 0);
                         .size(100%, 3px);
@@ -150,7 +150,7 @@
                     }
 
                     &.previous, &.before {
-                        left: 0% - @o-base-settings-mobile-tabs-overflow-gap;
+                        left: 0% - $o-base-settings-mobile-tabs-overflow-gap;
                     }
 
                     &.current {
@@ -167,7 +167,7 @@
                     }
 
                     &.next, &.after {
-                        left: 100% + @o-base-settings-mobile-tabs-overflow-gap;
+                        left: 100% + $o-base-settings-mobile-tabs-overflow-gap;
                     }
                 }
             }
@@ -176,14 +176,14 @@
         .settings {
             position: relative;
             .o-flex(1, 1, 100%);
-            background-color: @odoo-view-background-color;
+            background-color: $odoo-view-background-color;
             overflow: auto;
 
             > .app_settings_block {
                 h2 {
                     margin-bottom: 0;
                     .o-base-settings-horizontal-padding();
-                    background-color: @gray-lighter;
+                    background-color: $gray-lighter;
                     font-size: 15px;
                     font-weight: bold;
 
@@ -194,7 +194,7 @@
                 }
 
                 .o_settings_container {
-                    max-width: @screen-md-min; // Provide a maximum container size to ensure readability
+                    max-width: $screen-md-min; // Provide a maximum container size to ensure readability
                     .o-base-settings-horizontal-padding(0);
                 }
             }
@@ -203,7 +203,7 @@
                 .o-flex-display();
                 margin: 30px 0 10px;
                 .o-base-settings-horizontal-padding();
-                background-color: @gray-lighter;
+                background-color: $gray-lighter;
 
                 .icon {
                     .square(25px);
@@ -211,13 +211,13 @@
                 }
 
                 .appName {
-                    color: @headings-color;
+                    color: $headings-color;
                     font-size: 17px;
                 }
             }
 
             .notFound {
-                color : @text-muted;
+                color : $text-muted;
                 text-align: center;
                 font-size: 25px;
                 padding-top: 50px;

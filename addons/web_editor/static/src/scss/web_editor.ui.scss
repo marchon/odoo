@@ -3,21 +3,21 @@
 #web_editor-top-edit {
     .o-position-absolute(0, 0, auto, 0);
     position: fixed;
-    height: @odoo-navbar-height;
+    height: $odoo-navbar-height;
     z-index: 1003;
 
     background-color: rgba(0,0,0,0);
-    .o-transition(background-color, 400ms, @o-we-md-ease);
-    font-family: @o-we-font-family;
+    .o-transition(background-color, 400ms, $o-we-md-ease);
+    font-family: $o-we-font-family;
 
     form.navbar-form {
         height: 100%;
         z-index: 1060;
         margin: 0;
         padding: 0;
-        .o-position-absolute(@right: -@o-we-sidebar-width);
-        .o-transition(right, 0.4s, @o-we-md-ease);
-        border-left: 1px solid @o-we-color-divider;
+        .o-position-absolute($right: -$o-we-sidebar-width);
+        .o-transition(right, 0.4s, $o-we-md-ease);
+        border-left: 1px solid $o-we-color-divider;
         background-color: inherit;
 
         .btn-group {
@@ -30,21 +30,21 @@
             padding: 10px;
             line-height: 1.2;
             font-size: 13px;
-            font-family: @o-we-font-family;
+            font-family: $o-we-font-family;
 
             .o-transition(all, 0.3s);
             border: none;
             border-radius: 0;
 
             .fa {
-                margin-right: @grid-gutter-width/4;
+                margin-right: $grid-gutter-width/4;
                 &.fa-times {
-                    color: @o-we-color-danger;
+                    color: $o-we-color-danger;
                 }
             }
 
             &.btn-primary {
-                .button-variant(white, @odoo-brand-primary, @odoo-brand-primary);
+                .button-variant(white, $odoo-brand-primary, $odoo-brand-primary);
             }
             &.btn-default {
                 .button-variant(white, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0));
@@ -71,16 +71,16 @@
     padding: 4px;
 }
 html[lang] > body.editor_enable [data-oe-translation-state] {
-    @o-color-content-to-translate: rgb(255, 255, 90);
-    @o-color-translated-content: rgb(120, 215, 110);
+    $o-color-content-to-translate: rgb(255, 255, 90);
+    $o-color-translated-content: rgb(120, 215, 110);
 
-    background: fade(@o-color-content-to-translate, 50%)!important;
+    background: fade($o-color-content-to-translate, 50%)!important;
 
     &[data-oe-translation-state="translated"] {
-        background: fade(@o-color-translated-content, 50%)!important;
+        background: fade($o-color-translated-content, 50%)!important;
     }
     &.o_dirty {
-        background: fade(@o-color-translated-content, 25%)!important;
+        background: fade($o-color-translated-content, 25%)!important;
     }
 }
 
@@ -90,29 +90,29 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 
     .o-flex-display();
     .o-flex-flow(column, nowrap);
-    .o-position-absolute(0, auto, 0, -@o-we-sidebar-width);
+    .o-position-absolute(0, auto, 0, -$o-we-sidebar-width);
     position: fixed;
-    width: @o-we-sidebar-width;
+    width: $o-we-sidebar-width;
     z-index: 1003;
 
-    font-family: Roboto, @font-family-sans-serif;
-    border-right: 1px solid @o-we-color-divider;
-    .o-transition(left, 400ms, @o-we-md-ease);
-    .o-linear-gradient(45deg, @o-we-color-normal, darken(@o-we-color-normal, 10%));
+    font-family: Roboto, $font-family-sans-serif;
+    border-right: 1px solid $o-we-color-divider;
+    .o-transition(left, 400ms, $o-we-md-ease);
+    .o-linear-gradient(45deg, $o-we-color-normal, darken($o-we-color-normal, 10%));
     box-shadow: 0px 10px 10px -10px black inset;
 
     #snippets_menu {
         .o-flex(0, 0, auto);
-        height: @odoo-navbar-height;
-        line-height: @odoo-navbar-height;
+        height: $odoo-navbar-height;
+        line-height: $odoo-navbar-height;
         margin: 0;
         padding: 0;
-        background: @o-we-color-dark;
+        background: $o-we-color-dark;
         text-align: center;
         font-weight: normal;
         font-size: 17px;
         color: white;
-        font-family: @o-we-font-family;
+        font-family: $o-we-font-family;
     }
 
     #o_scroll {
@@ -198,7 +198,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 .oe_snippet { // No root because can be drag and drop (and the helper is in the body)
     position: relative;
     width: 100px;
-    background-color: @o-we-color-normal;
+    background-color: $o-we-color-normal;
 
     > :not(.oe_snippet_thumbnail) {
         display: none!important;
@@ -210,7 +210,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
         .oe_snippet_thumbnail_img {
             width: 100%;
             height: 0;
-            border: 1px solid @o-we-color-normal;
+            border: 1px solid $o-we-color-normal;
             padding-bottom: 75%;
             background-size: cover;
             background-position: center center;
@@ -223,12 +223,12 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
         }
         .oe_snippet_thumbnail_title {
             display: block;
-            border: 1px solid @o-we-color-dark;
+            border: 1px solid $o-we-color-dark;
             padding: 5px;
             font-size: 12px;
             font-weight: 300;
             text-shadow: none;
-            color: @o-we-color-text-light;
+            color: $o-we-color-text-light;
         }
         &:hover .oe_snippet_thumbnail_title {
             color: white;
@@ -237,30 +237,30 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 }
 
 // DROPZONES
-@keyframes dropZoneInsert {
+$keyframes dropZoneInsert {
     to {
-        background-color: fade(@odoo-brand-primary, 20%);
+        background-color: fade($odoo-brand-primary, 20%);
     }
 }
 #wrapwrap .oe_drop_zone {
-    background-color: fade(@odoo-brand-primary, 5%);
+    background-color: fade($odoo-brand-primary, 5%);
     .o-animation(dropZoneInsert, 1s, linear, 0s, infinite, alternate);
 
     &.oe_insert {
-        @odoo-dropzone-size: 40px;
-        @odoo-dropzone-border-width: 2px;
-        @odoo-dropzone-border: @odoo-dropzone-border-width dashed @odoo-brand-primary;
+        $odoo-dropzone-size: 40px;
+        $odoo-dropzone-border-width: 2px;
+        $odoo-dropzone-border: $odoo-dropzone-border-width dashed $odoo-brand-primary;
 
         z-index: 999;
 
-        border: @odoo-dropzone-border;
+        border: $odoo-dropzone-border;
         border-top: none;
         border-bottom: none;
 
         position: relative;
         width: 100%;
-        height: @odoo-dropzone-size;
-        margin: -@odoo-dropzone-size/2 0;
+        height: $odoo-dropzone-size;
+        margin: -$odoo-dropzone-size/2 0;
 
         .o-transition(margin, 400ms, linear);
 
@@ -269,24 +269,24 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
             display: block;
             width: 100%;
             height: 50%;
-            border-bottom: @odoo-dropzone-border;
+            border-bottom: $odoo-dropzone-border;
             box-sizing: content-box;
         }
 
         &.oe_vertical {
-            border: 2px dashed @odoo-brand-primary;
+            border: 2px dashed $odoo-brand-primary;
             border-left: none;
             border-right: none;
 
-            width: @odoo-dropzone-size;
+            width: $odoo-dropzone-size;
             float: left;
-            margin: 0 -@odoo-dropzone-size/2;
+            margin: 0 -$odoo-dropzone-size/2;
 
             &:after {
                 width: 50%;
                 height: 100%;
                 border-bottom: none;
-                border-right: @odoo-dropzone-border;
+                border-right: $odoo-dropzone-border;
             }
         }
     }
@@ -294,8 +294,8 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 
 // MANIPULATORS
 #oe_manipulators {
-    @odoo-handle-edge-size: 1px;
-    @odoo-handle-border-width: 1px;
+    $odoo-handle-edge-size: 1px;
+    $odoo-handle-border-width: 1px;
 
     position: relative;
 
@@ -317,8 +317,8 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 
         // OVERLAY OPTIONS
         > .oe_overlay_options {
-            font-family: @o-we-font-family;
-            .o-position-absolute(@bottom: 0, @left: 0);
+            font-family: $o-we-font-family;
+            .o-position-absolute($bottom: 0, $left: 0);
             width: 250px; // the parent oe_overlay has a width equal to the snippet width, the 250px is there to force the options to stay on one line without overriding bootstrap .btn-group
             text-align: left;
 
@@ -326,24 +326,24 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                 white-space: nowrap;
 
                 .btn {
-                    @o-overlay-option-size: 25px;
+                    $o-overlay-option-size: 25px;
 
                     display: inline-block;
-                    width: @o-overlay-option-size;
-                    height: @o-overlay-option-size;
+                    width: $o-overlay-option-size;
+                    height: $o-overlay-option-size;
                     padding: 0;
-                    border: 1px solid @o-we-color-dark;
-                    line-height: @o-overlay-option-size;
+                    border: 1px solid $o-we-color-dark;
+                    line-height: $o-overlay-option-size;
                     font-size: 11px;
                     border-radius: 0;
                     font-weight: normal;
 
                     .o-transition(all, 400ms);
-                    color: @o-we-color-text-light;
-                    background-color: @o-we-color-light;
+                    color: $o-we-color-text-light;
+                    background-color: $o-we-color-light;
                     &:hover {
                         color: white;
-                        background-color: lighten(@o-we-color-dark, 10%);
+                        background-color: lighten($o-we-color-dark, 10%);
 
                         > .fa {
                             color: white;
@@ -352,15 +352,15 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 
                     &.oe_snippet_remove {
                         color: white;
-                        background-color: @o-we-color-danger;
-                        border-color: darken(@o-we-color-danger, 20%);
+                        background-color: $o-we-color-danger;
+                        border-color: darken($o-we-color-danger, 20%);
 
                         > .fa {
                             color: white;
                         }
 
                         &:hover {
-                            background-color: darken(@o-we-color-danger, 20%);
+                            background-color: darken($o-we-color-danger, 20%);
                         }
                     }
                     &.oe_snippet_parent > i {
@@ -369,7 +369,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                     }
 
                     > .fa {
-                        color: @o-we-color-text-light;
+                        color: $o-we-color-text-light;
                     }
                 }
 
@@ -378,11 +378,11 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                     .btn {
                         width: auto;
                         padding: 0 25px 0 5px;
-                        background-color: @o-we-color-dark;
+                        background-color: $o-we-color-dark;
                         text-transform: uppercase;
                         &:hover, &:active, &:focus {
-                            background-color: lighten(@o-we-color-dark, 5%);
-                            border-color: lighten(@o-we-color-dark, 10%);
+                            background-color: lighten($o-we-color-dark, 5%);
+                            border-color: lighten($o-we-color-dark, 10%);
                             color: white;
                         }
                         &:active, &:focus, &:active:focus {
@@ -392,7 +392,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                             content: "";
                             width: 7px;
                             height: 2px;
-                            background-color: @o-we-color-text-light;
+                            background-color: $o-we-color-text-light;
                             .o-position-absolute(46%);
                             .o-transition(all, 0.3s);
                         }
@@ -407,7 +407,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                     }
                     // Open menu
                     &.open .btn {
-                        background-color: @o-we-color-light;
+                        background-color: $o-we-color-light;
                         &:before, &:after {
                             width: 9px;
                         }
@@ -424,11 +424,11 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                     .dropdown-menu {
                         margin: -1px 0 0 0;
                         padding: 0;
-                        border: 1px solid @o-we-color-dark;
+                        border: 1px solid $o-we-color-dark;
                         border-radius: 0;
-                        background-color: @o-we-color-light;
+                        background-color: $o-we-color-light;
                         a {
-                            color: @o-we-color-text-light;
+                            color: $o-we-color-text-light;
                             font-weight: normal;
                             font-size: 12px;
                             padding: 5px 35px 5px 20px;
@@ -437,7 +437,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                         > li {
                             position: relative;
                             &:hover {
-                                background-color: fadeOut(@o-we-color-dark, 50%);
+                                background-color: fadeOut($o-we-color-dark, 50%);
                                 > a {
                                     color: white;
                                     background: transparent;
@@ -455,22 +455,22 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                                 }
                             }
                             &.dropdown-submenu:before {
-                                .o-position-absolute(@top: 10px, @right: 10px);
+                                .o-position-absolute($top: 10px, $right: 10px);
                                 .o-caret-right(3px);
-                                border-left-color: @o-we-color-text-light;
+                                border-left-color: $o-we-color-text-light;
                             }
                             &.divider {
-                                background-color: @o-we-color-divider;
+                                background-color: $o-we-color-divider;
                                 margin: 0 8px;
                             }
                             &.active > a {
                                 color: white;
-                                background-color: fadeOut(@o-we-color-dark, 50%);
+                                background-color: fadeOut($o-we-color-dark, 50%);
                                 &:before {
-                                    .o-position-absolute(@top: 5px, @left: 5px);
+                                    .o-position-absolute($top: 5px, $left: 5px);
                                     content: "\f00c";
                                     font-family: "FontAwesome";
-                                    color: @odoo-brand-optional;
+                                    color: $odoo-brand-optional;
                                 }
                             }
                             &.dropdown-header {
@@ -493,7 +493,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                                     margin: 7px 0 4px 4px;
                                     &::before {
                                         content: "\f148";
-                                        .o-position-absolute(@top: 2px, @left: 8px);
+                                        .o-position-absolute($top: 2px, $left: 8px);
                                         font-family: FontAwesome;
                                         .scaleX(-1);
                                     }
@@ -514,7 +514,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                                 display: block;
                                 margin: 4px 35px 4px 20px;
                                 height: 1px;
-                                background: fade(@o-we-color-text-light, 10%);
+                                background: fade($o-we-color-text-light, 10%);
                             }
 
                             > a > i {
@@ -529,60 +529,60 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 
         &.o_top_cover > .oe_overlay_options {
             bottom: auto;
-            top: @odoo-handle-border-width;
-            right: @odoo-handle-border-width;
+            top: $odoo-handle-border-width;
+            right: $odoo-handle-border-width;
         }
 
         // HANDLES
         > .o_handles {
-            @o-handles-offset-to-hide: 10000px;
-            @o-handless-accent-color: #00e2ff;
-            .o-position-absolute(-@o-handles-offset-to-hide, 0, auto, 0);
+            $o-handles-offset-to-hide: 10000px;
+            $o-handless-accent-color: #00e2ff;
+            .o-position-absolute(-$o-handles-offset-to-hide, 0, auto, 0);
 
             &:hover > .o_handle {
-                background-color: fade(@o-handless-accent-color, 5%);
+                background-color: fade($o-handless-accent-color, 5%);
             }
 
             > .o_handle {
-                @o-handle-btn-size: 18px;
+                $o-handle-btn-size: 18px;
 
                 position: relative;
-                border: 0 solid @o-handless-accent-color;
+                border: 0 solid $o-handless-accent-color;
                 .o-transition(background, 300ms);
 
                 &:hover, &.o_active {
-                    background-color: fade(@o-handless-accent-color, 20%);
+                    background-color: fade($o-handless-accent-color, 20%);
 
                     &:before {
                         content: '';
-                        .o-position-absolute(0, @left:50%);
+                        .o-position-absolute(0, $left:50%);
                         width: 1px;
                         height: 100%;
                         margin-left: -1px;
-                        background-color: fade(@o-handless-accent-color, 50%);
+                        background-color: fade($o-handless-accent-color, 50%);
                     }
 
                     &.w:before {
-                        .o-position-absolute(50%, @left: 0);
+                        .o-position-absolute(50%, $left: 0);
                         width: 100%;
                         height: 1px;
                     }
 
                     &:after {
-                        border-color: darken(@o-handless-accent-color, 10%);
-                        background-color: darken(@o-handless-accent-color, 20%);
+                        border-color: darken($o-handless-accent-color, 10%);
+                        background-color: darken($o-handless-accent-color, 20%);
                     }
                 }
 
                 &:after {
                     display: block;
-                    width: @o-handle-btn-size;
-                    height: @o-handle-btn-size;
-                    border: solid 1px darken(@o-handless-accent-color, 10%);
-                    line-height: @o-handle-btn-size - 2;
+                    width: $o-handle-btn-size;
+                    height: $o-handle-btn-size;
+                    border: solid 1px darken($o-handless-accent-color, 10%);
+                    line-height: $o-handle-btn-size - 2;
                     font-size: 14px;
                     font-family: FontAwesome;
-                    background-color: darken(@o-handless-accent-color, 20%);
+                    background-color: darken($o-handless-accent-color, 20%);
                     color: white;
                 }
                 &.w:after, &.e:after {
@@ -610,46 +610,46 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                 }
 
                 &.w {
-                    .o-position-absolute(@o-handles-offset-to-hide, auto, -@o-handles-offset-to-hide, 0);
-                    width: @odoo-handle-edge-size;
-                    border-width: @odoo-handle-border-width;
+                    .o-position-absolute($o-handles-offset-to-hide, auto, -$o-handles-offset-to-hide, 0);
+                    width: $odoo-handle-edge-size;
+                    border-width: $odoo-handle-border-width;
                     border-right-width: 0;
                     cursor: e-resize;
 
                     &:after {
-                        .o-position-absolute(@top: 50%, @left: 40%);
-                        margin-top: -@o-handle-btn-size/2;
+                        .o-position-absolute($top: 50%, $left: 40%);
+                        margin-top: -$o-handle-btn-size/2;
                     }
                 }
                 &.e {
-                    .o-position-absolute(@o-handles-offset-to-hide, 0, -@o-handles-offset-to-hide, auto);
-                    width: @odoo-handle-edge-size;
-                    border-right-width: @odoo-handle-border-width;
+                    .o-position-absolute($o-handles-offset-to-hide, 0, -$o-handles-offset-to-hide, auto);
+                    width: $odoo-handle-edge-size;
+                    border-right-width: $odoo-handle-border-width;
                     cursor: w-resize;
 
                     &:after {
-                        .o-position-absolute(@top: 50%, @right: 40%);
-                        margin-top: -@o-handle-btn-size/2;
+                        .o-position-absolute($top: 50%, $right: 40%);
+                        margin-top: -$o-handle-btn-size/2;
                     }
                 }
                 &.n {
-                    .o-position-absolute(@o-handles-offset-to-hide, 0, auto, 0);
-                    border-top-width: @odoo-handle-border-width;
+                    .o-position-absolute($o-handles-offset-to-hide, 0, auto, 0);
+                    border-top-width: $odoo-handle-border-width;
                     cursor: ns-resize;
 
                     &:after {
-                        .o-position-absolute(@left: 50%, @top: 40%);
-                        margin-left: -@o-handle-btn-size/2;
+                        .o-position-absolute($left: 50%, $top: 40%);
+                        margin-left: -$o-handle-btn-size/2;
                     }
                 }
                 &.s {
-                    .o-position-absolute(auto, 0, -@o-handles-offset-to-hide, 0);
-                    border-bottom-width: @odoo-handle-border-width;
+                    .o-position-absolute(auto, 0, -$o-handles-offset-to-hide, 0);
+                    border-bottom-width: $odoo-handle-border-width;
                     cursor: ns-resize;
 
                     &:after {
-                        .o-position-absolute(@left: 50%, @bottom: 40%);
-                        margin-left: -@o-handle-btn-size/2;
+                        .o-position-absolute($left: 50%, $bottom: 40%);
+                        margin-left: -$o-handle-btn-size/2;
                     }
                 }
 
@@ -686,12 +686,12 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 
 // NOTE EDITOR
 .note-popover .popover {
-    height: @odoo-navbar-height;
+    height: $odoo-navbar-height;
     top: 0 !important;
     left: 0 !important;
     padding: 0;
-    margin: 0 0 0 @o-we-sidebar-width;
-    background-color: @o-we-color-dark;
+    margin: 0 0 0 $o-we-sidebar-width;
+    background-color: $o-we-color-dark;
     border-radius: 0;
     border-width: 0 1px;
     width: auto;
@@ -699,34 +699,34 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
     box-shadow: none;
 
     .popover-content {
-        height: @odoo-navbar-height;
+        height: $odoo-navbar-height;
         white-space: nowrap;
-        font-family: @o-we-font-family;
+        font-family: $o-we-font-family;
 
         h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-            font-family: @o-we-font-family;
+            font-family: $o-we-font-family;
         }
 
         .btn {
-            height: @odoo-navbar-height;
+            height: $odoo-navbar-height;
             border: none;
             border-radius: 0;
-            padding: @padding-base-vertical @padding-base-horizontal; // force this because of themes
-            background-color: @o-we-color-dark;
-            color: @o-we-color-text-normal;
+            padding: $padding-base-vertical $padding-base-horizontal; // force this because of themes
+            background-color: $o-we-color-dark;
+            color: $o-we-color-text-normal;
             border-top: 2px solid transparent;
             .o-transition(all, 0.3s);
 
             > .fa {
-                color: @o-we-color-text-normal;
+                color: $o-we-color-text-normal;
             }
 
             &:hover {
-                border-top: 2px solid @o-we-color-text-normal;
-                color: @o-we-color-text-light;
+                border-top: 2px solid $o-we-color-text-normal;
+                color: $o-we-color-text-light;
 
                 > .fa {
-                    color: @o-we-color-text-light;
+                    color: $o-we-color-text-light;
                 }
             }
 
@@ -737,12 +737,12 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 
             &.active {
                 border-top: 2px solid white;
-                background-color: @o-we-color-dark;
-                color: @o-we-color-text-light;
+                background-color: $o-we-color-dark;
+                color: $o-we-color-text-light;
                 box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.5);
 
                 > .fa {
-                    color: @o-we-color-text-light;
+                    color: $o-we-color-text-light;
                 }
             }
         }
@@ -752,7 +752,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
             &.open, .btn-group.open {
                 .dropdown-toggle {
                     border-top: 2px solid white;
-                    background-color: @o-we-color-darker;
+                    background-color: $o-we-color-darker;
                     color: white;
                     box-shadow: none;
 
@@ -765,18 +765,18 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
         .dropdown-menu {
             margin: 0;
             border-radius: 0;
-            background-color: @o-we-color-darker;
-            color: @o-we-color-text-normal;
+            background-color: $o-we-color-darker;
+            color: $o-we-color-text-normal;
             > li > a {
                 width: 100%;
-                color: @o-we-color-text-light;
+                color: $o-we-color-text-light;
 
                 > .fa {
-                    color: @o-we-color-text-light;
+                    color: $o-we-color-text-light;
                 }
 
                 &:hover {
-                    background-color: @o-we-tab-active-bg;
+                    background-color: $o-we-tab-active-bg;
                     color: white;
 
                     > .fa {
@@ -793,7 +793,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
             padding: 4px;
             border-radius: 2px;
             border: 1px solid #989898;
-            border-color: fadeOut(@o-we-color-text-normal, 0.5);
+            border-color: fadeOut($o-we-color-text-normal, 0.5);
         }
         .note-color-palette .note-color-row {
             height: auto!important;
@@ -876,10 +876,10 @@ table.colorpicker {
     }
 }
 .colorpicker {
-    background-color: @o-we-color-dark!important;
+    background-color: $o-we-color-dark!important;
 
     .o_colorpicker_sections {
-        border: 1px solid darken(@o-we-color-dark, 12%);
+        border: 1px solid darken($o-we-color-dark, 12%);
         border-width: 1px 0 0;
         font-size: 14px;
 
@@ -902,7 +902,7 @@ table.colorpicker {
                     padding: 5px 10px!important;
                     border-radius: 0;
                     background-color: transparent;
-                    color: darken(@o-we-color-text-light, 10%);
+                    color: darken($o-we-color-text-light, 10%);
                     > i.fa {
                         font-size: 20px;
                     }
@@ -917,7 +917,7 @@ table.colorpicker {
                     }
                 }
                 &.active > a {
-                    background-color: @o-we-tab-active-bg!important;
+                    background-color: $o-we-tab-active-bg!important;
                 }
             }
         }
@@ -927,7 +927,7 @@ table.colorpicker {
             margin-left: 50px;
             .tab-pane {
                 padding: 5px 10px;
-                background-color: @o-we-tab-active-bg;
+                background-color: $o-we-tab-active-bg;
             }
             &.o_unique_palette {
                 margin-left: 0;
@@ -946,7 +946,7 @@ table.colorpicker {
             display: block;
             width: 100%;
             height: 30px;
-            border: 1px solid @o-we-color-dark;
+            border: 1px solid $o-we-color-dark;
             border-radius: 3px;
             margin: 0 0 5px;
             padding: 0 20px;
@@ -957,7 +957,7 @@ table.colorpicker {
             .o_alpha_button_preview();
 
             &:hover, &.selected {
-                box-shadow: 0px 0px 2px 2px @o-we-color-light;
+                box-shadow: 0px 0px 2px 2px $o-we-color-light;
             }
 
             &:after {
@@ -972,11 +972,11 @@ table.colorpicker {
             &.selected:after {
                 content: "\f00c";
                 font-family: "FontAwesome";
-                color: @brand-success;
+                color: $brand-success;
             }
 
             &[data-event="foreColor"] {
-                background-color: @o-we-color-normal;
+                background-color: $o-we-color-normal;
                 &:after {
                     background-color: fade(white, 30%);
                 }
@@ -997,7 +997,7 @@ table.colorpicker {
     }
     .note-palette-title {
         padding: 10px 0px 10px 10px;
-        color: @o-we-color-text-light;
+        color: $o-we-color-text-light;
         font-weight: bold;
     }
     .palette-reset {
@@ -1006,13 +1006,13 @@ table.colorpicker {
         padding: 5px 10px 0;
         .note-color-reset {
             font-size: 20px!important;
-            color: desaturate(fade(@o-we-color-danger, 60%), 40%);
+            color: desaturate(fade($o-we-color-danger, 60%), 40%);
             margin: 1px 0 0;
             padding: 0;
             cursor: pointer;
             &:hover {
                 background: transparent!important;
-                color: @o-we-color-danger;
+                color: $o-we-color-danger;
             }
         }
     }
@@ -1020,18 +1020,18 @@ table.colorpicker {
 
 // ENTER IN EDIT MODE
 body.editor_enable {
-    padding-top: @odoo-navbar-height!important;
+    padding-top: $odoo-navbar-height!important;
 
     #web_editor-top-edit {
-        background-color: @o-we-color-dark;
+        background-color: $o-we-color-dark;
         form.navbar-form {
             right: 0;
         }
     }
 
     &.editor_has_snippets {
-        .o-transition(padding-left, 400ms, @o-we-md-ease);
-        padding-left: @o-we-sidebar-width!important;
+        .o-transition(padding-left, 400ms, $o-we-md-ease);
+        padding-left: $o-we-sidebar-width!important;
 
         #oe_snippets {
             left: 0;
@@ -1040,7 +1040,7 @@ body.editor_enable {
 }
 
 #web_editor_inside_iframe {
-    background-color: @odoo-brand-secondary;
+    background-color: $odoo-brand-secondary;
 
     #wrapwrap {
         position: relative;
@@ -1082,7 +1082,7 @@ body.editor_enable {
 }
 
 // Animations
-@keyframes fadeInDownSmall {
+$keyframes fadeInDownSmall {
     0% {
         opacity: 0;
         .translate(0, -5px);
@@ -1092,7 +1092,7 @@ body.editor_enable {
         .translate(0, 0);
     }
 }
-@keyframes fadeInOut {
+$keyframes fadeInOut {
     0% {
         opacity: 0;
     }
@@ -1106,14 +1106,14 @@ body.editor_enable {
         opacity: 0;
     }
 }
-@keyframes inputHighlighter {
-    from { background: @odoo-brand-optional; }
+$keyframes inputHighlighter {
+    from { background: $odoo-brand-optional; }
     to   { width: 0; background: transparent; }
 }
 
 // INPUTS
-@o-switch-size: 2ex;
-@o-switch-inactive-color: @gray-lighter;
+$o-switch-size: 2ex;
+$o-switch-inactive-color: $gray-lighter;
 
 .o_switch {
     .o-flex-display();
@@ -1125,35 +1125,35 @@ body.editor_enable {
         display: none;
 
         + span {
-            background-color: @o-switch-inactive-color;
-            box-shadow: inset 0 0 0px 1px darken(@o-switch-inactive-color,10%);
+            background-color: $o-switch-inactive-color;
+            box-shadow: inset 0 0 0px 1px darken($o-switch-inactive-color,10%);
             border-radius: 100rem;
-            height: @o-switch-size;
-            width: @o-switch-size * 1.8;
+            height: $o-switch-size;
+            width: $o-switch-size * 1.8;
             margin-right: 0.5em;
             display: inline-block;
-            .transition(all 0.3s @o-we-md-ease);
+            .transition(all 0.3s $o-we-md-ease);
 
             &:after {
                 content: "";
-                background: @o-we-color-paper;
+                background: $o-we-color-paper;
                 display: block;
-                width: @o-switch-size - 0.2;
-                height: @o-switch-size - 0.2;
+                width: $o-switch-size - 0.2;
+                height: $o-switch-size - 0.2;
                 margin-top: 0.1ex;
                 margin-left: 0.3ex;
                 border-radius: 100rem;
-                .transition(all 0.3s @o-we-md-ease);
-                box-shadow: 0 1px 1px darken(@o-switch-inactive-color,35%), inset 0 0 0 1px lighten(@o-switch-inactive-color,10%);
+                .transition(all 0.3s $o-we-md-ease);
+                box-shadow: 0 1px 1px darken($o-switch-inactive-color,35%), inset 0 0 0 1px lighten($o-switch-inactive-color,10%);
             }
         }
 
         &:checked + span {
             box-shadow: none;
-            .o-linear-gradient(0deg, @o-we-color-success, darken(@o-we-color-success, 10%));
+            .o-linear-gradient(0deg, $o-we-color-success, darken($o-we-color-success, 10%));
 
             &:after {
-                margin-left: (@o-switch-size*1.8 - @o-switch-size) + 0.1;
+                margin-left: ($o-switch-size*1.8 - $o-switch-size) + 0.1;
             }
         }
     }
@@ -1183,7 +1183,7 @@ body.editor_enable {
         color: #999;
         font-size: 18px;
         font-weight: normal;
-        .o-position-absolute(@top: 10px, @left: 5px);
+        .o-position-absolute($top: 10px, $left: 5px);
         pointer-events: none;
         .transition(0.2s ease all)
     }
@@ -1220,7 +1220,7 @@ body.editor_enable {
 
     /* HIGHLIGHTER ================================== */
     .highlight {
-        .o-position-absolute(@top: 25%, @left: 0);
+        .o-position-absolute($top: 25%, $left: 0);
         height: 60%;
         width: 100px;
         pointer-events: none;
@@ -1236,13 +1236,13 @@ body.editor_enable {
 // DRAG&DROP ANIMATIONS
 .oe_snippet_body {
     opacity: 0;
-    .o-animation(fadeInDownSmall, 700ms, @fill-mode: forwards);
+    .o-animation(fadeInDownSmall, 700ms, $fill-mode: forwards);
 }
 
 // ACE EDITOR
 .o_ace_view_editor {
-    @o-ace-color: #2F3129;
-    background: @o-ace-color;
+    $o-ace-color: #2F3129;
+    background: $o-ace-color;
     color: white;
     .o-flex-display();
     .o-flex-flow(column, nowrap);
@@ -1252,7 +1252,7 @@ body.editor_enable {
         .o-flex(0, 0, auto);
         .o-flex-display();
         .o-align-items(center);
-        padding: @grid-gutter-width/4;
+        padding: $grid-gutter-width/4;
 
         > .o_ace_type_switcher > button::after {
             .o-caret-down();
@@ -1261,7 +1261,7 @@ body.editor_enable {
 
         > * {
             .o-flex(0, 0, auto);
-            margin: 0 @grid-gutter-width/4;
+            margin: 0 $grid-gutter-width/4;
 
             &.o_include_option {
                 .o-flex-display();
@@ -1269,7 +1269,7 @@ body.editor_enable {
                 font-size: 11px;
 
                 > .o_checkbox {
-                    margin-right: @grid-gutter-width/4;
+                    margin-right: $grid-gutter-width/4;
                 }
             }
 
@@ -1281,8 +1281,8 @@ body.editor_enable {
     }
     #ace-view-id {
         .o-flex(0, 0, auto);
-        padding: @grid-gutter-width/4 @grid-gutter-width/2;
-        background-color: lighten(@o-ace-color, 10%);
+        padding: $grid-gutter-width/4 $grid-gutter-width/2;
+        background-color: lighten($o-ace-color, 10%);
     }
     #ace-view-editor {
         height: 70%; // in case flex is not supported
@@ -1299,7 +1299,7 @@ body.editor_enable {
             }
         }
         .ace_resize_bar {
-            .o-position-absolute(@right: 0);
+            .o-position-absolute($right: 0);
             width: 25px;
             height: 100%;
             cursor: ew-resize;
@@ -1314,7 +1314,7 @@ body.editor_enable {
             content: "";
             z-index: 1000;
             display: block;
-            background-color: @brand-danger;
+            background-color: $brand-danger;
             opacity: 0.5;
             pointer-events: none;
         }
@@ -1371,15 +1371,15 @@ body .modal {
             }
 
             .well {
-                border-color: @gray-lighter;
+                border-color: $gray-lighter;
                 border-top-width: 0;
             }
 
             .o_existing_attachment_cell {
-                @odoo-border-image: 2px;
+                $odoo-border-image: 2px;
 
                 .o_existing_attachment_remove {
-                    .o-position-absolute(@odoo-border-image, 15px + @odoo-border-image);
+                    .o-position-absolute($odoo-border-image, 15px + $odoo-border-image);
                     padding: 3px 5px 5px 5px;
                     background-color: fade(white, 80%);
                     text-shadow: 0 0 1px white;
@@ -1389,11 +1389,11 @@ body .modal {
 
                     &:hover {
                         background-color: white;
-                        color: @o-we-color-danger;
+                        color: $o-we-color-danger;
                     }
                 }
                 .o_image {
-                    border: @odoo-border-image solid transparent;
+                    border: $odoo-border-image solid transparent;
                     cursor: pointer;
                     .o-transition(opacity, 400ms);
 
@@ -1408,8 +1408,8 @@ body .modal {
                     }
                 }
                 &.o_selected .o_image {
-                    border-color: @odoo-brand-primary;
-                    box-shadow: 0px 0px 2px 2px @odoo-brand-secondary;
+                    border-color: $odoo-brand-primary;
+                    box-shadow: 0px 0px 2px 2px $odoo-brand-secondary;
                 }
                 &:hover .o_existing_attachment_remove {
                     opacity: 1;
@@ -1429,8 +1429,8 @@ body .modal {
 
                     &.o_selected {
                         cursor: auto;
-                        background-color: @o-we-color-paper;
-                        box-shadow: 0px 0px 0px 1px @o-we-color-success;
+                        background-color: $o-we-color-paper;
+                        box-shadow: 0px 0px 0px 1px $o-we-color-success;
                     }
                 }
             }
@@ -1505,7 +1505,7 @@ body .modal {
                         max-height: 100%;
 
                         &.alert {
-                            .o-animation(fadeInDownSmall, 700ms, @fill-mode: forwards);
+                            .o-animation(fadeInDownSmall, 700ms, $fill-mode: forwards);
                             margin: 0 auto;
                         }
                     }
@@ -1579,7 +1579,7 @@ body .modal {
             }
             .o_bg_img_opt_ui_info {
                 .animation(fadeInOut 2s ease forwards);
-                .o-position-absolute(@bottom: 1px, @right: 0);
+                .o-position-absolute($bottom: 1px, $right: 0);
                 display: block;
                 padding: 3px 13px;
                 background-color: rgba(255, 255, 255, 0.8);
@@ -1595,11 +1595,11 @@ body .modal {
                 }
             }
             .grid {
-                .o-position-absolute(@top: 33.33%, @left: 0);
+                .o-position-absolute($top: 33.33%, $left: 0);
                 display: block;
                 width: 100%;
                 height: 1px;
-                background: fadeOut(lighten(@odoo-brand-optional, 30%), 50%);
+                background: fadeOut(lighten($odoo-brand-optional, 30%), 50%);
                 pointer-events: none;
                 &.grid-2 {
                     top: 66.66%
@@ -1618,7 +1618,7 @@ body .modal {
                 }
             }
             .o_focus_point {
-                .o-position-absolute(@top: 0, @left: 0);
+                .o-position-absolute($top: 0, $left: 0);
                 width: 30px;
                 height: 30px;
                 border: 2px solid white;
@@ -1661,7 +1661,7 @@ body .modal {
 
             input:checked + i::before {
                 content: "\f00c";
-                .o-position-absolute(@top: 6px, @left: 5px);
+                .o-position-absolute($top: 6px, $left: 5px);
             }
 
             &.btn-link {
@@ -1673,7 +1673,7 @@ body .modal {
             }
         }
         .o_link_dialog_preview {
-            border-left: 1px solid @gray-lighter;
+            border-left: 1px solid $gray-lighter;
         }
     }
 }

@@ -1,9 +1,9 @@
 .ui-autocomplete .ui-menu-item {
     &.ui-state-focus {
-        background-color: @odoo-brand-primary;
+        background-color: $odoo-brand-primary;
     }
     &.o_m2o_dropdown_option > a {
-        color: @odoo-brand-primary;
+        color: $odoo-brand-primary;
     }
     &.ui-state-focus > a,
     &.ui-state-focus.o_m2o_dropdown_option > a {
@@ -11,7 +11,7 @@
     }
 }
 
-@tag-border: #afafb6;
+$tag-border: #afafb6;
 .oe_dropdown, .oe_dropdown_toggle {
     position: relative;
     cursor: pointer;
@@ -25,7 +25,7 @@
     position: absolute;
     z-index: 3;
     margin: 0;
-    border: 1px solid @tag-border;
+    border: 1px solid $tag-border;
     background: white;
     padding: 4px 0;
     min-width: 140px;

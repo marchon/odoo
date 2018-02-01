@@ -1,4 +1,4 @@
-@-webkit-keyframes move-left-right {
+$-webkit-keyframes move-left-right {
     0% {
         .translate(-3px, 0);
     }
@@ -6,7 +6,7 @@
         .translate(3px, 0);
     }
 }
-@-moz-keyframes move-left-right {
+$-moz-keyframes move-left-right {
     0% {
         .translate(-3px, 0);
     }
@@ -14,7 +14,7 @@
         .translate(3px, 0);
     }
 }
-@keyframes move-left-right {
+$keyframes move-left-right {
     0% {
         .translate(-3px, 0);
     }
@@ -23,7 +23,7 @@
     }
 }
 
-@-webkit-keyframes move-bottom-top {
+$-webkit-keyframes move-bottom-top {
     0% {
         .translate(0, -3px);
     }
@@ -31,7 +31,7 @@
         .translate(0, 3px);
     }
 }
-@-moz-keyframes move-bottom-top {
+$-moz-keyframes move-bottom-top {
     0% {
         .translate(0px, -3px);
     }
@@ -39,7 +39,7 @@
         .translate(0, 3px);
     }
 }
-@keyframes move-bottom-top {
+$keyframes move-bottom-top {
     0% {
         .translate(0px, -3px);
     }

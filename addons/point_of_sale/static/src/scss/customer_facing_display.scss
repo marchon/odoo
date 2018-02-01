@@ -1,16 +1,16 @@
 // out: ../css/customer_facing_display.css, sourcemap: false, compress: false
 
 // =========== Variables ===========
-@color_gray_lighter: #f6f6f6;
-@color_gray_dark: #3E3E3E;
+$color-gray-lighter: #f6f6f6;
+$color-gray-dark: #3E3E3E;
 
 // =========== Animations ===========
-@keyframes item_in {
+$keyframes item_in {
     0%   { opacity: 0; margin-top: -30px; }
     50%  { margin-top: 0; }
     100% { opacity: 1; }
 }
-@-webkit-keyframes item_in {
+$-webkit-keyframes item_in {
     0%   { opacity: 0; margin-top: -30px; }
     50%  { margin-top: 0; }
     100% { opacity: 1; }
@@ -38,46 +38,46 @@
     -o-display: flex;
     display: flex;
 }
-.flex-direction(@direction){
-    -webkit-flex-direction: @direction;
-    -moz-flex-direction: @direction;
-    -ms-flex-direction: @direction;
-    -o-flex-direction: @direction;
-    flex-direction: @direction;
+.flex-direction($direction){
+    -webkit-flex-direction: $direction;
+    -moz-flex-direction: $direction;
+    -ms-flex-direction: $direction;
+    -o-flex-direction: $direction;
+    flex-direction: $direction;
 };
-.flex-grow(@grow) {
-    -webkit-box-flex: @grow;
-    -webkit-flex-grow: @grow;
-    -moz-box-flex: @grow;
-    -ms-flex-positive: @grow;
-    flex-grow: @grow;
+.flex-grow($grow) {
+    -webkit-box-flex: $grow;
+    -webkit-flex-grow: $grow;
+    -moz-box-flex: $grow;
+    -ms-flex-positive: $grow;
+    flex-grow: $grow;
 }
-.flex(@flex) {
-    -webkit-box-flex: @flex;
-    -webkit-flex: @flex;
-    -moz-box-flex: @flex;
-    -ms-flex: @flex;
-    flex: @flex;
+.flex($flex) {
+    -webkit-box-flex: $flex;
+    -webkit-flex: $flex;
+    -moz-box-flex: $flex;
+    -ms-flex: $flex;
+    flex: $flex;
 }
-.align-items(@align){
-    -webkit-box-align: @align;
-    -webkit-align-items: @align;
-    -moz-box-align: @align;
-    -ms-flex-align: @align;
-    -ms-grid-row-align: @align;
-    align-items: @align;
+.align-items($align){
+    -webkit-box-align: $align;
+    -webkit-align-items: $align;
+    -moz-box-align: $align;
+    -ms-flex-align: $align;
+    -ms-grid-row-align: $align;
+    align-items: $align;
 };
-.justify-content(@justify){
-    -webkit-box-pack: @justify;
-    -webkit-justify-content: @justify;
-    -moz-box-pack: @justify;
-    -ms-flex-pack: @justify;
-    justify-content: @justify;
+.justify-content($justify){
+    -webkit-box-pack: $justify;
+    -webkit-justify-content: $justify;
+    -moz-box-pack: $justify;
+    -ms-flex-pack: $justify;
+    justify-content: $justify;
 }
-.flex-wrap(@wrap){
-    -webkit-flex-wrap: @wrap;
-    -ms-flex-wrap: @wrap;
-    flex-wrap: @wrap;
+.flex-wrap($wrap){
+    -webkit-flex-wrap: $wrap;
+    -ms-flex-wrap: $wrap;
+    flex-wrap: $wrap;
 }
 
 
@@ -89,7 +89,7 @@ body {
     font-smooth: always;
 
     .pos-customer_facing_display {
-        background-color: @color_gray_lighter;
+        background-color: $color-gray-lighter;
         font-size: 2vw;
         font-family: Futura, HelveticaNeue, Helvetica, Arial, "Lucida Grande", sans-serif;
         font-weight: 300;
@@ -206,7 +206,7 @@ body {
             .pos-adv {
                 margin-bottom: 5%;
                 border-bottom: 10px solid transparent;
-                box-shadow: 0 1px fade(@color_gray_lighter, 20%);
+                box-shadow: 0 1px fade($color-gray-lighter, 20%);
                 .flex(1 1 60%);
             }
 
@@ -309,7 +309,7 @@ body {
                         padding-right: 1.5vh;
                         height: auto;
                         .pos_orderlines_item {
-                            box-shadow: 0 .1vh .1vh darken(@color_gray_lighter, 10%);
+                            box-shadow: 0 .1vh .1vh darken($color-gray-lighter, 10%);
                             margin-bottom: 1vh;
                             > div {
                                 font-size: 100%;
@@ -417,10 +417,10 @@ body {
             opacity: 0.1;
             background: repeating-linear-gradient(
                 45deg,
-                @color_gray_lighter,
-                @color_gray_lighter 5px,
-                @color_gray_dark 5px,
-                @color_gray_dark 10px
+                $color-gray-lighter,
+                $color-gray-lighter 5px,
+                $color-gray-dark 5px,
+                $color-gray-dark 10px
             )!important;
         }
 
@@ -469,42 +469,42 @@ body {
 
 // =========== PALETTE GENERATOR ===========
 .palette_variant (
-    @bg-info: @color_gray_dark,
-    @text-info: @color_gray_lighter,
-    @bg-products: @color_gray_lighter,
-    @text-products: lighten(@color_gray_dark, 10%),
-    @card-bg: white,
-    @card-text: @color_gray_dark,
-    @card-shadow: darken(@bg-products, 30%)) {
+    $bg-info: $color-gray-dark,
+    $text-info: $color-gray-lighter,
+    $bg-products: $color-gray-lighter,
+    $text-products: lighten($color-gray-dark, 10%),
+    $card-bg: white,
+    $card-text: $color-gray-dark,
+    $card-shadow: darken($bg-products, 30%)) {
 
     .pos-payment_info {
-        background: @bg-info;
-        color: @text-info;
+        background: $bg-info;
+        color: $text-info;
     }
 
     .pos-customer_products {
-        background: @bg-products;
-        color: @text-products;
+        background: $bg-products;
+        color: $text-products;
 
         .pos_orderlines_list .pos_orderlines_item {
-            background-color: @card-bg;
-            color: @card-text;
-            box-shadow: 0 .1vh .1vh @card-shadow;
+            background-color: $card-bg;
+            color: $card-text;
+            box-shadow: 0 .1vh .1vh $card-shadow;
             div:nth-child(2) {
-                border-color: fade(@card-text, 30%);
+                border-color: fade($card-text, 30%);
             }
         }
     }
 
     @media all and (orientation: portrait) {
         &:before {
-            background: @bg-info;
+            background: $bg-info;
         }
     }
 
     // Editor dropdown buttons
     #oe_manipulators .oe_overlay > .oe_overlay_options .snippet-option-pos_palette > ul > li > & {
-        background: @bg-products!important;
+        background: $bg-products!important;
 
         &:after {
             content: "";
@@ -513,28 +513,28 @@ body {
             right: 0;
             bottom:0;
             left: 50px;
-            background: @bg-info;
+            background: $bg-info;
         }
 
         &:before {
-            text-shadow: 0 0 1px (#fff - @bg-products);
+            text-shadow: 0 0 1px (#fff - $bg-products);
         }
     }
 };
 
 // =========== PALETTE  ===========
 .pos-palette_01 { .palette_variant(); }
-.pos-palette_02 { .palette_variant( #364152, #e6e7e8, #ecf2f6, #364152, white, @color_gray_dark, #364152 ); }
-.pos-palette_03 { .palette_variant( #1BA39C, @color_gray_lighter, #ececec ); }
-.pos-palette_04 { .palette_variant( #0b7b6c, @color_gray_lighter, #efeeec); }
-.pos-palette_05 { .palette_variant( #E26868, @color_gray_lighter, #ececec ); }
-.pos-palette_06 { .palette_variant( #9E373B, @color_gray_lighter); }
+.pos-palette_02 { .palette_variant( #364152, #e6e7e8, #ecf2f6, #364152, white, $color-gray-dark, #364152 ); }
+.pos-palette_03 { .palette_variant( #1BA39C, $color-gray-lighter, #ececec ); }
+.pos-palette_04 { .palette_variant( #0b7b6c, $color-gray-lighter, #efeeec); }
+.pos-palette_05 { .palette_variant( #E26868, $color-gray-lighter, #ececec ); }
+.pos-palette_06 { .palette_variant( #9E373B, $color-gray-lighter); }
 .pos-palette_07 { .palette_variant( #ce9934, white, #ececec ); }
-.pos-palette_08 { .palette_variant( #a48c77, @color_gray_lighter, #ececec ); }
+.pos-palette_08 { .palette_variant( #a48c77, $color-gray-lighter, #ececec ); }
 
-.pos-palette_09 { .palette_variant( linear-gradient(30deg, #014d43, #127e71), @color_gray_lighter, #ececec ); }
+.pos-palette_09 { .palette_variant( linear-gradient(30deg, #014d43, #127e71), $color-gray-lighter, #ececec ); }
 .pos-palette_10 { .palette_variant( linear-gradient(30deg, #e2316c, #ea4c89), white, #ececec ); }
 .pos-palette_11 { .palette_variant( linear-gradient(30deg, #362b3d, #5b4a63), white, #ececec ); }
 
 .pos-palette_12 { .palette_variant( #434343, #e6e6e6, #5b5b5b, #bdb9b9, #f5f5f5); }
-.pos-palette_13 { .palette_variant( linear-gradient(30deg, #1a1b1f, #3d3f45), white, #a2a2ab, @color_gray_lighter, @color_gray_lighter); }
+.pos-palette_13 { .palette_variant( linear-gradient(30deg, #1a1b1f, #3d3f45), white, #a2a2ab, $color-gray-lighter, $color-gray-lighter); }

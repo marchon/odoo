@@ -12,7 +12,7 @@
     padding: 0 20px 1px 0;
 
     .o_searchview_facet {
-        @o-searchview-facet-remove-width: 18px;
+        $o-searchview-facet-remove-width: 18px;
 
         .o-flex(0, 0, auto);
         max-width: 100%;
@@ -31,7 +31,7 @@
         }
             
         .o_facet_values {
-            padding: 0 @o-searchview-facet-remove-width 0 5px;
+            padding: 0 $o-searchview-facet-remove-width 0 5px;
             .o_facet_values_sep {
                 font-style: italic;
             }
@@ -42,7 +42,7 @@
             .o-justify-content(center);
             .o-align-items(center);
             .o-position-absolute(0, 0, 0);
-            width: @o-searchview-facet-remove-width;
+            width: $o-searchview-facet-remove-width;
             cursor: pointer;
         }
     }
@@ -58,7 +58,7 @@
     }
 
     .o_searchview_autocomplete {
-        .o-position-absolute(100%, @left: auto);
+        .o-position-absolute(100%, $left: auto);
         width: 100%;
 
         li {
@@ -75,7 +75,7 @@
                     background-color: inherit;
                 }
                 &.o-expand, &.o-expanded { // caret
-                    .o-position-absolute(@left: 6px);
+                    .o-position-absolute($left: 6px);
                     padding: 3px;
                 }
                 &.o-expand:before {
@@ -103,16 +103,16 @@
     cursor: pointer;
     .user-select(none);  // Prevent text selection when toggling the dropdowns
     > a { // dropdown togglers
-        color: @odoo-main-text-color;
+        color: $odoo-main-text-color;
         &:hover {
             text-decoration: none;
             font-weight: bold;
-            color: darken(@odoo-main-text-color, 10%);
+            color: darken($odoo-main-text-color, 10%);
         }
     }
     &.open > a {
         font-weight: bold;
-        color: darken(@odoo-main-text-color, 10%);
+        color: darken($odoo-main-text-color, 10%);
     }
 }
 
@@ -123,16 +123,16 @@
         position: relative;
         a:before {
             .o-caret-right;
-            .o-position-absolute(@top: 50%, @left: 10px);
-            margin-top: (-@caret-width-base);
+            .o-position-absolute($top: 50%, $left: 10px);
+            margin-top: (-$caret-width-base);
         }
     }
     .o_open_menu {
         position: relative;
         a:before {
             .o-caret-down;
-            .o-position-absolute(@top: 50%, @left: 10px);
-            margin-top: (-@caret-width-base);
+            .o-position-absolute($top: 50%, $left: 10px);
+            margin-top: (-$caret-width-base);
         }
     }
 
@@ -148,7 +148,7 @@
             margin-bottom: 8px;
             .o_or_filter { // or between conditions
                 display: none;  // hidden for the first condition
-                .o-position-absolute(@top: 7px, @left: -18px);
+                .o-position-absolute($top: 7px, $left: -18px);
             }
         }
         .o_filter_condition + .o_filter_condition {

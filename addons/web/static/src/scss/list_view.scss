@@ -1,9 +1,9 @@
-@odoo-list-group-header-color: lighten(@odoo-brand-lightsecondary, 10%);
+$odoo-list-group-header-color: lighten($odoo-brand-lightsecondary, 10%);
 
 .o_list_view {
     position: relative;
     cursor: pointer;
-    background-color: @odoo-view-background-color;
+    background-color: $odoo-view-background-color;
     margin-bottom: 0px;
 
     &.table {
@@ -13,7 +13,7 @@
     }
 
     thead {
-        color: @odoo-main-text-color;
+        color: $odoo-main-text-color;
         border-bottom: 1px solid #cacaca;
         > tr > th {
             border-left: 1px solid #dfdfdf;
@@ -25,9 +25,9 @@
 
     tfoot {
         cursor: default;
-        color: @odoo-list-footer-color;
-        background-color: @odoo-list-footer-bg-color;
-        font-weight: @odoo-list-footer-font-weight;
+        color: $odoo-list-footer-color;
+        background-color: $odoo-list-footer-bg-color;
+        font-weight: $odoo-list-footer-font-weight;
         border-top: 2px solid #cacaca;
         border-bottom: 1px solid #cacaca;
     }
@@ -59,7 +59,7 @@
             opacity: 0.3;
         }
         &.o-sort-up, &.o-sort-down {
-            color: @headings-color;
+            color: $headings-color;
             &::after {
                 opacity: 1;
             }
@@ -78,7 +78,7 @@
         font-style: italic;
     }
     .text-muted {
-        color: lighten(@text-muted, 10%);
+        color: lighten($text-muted, 10%);
     }
 
     // Grouped list views
@@ -95,9 +95,9 @@
             padding-top: 0;
             padding-bottom: 0;
             .o_pager_previous, .o_pager_next {
-                background-color: @odoo-list-group-header-color;
+                background-color: $odoo-list-group-header-color;
                 &:hover {
-                    background-color: darken(@odoo-list-group-header-color, 10%);
+                    background-color: darken($odoo-list-group-header-color, 10%);
                 }
             }
         }
@@ -167,7 +167,7 @@
             width: 16px; // to have some space on the right
         }
         .o_input {
-            padding: @table-condensed-cell-padding;
+            padding: $table-condensed-cell-padding;
             background-color: white;
 
             .o_input {

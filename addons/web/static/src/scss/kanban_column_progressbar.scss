@@ -1,14 +1,14 @@
-@o-kanban-counter-header-height: @o-kanban-header-title-height*0.6;
+$o-kanban-counter-header-height: $o-kanban-header-title-height*0.6;
 
-.o-kanban-css-filter(@class, @accent-color) {
+.o-kanban-css-filter($class, $accent-color) {
     // Provide CSS reordering and highlight
     &.o_kanban_group_show_@{class} {
-        @mix-soft: mix(@accent-color, @odoo-webclient-background-color, 5%);
-        @mix-full: mix(@accent-color, @odoo-webclient-background-color);
+        $mix-soft: mix($accent-color, $odoo-webclient-background-color, 5%);
+        $mix-full: mix($accent-color, $odoo-webclient-background-color);
 
         &, .o_kanban_header {
-            background-color: @mix-soft;
-            border-color: @mix-full;
+            background-color: $mix-soft;
+            border-color: $mix-full;
         }
 
         .progress-bar.bg-@{class}-full {
@@ -17,20 +17,20 @@
 
         .oe_kanban_card_@{class} {
             order: 1;
-            margin-bottom: @o-kanban-inside-vgutter*0.5;
+            margin-bottom: $o-kanban-inside-vgutter*0.5;
 
             ~ .oe_kanban_card_@{class} {
-                margin-top: -@o-kanban-inside-vgutter*0.5 - 1px;
+                margin-top: -$o-kanban-inside-vgutter*0.5 - 1px;
             }
 
             ~ .o_kanban_load_more {
-                margin-top: -@o-kanban-inside-vgutter*0.5;
+                margin-top: -$o-kanban-inside-vgutter*0.5;
             }
         }
 
         .o_kanban_load_more {
             order: 2;
-            padding: @o-kanban-inside-vgutter*0.5 0 @o-kanban-inside-vgutter;
+            padding: $o-kanban-inside-vgutter*0.5 0 $o-kanban-inside-vgutter;
         }
 
         .o_kanban_record:not(.oe_kanban_card_@{class}) {
@@ -44,7 +44,7 @@
 // If columns has the progressbar, adapt the layout
 .o_kanban_view .o_kanban_group.o_kanban_has_progressbar {
     > .o_kanban_header .o_kanban_header_title {
-        height: @o-kanban-counter-header-height;
+        height: $o-kanban-counter-header-height;
         margin-top: 5px;
     }
 
@@ -60,13 +60,13 @@
     .o-flex-display();
     .o-align-items(center);
     .o-transition(opacity, 0.3s);
-    margin-bottom: @o-kanban-record-margin*2;
+    margin-bottom: $o-kanban-record-margin*2;
 
     > .o_kanban_counter_progress {
         width: 76%;
-        height: @font-size-small;
+        height: $font-size-small;
         margin-bottom: 0;
-        background-color: @gray-lighter-dark;
+        background-color: $gray-lighter-dark;
         box-shadow: none;
 
         .progress-bar {
@@ -89,7 +89,7 @@
     > .o_kanban_counter_side {
         width: 21%;
         margin-left: 3%;
-        color: @headings-color;
+        color: $headings-color;
         text-align: right;
         .o-transform-origin(right, center);
 
@@ -112,9 +112,9 @@
 }
 
 .o_kanban_view .o_kanban_group {
-    .o-kanban-css-filter(success, @brand-success);
-    .o-kanban-css-filter(warning, @brand-warning);
-    .o-kanban-css-filter(danger, @brand-danger);
+    .o-kanban-css-filter(success, $brand-success);
+    .o-kanban-css-filter(warning, $brand-warning);
+    .o-kanban-css-filter(danger, $brand-danger);
 
     &.o_kanban_group_show {
         .o-flex-display();
@@ -126,7 +126,7 @@
     }
 }
 
-@keyframes grow {
+$keyframes grow {
     0% {
         transform: scale3d(1, 1, 1);
     }
@@ -138,7 +138,7 @@
     }
 }
 
-@keyframes grow_huge {
+$keyframes grow_huge {
     0% {
         transform: scale3d(1, 1, 1);
     }

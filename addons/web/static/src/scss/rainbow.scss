@@ -1,42 +1,42 @@
 /**************  rainbow  *****************/
 
 // Variables
-@reward-size: 400px;
-@reward-size-mobile: 300px;
-@reward-text-color: #727880;
-@reward-base-time: 1.4s;
+$reward-size: 400px;
+$reward-size-mobile: 300px;
+$reward-text-color: #727880;
+$reward-base-time: 1.4s;
 
 // o_reward
 .o_reward {
     will-change: transform;
-    z-index: @zindex-modal;
+    z-index: $zindex-modal;
     padding: 50px;
-    margin: -5% auto 0 -(@reward-size / 2);
-    @media (max-width: @screen-xs-max) {
-        margin: -5% auto 0 -(@reward-size-mobile / 2);
+    margin: -5% auto 0 -($reward-size / 2);
+    @media (max-width: $screen-xs-max) {
+        margin: -5% auto 0 -($reward-size-mobile / 2);
     }
     background-image: -webkit-radial-gradient(#EDEFF4 30%, transparent 70%, transparent);
     background-image: -o-radial-gradient(#EDEFF4 30%, transparent 70%, transparent);
     background-image: radial-gradient(#EDEFF4 30%, transparent 70%, transparent);
 
-    .o-animation(reward-fading, @reward-base-time * 0.5, ease-in-out, 0s, 1, normal, forwards);
+    .o-animation(reward-fading, $reward-base-time * 0.5, ease-in-out, 0s, 1, normal, forwards);
     .o-position-absolute(20%, auto, auto, 50%);
-    .size(@reward-size, @reward-size);
-    @media (max-width: @screen-xs-max) {
-        .size(@reward-size-mobile, @reward-size-mobile);
+    .size($reward-size, $reward-size);
+    @media (max-width: $screen-xs-max) {
+        .size($reward-size-mobile, $reward-size-mobile);
     }
 
     &.o_reward_fading {
         display: block;
-        .o-animation(reward-fading-reverse, (@reward-base-time * 0.4), ease-in-out, 0s, 1, normal, forwards);
+        .o-animation(reward-fading-reverse, ($reward-base-time * 0.4), ease-in-out, 0s, 1, normal, forwards);
 
         .o_reward_face_group {
-            .o-animation(reward-jump-reverse, (@reward-base-time * 0.4), ease-in-out, 0s, 1, normal, forwards);
+            .o-animation(reward-jump-reverse, ($reward-base-time * 0.4), ease-in-out, 0s, 1, normal, forwards);
         }
 
         .o_reward_rainbow {
             path {
-                .o-animation(reward-rainbow-reverse, (@reward-base-time * 0.5), ease-out, 0s, 1, normal, forwards);
+                .o-animation(reward-rainbow-reverse, ($reward-base-time * 0.5), ease-out, 0s, 1, normal, forwards);
             }
         }
 
@@ -53,13 +53,13 @@
             fill: none;
             stroke-linecap: round;
             stroke-width: 21px;
-            .o-animation(reward-rainbow, (@reward-base-time ), ease-out, 0s, 1, normal, forwards);
+            .o-animation(reward-rainbow, ($reward-base-time ), ease-out, 0s, 1, normal, forwards);
         }
     }
 
     .o_reward_face_group {
         transform-origin: center;
-        .o-animation(reward-jump, @reward-base-time * 0.8, ease-in-out);
+        .o-animation(reward-jump, $reward-base-time * 0.8, ease-in-out);
         .o-position-absolute(6%, 0, 0, 0);
         .size(100%, 60%);
     }
@@ -70,25 +70,25 @@
         position: relative;
         border-radius: 100%;
         background: center center / contain no-repeat;
-        .o-animation(reward-float, @reward-base-time, ease-in-out, @reward-base-time, infinite, alternate);
+        .o-animation(reward-float, $reward-base-time, ease-in-out, $reward-base-time, infinite, alternate);
         .size(34%, 56.67%);
     }
 
     .o_reward_stars {
         display: block;
-        .size(@reward-size * 0.75, @reward-size / 2);
-        @media (max-width: @screen-xs-max) {
-            .size(@reward-size-mobile * 0.75, @reward-size-mobile / 2);
+        .size($reward-size * 0.75, $reward-size / 2);
+        @media (max-width: $screen-xs-max) {
+            .size($reward-size-mobile * 0.75, $reward-size-mobile / 2);
         }
         .o-position-absolute(18%, 7%);
 
         svg {
             transform-origin: center center;
-            .o-position-absolute(28%, @left:3%);
-            .o-animation(reward-stars, @reward-base-time, ease-in-out, 0s, infinite, alternate-reverse);
+            .o-position-absolute(28%, $left:3%);
+            .o-animation(reward-stars, $reward-base-time, ease-in-out, 0s, infinite, alternate-reverse);
 
             &.star2, &.star4 {
-                .o-animation(reward-stars, (@reward-base-time*1.2), ease-in-out, 0s, infinite, alternate);
+                .o-animation(reward-stars, ($reward-base-time*1.2), ease-in-out, 0s, infinite, alternate);
             }
 
             &.star2 {
@@ -112,7 +112,7 @@
     .o_reward_thumbup {
         width: 40px;
         display: block;
-        .o-animation(reward-scale, @reward-base-time * 0.5, ease-in-out, 0s, infinite, alternate);
+        .o-animation(reward-scale, $reward-base-time * 0.5, ease-in-out, 0s, infinite, alternate);
         .o-position-absolute(63%, auto, auto, 65%);
     }
 
@@ -125,7 +125,7 @@
         // Translate before animate
         .o-transform(translateY(5px));
 
-        .o-animation(reward-float, @reward-base-time, ease-in-out, @reward-base-time, infinite, alternate-reverse);
+        .o-animation(reward-float, $reward-base-time, ease-in-out, $reward-base-time, infinite, alternate-reverse);
         .o-position-absolute(85%, auto, auto, 0%);
 
         .o_reward_thumb_right {
@@ -153,12 +153,12 @@
             position: relative;
             font-family: sans-serif;
             text-align: left;
-            color: @reward-text-color;
+            color: $reward-text-color;
         }
 
         .o_reward_shadow_container {
             .o-transform(~"translateY(0px) rotateZ(0)");
-            .o-animation(reward-float, @reward-base-time, ease-in-out, @reward-base-time, infinite, alternate);
+            .o-animation(reward-float, $reward-base-time, ease-in-out, $reward-base-time, infinite, alternate);
         }
 
         .o_reward_shadow {
@@ -166,13 +166,13 @@
             background-color: #e7eaf0;
             border-radius: 100%;
             .o-transform(~"scale(0.8) rotateZ(0)");
-            .o-animation(reward-scale, @reward-base-time, ease-in-out, @reward-base-time, infinite, alternate);
+            .o-animation(reward-scale, $reward-base-time, ease-in-out, $reward-base-time, infinite, alternate);
             .o-position-absolute(auto, auto, -40px, 0);
         }
     }
 }
 
-@keyframes reward-fading {
+$keyframes reward-fading {
     0% {
         opacity: 0;
     }
@@ -181,13 +181,13 @@
     }
 }
 
-@keyframes reward-fading-reverse {
+$keyframes reward-fading-reverse {
     100% {
         opacity: 0;
     }
 }
 
-@keyframes reward-jump {
+$keyframes reward-jump {
     0% {
         .o-transform(~"scale(0.5)");
     }
@@ -199,7 +199,7 @@
     }
 }
 
-@keyframes reward-jump-reverse {
+$keyframes reward-jump-reverse {
     0% {
         .o-transform(~"scale(1)");
     }
@@ -211,7 +211,7 @@
     }
 }
 
-@keyframes reward-rainbow {
+$keyframes reward-rainbow {
     0% {
         stroke-dashoffset: -500;
     }
@@ -220,13 +220,13 @@
     }
 }
 
-@keyframes reward-rainbow-reverse {
+$keyframes reward-rainbow-reverse {
     to {
         stroke-dashoffset: -500;
     }
 }
 
-@keyframes reward-float {
+$keyframes reward-float {
     from {
         .o-transform(~"translateY(0px)");
     }
@@ -235,7 +235,7 @@
     }
 }
 
-@keyframes reward-stars {
+$keyframes reward-stars {
     from {
         .o-transform(~"scale(0.3) rotate(0deg)");
     }
@@ -247,7 +247,7 @@
     }
 }
 
-@keyframes reward-scale {
+$keyframes reward-scale {
     from {
         .o-transform(~"scale(0.8)");
     }

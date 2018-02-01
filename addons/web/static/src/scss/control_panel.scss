@@ -1,11 +1,11 @@
-@breadcrumb-height: 30px;
+$breadcrumb-height: 30px;
 
 .o_control_panel {
     .o-flex-display();
     .o-flex-flow(row, wrap);
-    border-bottom: 1px solid darken(@odoo-control-panel-background-color, 20%);
-    .o-webclient-padding(@top: 10px, @bottom: 10px);
-    background-color: @odoo-control-panel-background-color;
+    border-bottom: 1px solid darken($odoo-control-panel-background-color, 20%);
+    .o-webclient-padding($top: 10px, $bottom: 10px);
+    background-color: $odoo-control-panel-background-color;
 
     > .breadcrumb {
         width: 50%;
@@ -13,7 +13,7 @@
         font-size: 18px;
 
         > li {
-            .o-text-overflow(@max-width: 90%);
+            .o-text-overflow($max-width: 90%);
 
             > a {
                 cursor: pointer;
@@ -27,7 +27,7 @@
 
     > .o_cp_searchview {
         width: 50%;
-        min-height: @breadcrumb-height;
+        min-height: $breadcrumb-height;
     }
 
     .btn.o_enable_searchview {
@@ -56,10 +56,10 @@
                 }
                 .o_form_binary_form span {
                     padding: 3px 25px;
-                    color: @btn-default-color;
+                    color: $btn-default-color;
                 }
                 .o_form_binary_form:hover {
-                    background-color: @table-bg-hover;
+                    background-color: $table-bg-hover;
                 }
             }
             .o_sidebar_delete_attachment {
@@ -93,7 +93,7 @@
         }
 
         > .o_cp_switch_buttons > .btn:first-child {
-            margin-left: @odoo-horizontal-padding;
+            margin-left: $odoo-horizontal-padding;
         }
     }
 }
