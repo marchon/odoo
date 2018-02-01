@@ -16,7 +16,7 @@ options.registry.product_catalog = options.Class.extend({
      * @override
      */
     start: function () {
-        this.productCatalogData = _.pick(this.$target.data(), 'catalog_type', 'product_selection', 'product_ids', 'sort_by', 'x', 'y', 'category_id');
+        this.productCatalogData = _.pick(this.$target.data(), 'catalog_type', 'product_selection', 'product_ids', 'sortby', 'x', 'y', 'category_id');
         this._setGrid();
         this._bindGridEvents();
         return this._super.apply(this, arguments);
@@ -48,41 +48,8 @@ options.registry.product_catalog = options.Class.extend({
      * @see this.selectClass for parameters
      */
     sortby: function (previewMode, value) {
-        var self = this;
-        if (value !== 'reorder_products') {
-            this.productCatalogData.sort_by = value;
-            this._renderProducts();
-        }
-        if (value === 'reorder_products') {
-            var products = [];
-            _.each(this.$target.find('.o_product_item'), function(product) {
-                products.push({
-                    id: $(product).data('product-id'),
-                    name: $(product).data('product-name'),
-                });
-            });
-            var $dialog = new Dialog(null, {
-                title: _t('Drag a product to re-arrange display sequence'),
-                $content: $(QWeb.render('website_sale.reorderProducts', {'products': products})),
-                buttons: [
-                    {text: _t('Save'), classes: 'btn-primary', close: true, click: function () {
-                        self.productCatalogData.sort_by = value;
-                        var productids = _.map($dialog.$content.find('ul.reorder_products > li'), function (el) {
-                            return $(el).attr('data-menu-id');
-                        });
-                        self.$el.find('li[data-sortby]').removeClass('active')
-                            .filter('li[data-sortby="reorder_products"]').addClass('active');
-                        self.productCatalogData.product_ids = productids.join();
-                        self._renderProducts();
-                    }},
-                    {text: _t('Discard'), close: true}
-                ]
-            }).open();
-            $dialog.opened().then(function () {
-                $dialog.$el.find('.reorder_products').sortable();
-                $dialog.$el.find('.reorder_products').disableSelection();
-            });
-        }
+        this.productCatalogData.sortby = value;
+        this._renderProducts();
     },
     /**
      * Products selection.
@@ -217,6 +184,7 @@ options.registry.product_catalog = options.Class.extend({
                     {text: _t('Save'), classes: 'btn-primary', close: true, click: function () {
                         self.productCatalogData.product_ids = dialog.$content.find('[name="selection"]').val();
                         self.productCatalogData.product_selection = 'manual';
+                        self.productCatalogData.sortby = '';
                         self.$el.find('li[data-product-selection]').removeClass('active')
                             .filter('li[data-product-selection="manual"]').addClass('active');
                         self._renderProducts();
@@ -235,6 +203,11 @@ options.registry.product_catalog = options.Class.extend({
             }).change(function () {
                 dialog.$footer.find('.btn-primary').prop('disabled', dialog.$content.find('[name="selection"]').val() === "");
             });
+            dialog.$content.find('[name="selection"]').select2("container").find("ul.select2-choices").sortable({
+                containment: 'parent',
+                start: function() {dialog.$content.find('[name="selection"]').select2("onSortStart"); },
+                update: function() {dialog.$content.find('[name="selection"]').select2("onSortEnd"); }
+            });
             dialog.open();
         });
     },
@@ -249,8 +222,11 @@ options.registry.product_catalog = options.Class.extend({
         this.$el.find('[data-grid-size]:first').parent().parent().toggle(mode === 'grid');
         this.$el.find('li[data-catalog-type]').removeClass('active')
             .filter('li[data-catalog-type=' + this.productCatalogData.catalog_type + ']').addClass('active');
-        this.$el.find('li[data-sortby]').removeClass('active')
-            .filter('li[data-sortby=' + this.productCatalogData.sort_by + ']').addClass('active');
+        this.$el.find('[data-sortby]:first').parent().parent().toggle(this.productCatalogData.product_selection !== 'manual');
+        if (this.productCatalogData.product_selection !== 'manual') {
+            this.$el.find('li[data-sortby]').removeClass('active')
+            .filter('li[data-sortby=' + this.productCatalogData.sortby + ']').addClass('active');
+        }
     },
 
     /**
@@ -291,6 +267,8 @@ options.registry.product_catalog = options.Class.extend({
             self.$target.attr('data-' + key, value);
             self.$target.data(key, value);
         });
+        // Disable sortby when manual selection
+        this.$el.find('[data-sortby]:first').parent().parent().toggle(this.productCatalogData.product_selection !== 'manual');
         this.trigger_up('animation_start_demand', {
             editableMode: true,
             $target: self.$target,

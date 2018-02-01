@@ -21,7 +21,7 @@ var ProductCatalog = Widget.extend({
      */
     init: function (options) {
         this._super.apply(this, arguments);
-        this.options = _.pick(options, 'catalog_type', 'product_selection', 'product_ids', 'sort_by', 'x', 'y', 'category_id');
+        this.options = _.pick(options, 'catalog_type', 'product_selection', 'product_ids', 'sortby', 'x', 'y', 'category_id');
         this.isMobile = config.device.isMobile;
         this.isGrid = this.options.catalog_type === 'grid';
         this.size = this.isGrid ? 12 / this.options.x : 12 / config.device.size_class;
@@ -45,7 +45,7 @@ var ProductCatalog = Widget.extend({
             self.isRatingActive = result.is_rating_active;
             self.productsAvailable = result.products_available;
             self.isSalesManager = result.is_sales_manager;
-            if (self.options.sort_by === 'reorder_products') {
+            if (self.options.product_selection === 'manual') {
                 result.products = self._reorderingProducts(result.products);
             }
             self.products = self.isGrid ? result.products : self._getCarouselProducts(result.products);
@@ -109,9 +109,8 @@ var ProductCatalog = Widget.extend({
             name_desc: 'name desc',
             newest_to_oldest: 'create_date asc',
             oldest_to_newest: 'create_date desc',
-            reorder_products: '',
         };
-        return sortBy[this.options.sort_by];
+        return sortBy[this.options.sortby];
     },
     /**
      * Number of products to display
@@ -146,6 +145,7 @@ var ProductCatalog = Widget.extend({
             return _.indexOf(reorderIDs, product.id);
         });
     },
+
 });
 
 sAnimation.registry.productCatalog = sAnimation.Class.extend({
