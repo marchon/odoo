@@ -25,21 +25,22 @@ class ExportGstReturnXls(models.TransientModel):
                                ('11', 'November'), ('12', 'December')], string='Tax Month', required=True, default=_default_get_month)
     year = fields.Char(required=True, default=_default_get_year, string="Financial Year")
 
-    export_summary = fields.Selection([('b2b', 'B2B Supplies'), 
-                                       ('b2cl', 'B2C Large'), 
+    export_summary = fields.Selection([('b2b', 'B2B Supplies'),
+                                       ('b2cl', 'B2C Large'),
                                        ('b2cs', 'B2C Small'),
-                                       ('cdnr', 'Credit/Debit Note'), 
+                                       ('cdnr', 'Credit/Debit Note'),
                                        ('cdnur', 'Credit/Debit Note for unregistered Person'), 
-                                       ('exp', 'Export'), 
+                                       ('exp', 'Export'),
                                        ('at', 'Tax Liability on advances'),
-                                       ('atadj', 'Advance adjustments'), 
+                                       ('atadj', 'Advance adjustments'),
                                        ('exemp', 'Nil Rated, Exempted and Non GST supplies'), 
                                        ('hsn', 'HSN Summary'),
                                        ('docs', 'List of Documents issued') ], string="Export Summary For", default="b2b")  
+    advance_rate = fields.Float("Advances Tax Rate",default=18)
 
     @api.multi
     def export_gstr(self):
         return {
             'type': 'ir.actions.act_url',
-            'url': '/xls/download/%s/%s/%s' % (self.month, self.year, self.export_summary)
+            'url': '/xls/download/%s/%s/%s/%s' % (self.month, self.year, self.export_summary, self.advance_rate)
         }
