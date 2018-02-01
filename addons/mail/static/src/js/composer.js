@@ -402,6 +402,7 @@ var BasicComposer = Widget.extend(chat_mixin, {
         'focus .o_mail_emoji_container .o_mail_emoji': '_onEmojiImageFocus',
         'click .o_mail_emoji_container .o_mail_emoji': '_onEmojiImageClick',
         "drop .o_file_drop_zone_container": "_onFileDragDropped",
+        'paste .o_composer_input': '_onPasteImage',
     },
     // RPCs done to fetch the mention suggestions are throttled with the following value
     MENTION_THROTTLE: 200,
@@ -722,6 +723,21 @@ var BasicComposer = Widget.extend(chat_mixin, {
             // Otherwise, check if a mention is typed
             default:
                 this.mention_manager.detect_delimiter();
+        }
+    },
+
+    /**
+     * _onPasteImage event is triggered when image type attachment is pasted
+     * from any webpage and it is uploaded as an attachment
+     *
+     * @private
+     * @param {KeyboardEvent} event
+     */
+    _onPasteImage: function (event) {
+        var file = event.originalEvent.clipboardData.files;
+        if (file.length) {
+            event.preventDefault();
+            this._processAttachmentChange(file, false);
         }
     },
 
