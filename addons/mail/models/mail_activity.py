@@ -168,7 +168,8 @@ class MailActivity(models.Model):
         doc_operation = 'read' if operation == 'read' else 'write'
         activity_to_documents = dict()
         for activity in self.sudo():
-            activity_to_documents.setdefault(activity.res_model, list()).append(activity.res_id)
+            if activity.res_model and activity.res_id:
+                activity_to_documents.setdefault(activity.res_model, list()).append(activity.res_id)
         for model, res_ids in activity_to_documents.items():
             self.env[model].check_access_rights(doc_operation, raise_exception=True)
             try:
@@ -192,8 +193,8 @@ class MailActivity(models.Model):
         # continue as sudo because activities are somewhat protected
         activity = super(MailActivity, self.sudo()).create(values_w_defaults)
         activity_user = activity.sudo(self.env.user)
+        activity_user._check_access('create')
         if activity.res_id and activity.res_model:
-            activity_user._check_access('create')
             self.env[activity_user.res_model].browse(activity_user.res_id).message_subscribe(partner_ids=[activity_user.user_id.partner_id.id])
             if activity.date_deadline <= fields.Date.today():
                 self.env['bus.bus'].sendone(
