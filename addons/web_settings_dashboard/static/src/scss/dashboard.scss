@@ -28,7 +28,7 @@
         }
 
         > div {
-            .o_web_settings_dashboard_card();
+            @include o-web-settings-dashboard-card;
             padding: 25px 18px 18px 18px;
                 .o_web_settings_dashboard_header {
                     font-size: 22px;

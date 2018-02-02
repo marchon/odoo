@@ -40,13 +40,13 @@
 
 // No content helper
 .o_view_nocontent_container {
-    .o-flex-display();
+    @include o-flex-display;
     height: 100%;
     padding: 0;
 }
 
 .o_view_nocontent {
-    .o-position-absolute(20%, 0, 0, 0);
+    @include o-position-absolute(20%, 0, 0, 0);
     pointer-events: none;
 
     .o_nocontent_help {
@@ -73,20 +73,20 @@
         }
 
         .o_view_nocontent_smiling_face:before {
-            .o-init-image();
-            .size(120px, 140px);
+            @include o-init-image;
+            @include size(120px, 140px);
             background: transparent url(/web/static/src/img/smiling_face.svg) no-repeat center;
         }
 
         .o_view_nocontent_neutral_face:before {
-            .o-init-image();
-            .size(120px, 140px);
+            @include o-init-image;
+            @include size(120px, 140px);
             background: transparent url(/web/static/src/img/neutral_face.svg) no-repeat center;
         }
 
         .o_view_nocontent_empty_folder:before {
-            .o-init-image();
-            .size(120px, 80px);
+            @include o-init-image;
+            @include size(120px, 80px);
             margin-top: 30px;
             margin-bottom: 30px;
             background: transparent url(/web/static/src/img/empty_folder.svg) no-repeat center;

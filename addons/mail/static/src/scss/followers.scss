@@ -102,15 +102,15 @@
                     padding: 3px $partner-avatar-size + 8px;
                 }
                 > img {
-                    .o-position-absolute();
+                    @include o-position-absolute;
                     width: $partner-avatar-size;
                 }
                 .o_remove_follower {
-                    .o-position-absolute(6px, 5px);
+                    @include o-position-absolute(6px, 5px);
                     cursor: pointer;
                 }
                 .o_edit_subtype {
-                    .o-position-absolute(6px, 18px);
+                    @include o-position-absolute(6px, 18px);
                     cursor: pointer;
                 }
             }

@@ -1,7 +1,7 @@
 .o_chat_composer {
     position: relative;
-    .o-flex(0, 0, auto);
-    .o-flex-display();
+    @include o-flex(0, 0, auto);
+    @include o-flex-display;
     margin: 1px 0;
     border-top: none;
     background: $gray-lighter;
@@ -16,11 +16,11 @@
     }
 
     .o_composer_subject {
-        .o-flex-display();
+        @include o-flex-display;
         padding-bottom: 5px;
 
         > input {
-            .o-flex(1, 1, auto);
+            @include o-flex(1, 1, auto);
             padding: 5px;
             margin-right: 30px;
         }
@@ -38,7 +38,7 @@
             word-break: break-all;
         }
         .o_composer_mention_dropdown .o_mention_proposition > a {
-            .o-text-overflow();
+            @include o-text-overflow;
             width: 100%;
             padding: 3px 15px;
             .o_mention_name {
@@ -53,11 +53,11 @@
             resize: none;
         }
         .btn-icon {
-            .o-hover-opacity($default-opacity: 0.8, $hover-opacity: 1);
+            @include o-hover-opacity($default-opacity: 0.8, $hover-opacity: 1);
             border: none;
         }
         .o_composer_button_full_composer {
-            .o-position-absolute(0, 0);
+            @include o-position-absolute(0, 0);
         }
         @media (max-width: $screen-xs-max) {
             .o_composer_button_send {
@@ -85,11 +85,11 @@
         border-top: none;
 
         .o_chatter_avatar {
-            .o-position-absolute(0, $left:  -$mail-thread-avatar-size - $o-mail-chatter-gap);
+            @include o-position-absolute(0, $left:  -$mail-thread-avatar-size - $o-mail-chatter-gap);
         }
 
         .o_chatter_composer_info, .o_composer_suggested_partners {
-            .o-flex(0, 0, 100%);
+            @include o-flex(0, 0, 100%);
             margin-bottom: $o-mail-chatter-gap*0.5;
         }
 
@@ -123,10 +123,10 @@
         }
 
         &:not(.o_chat_inline_composer) {
-            .o-flex-flow(row, wrap);
+            @include o-flex-flow(row, wrap);
 
             .o_composer_container, .o_composer_button_send {
-                .o-flex(1, 0, 100%);
+                @include o-flex(1, 0, 100%);
             }
             .o_composer, .o_composer_subject {
                 padding: $o-mail-chatter-gap $o-mail-chatter-gap 0;
@@ -138,7 +138,7 @@
 
         &.o_chat_inline_composer {
             .o_composer_container {
-                .o-flex(1, 1, auto);
+                @include o-flex(1, 1, auto);
             }
             .o_composer {
                 display: flex;
@@ -152,25 +152,25 @@
                 border-width: 1px;
             }
             .o_composer_input {
-                .o-flex-flow(row, wrap);
+                @include o-flex-flow(row, wrap);
             }
             .o_composer_text_field {
-                .o-flex(1, 1, 50%);
+                @include o-flex(1, 1, 50%);
                 margin: -4px 7px 5px 0px;
                 padding: 2.5px 0px 0px 5px;
             }
             .o_chatter_composer_tools {
-                .o-flex(0, 1, auto);
+                @include o-flex(0, 1, auto);
             }
             .o_composer_attachments_list {
-                .o-flex(1, 0, 100%);
+                @include o-flex(1, 0, 100%);
             }
 
             .o_chatter_composer_tools {
                 border: none;
                 border-left: 1px solid $gray-lighter-dark;
                 padding-left: $o-mail-chatter-gap*0.5;
-                .o-transform(translateY(-$o-mail-chatter-gap*0.5));
+                @include o-transform(translateY(-$o-mail-chatter-gap*0.5));
             }
 
             .o_composer_button_send {
@@ -190,14 +190,14 @@
             width: 100%;
         }
         .o_mail_emoji_container {
-            .o-position-absolute(auto, 0, 100%, 0);
+            @include o-position-absolute(auto, 0, 100%, 0);
             border-bottom-width: 1px;
         }
         .o_composer_input {
-            .o-flex-flow(row, nowrap);
+            @include o-flex-flow(row, nowrap);
 
             .o_chatter_composer_tools {
-                .o-flex(0, 0, auto);
+                @include o-flex(0, 0, auto);
             }
         }
         .o_composer_button_send, .o_chatter_avatar {
@@ -270,16 +270,16 @@ $o-mail-attachment-image-size: 100px;
         }
         &:hover .o_image_overlay {
             display: block;
-            .o-position-absolute($top: 0, $left: 0, $right:0, $bottom:0);
+            @include o-position-absolute($top: 0, $left: 0, $right:0, $bottom:0);
             z-index: 20;
             background: rgba(0, 0, 0, 0.5);
             overflow: hidden;
             cursor: pointer;
             .o_attachment_download {
-                .o-position-absolute($left: 10px, $bottom:5px);
+                @include o-position-absolute($left: 10px, $bottom:5px);
             }
             .o_attachment_play {
-                .o-position-absolute($top: 50%, $left: 50%);
+                @include o-position-absolute($top: 50%, $left: 50%);
                 transform: translate(-50%, -50%);
             }
             .o_overlay_download {
@@ -304,23 +304,23 @@ $o-mail-attachment-image-size: 100px;
         display: none;
     }
     .o_attachment_delete {
-        .o-position-absolute($top: -10px, $right: -8px);
+        @include o-position-absolute($top: -10px, $right: -8px);
         color: $odoo-main-text-color;
         cursor: pointer;
         opacity: 0;
-        .o-transition(opacity, 0.2s, linear);
+        @include o-transition(opacity, 0.2s, linear);
     }
     &.o_attachment_uploading {
         .o_attachment_progress_bar {
             display: block;
-            .o-position-absolute($top: 18px, $left: 16px, $right: 16px);
+            @include o-position-absolute($top: 18px, $left: 16px, $right: 16px);
             height: 17px;
             line-height: 13px;
             color: white;
             border-radius: $border-radius-base;
             border: solid 1px grey;
             box-shadow: 0px 1px 10px $odoo-shadow-color;
-            .o-animation($name: oe_mail_attach_loading_anim, $duration: 1s, $timing-function: linear, $iteration-count: infinite);
+            @include o-animation($name: oe_mail_attach_loading_anim, $duration: 1s, $timing-function: linear, $iteration-count: infinite);
         }
         .o_attachment_delete {
             display: none;
@@ -328,7 +328,7 @@ $o-mail-attachment-image-size: 100px;
     }
     &:hover .o_attachment_delete {
         opacity: 1;
-        .o-transition(opacity, 0.2s, linear);
+        @include o-transition(opacity, 0.2s, linear);
     }
 }
 
@@ -350,7 +350,7 @@ $o-mail-attachment-image-size: 100px;
             }
         }
         .o_loading_img {
-            .o-position-absolute($top: 50%);
+            @include o-position-absolute($top: 50%);
             width: 25px;
             right: 50%;
             z-index: 1;
@@ -362,7 +362,7 @@ $o-mail-attachment-image-size: 100px;
             .o_viewer_zoomer {
                 width: 100%;
                 height: 100%;
-                .o-flex-display();
+                @include o-flex-display;
                 justify-content: center;
                 align-items: center;
                 img, video {
@@ -382,7 +382,7 @@ $o-mail-attachment-image-size: 100px;
             }
         }
         .o_viewer_toolbar {
-            .o-position-absolute($left: 50%);
+            @include o-position-absolute($left: 50%);
             bottom: 15px;
             transform: translate(-50%, -50%);
             padding: 8px 10px 0px 10px;
@@ -391,7 +391,7 @@ $o-mail-attachment-image-size: 100px;
         }
     }
     .arrow {
-        .o-position-absolute($top: 50%);
+        @include o-position-absolute($top: 50%);
         color: #FFFFFF;
     }
     .arrow-left {

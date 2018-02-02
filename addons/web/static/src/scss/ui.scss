@@ -3,7 +3,7 @@
 }
 
 .o_text_overflow {
-    .o-text-overflow();
+    @include o-text-overflow;
 }
 
 .ui-autocomplete {

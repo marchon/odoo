@@ -25,7 +25,7 @@
         padding: 4px 0 0 0;
     }
     .o_searchview_more {
-        .o-position-absolute($top: 6px, $right: 5px);
+        @include o-position-absolute($top: 6px, $right: 5px);
     }
     .o_searchview_autocomplete li.o-selection-focus {
         background-color: $odoo-brand-primary;
@@ -38,6 +38,6 @@
 // Search options: inputs and selects style
 .o_search_options {
     input[type="text"], select {
-        .form-control();
+        @include form-control;
     }
 }

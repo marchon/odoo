@@ -15,9 +15,9 @@
     .o_demo_message {
         color: $odoo-main-color-muted;
         width: 100%;
-        .o-position-absolute($left: 0, $top: 12%);
-        .o-flex-display();
-        .o-justify-content(center);
+        @include o-position-absolute($left: 0, $top: 12%);
+        @include o-flex-display;
+        @include o-justify-content(center);
     }
     .o_link_enable {
         @media (min-width: $screen-md-min) {

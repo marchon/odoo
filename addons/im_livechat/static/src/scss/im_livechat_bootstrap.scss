@@ -14,7 +14,7 @@ $navbar-height: 44px;
 
 .o_chat_window {
   &,* {
-    .box-sizing(border-box);
+    @include box-sizing(border-box);
   }
   .o_chat_header {
     height: 28px;

@@ -16,21 +16,21 @@
                     content: $on;
                 }
             }
-            .loop(($counter - 1));
+            @include loop(($counter - 1));
         }
-        .loop(5);
+        @include loop(5);
     }
 
     &.s_hr_rating_stars {
-        .s_hr_rating_generate_icons($star-o, $star);
+        @include s-hr-rating-generate-icons($star-o, $star);
     }
 
     &.s_hr_rating_bolts {
-        .s_hr_rating_generate_icons($bolt-o, $bolt);
+        @include s-hr-rating-generate-icons($bolt-o, $bolt);
     }
 
     &.s_hr_rating_hearts {
-        .s_hr_rating_generate_icons($heart-o, $heart);
+        @include s-hr-rating-generate-icons($heart-o, $heart);
     }
 
     &.s_hr_rating_bar {
@@ -48,7 +48,7 @@
                 border-radius: 2px;
                 background-color: $brand-primary;
                 display: block;
-                .size(0, 100%);
+                @include size(0, 100%);
             }
         }
 
@@ -58,8 +58,8 @@
                     width: percentage($counter/5);
                 }
             }
-            .loop(($counter - 1));
+            @include loop(($counter - 1));
         }
-        .loop(5);
+        @include loop(5);
     }
 }

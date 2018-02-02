@@ -31,7 +31,7 @@ $o-we-md-ease: cubic-bezier(0.19, 1, 0.22, 1);
     padding: $padding;
     border-top: 1px solid black;
     border-bottom: 1px solid white;
-    .o-linear-gradient(-150deg, $o-we-color-dark, $o-we-color-darker);
+    @include o-linear-gradient(-150deg, $o-we-color-dark, $o-we-color-darker);
 
     color:  $color-text;
 }
@@ -95,7 +95,7 @@ $o-we-md-ease: cubic-bezier(0.19, 1, 0.22, 1);
     }
 
     select.form-control {
-        .o-appearance(none);
+        @include o-appearance(none);
         background: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZycgeG1 sbnM6eGxpbms9J2h0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsnIHdpZHRoPScyNCcgaGVpZ2 h0PScyNCcgdmlld0JveD0nMCAwIDI0IDI0Jz48cGF0aCBpZD0nc3ZnXzEnIGQ9J203LjQwNiw3L jgyOGw0LjU5NCw0LjU5NGw0LjU5NCwtNC41OTRsMC40MDYsMS40MDZsLTUsNC43NjZsLTUsLTQu NzY2bDAuNDA2LC0xLjQwNnonIGZpbGw9JyM4ODgnLz48L3N2Zz4=');
         background-position: 100% 65%;
         background-repeat: no-repeat;
@@ -148,38 +148,38 @@ $o-we-md-ease: cubic-bezier(0.19, 1, 0.22, 1);
         border-width: 1px;
         border-radius: 0;
         font-weight: normal;
-        .button-size(6px; 12px; 14px; 1.42857143; 0);
+        @include button-size(6px; 12px; 14px; 1.42857143; 0);
 
         &.btn-primary {
-            .button-variant(white, $odoo-brand-optional, darken($odoo-brand-optional,5%));
+            @include button-variant(white, $odoo-brand-optional, darken($odoo-brand-optional,5%));
         }
         &.btn-default {
-            .button-variant($o-we-color-normal, white, $o-we-color-text-light);
+            @include button-variant($o-we-color-normal, white, $o-we-color-text-light);
         }
         &.btn-link {
-            .button-variant($odoo-brand-optional, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0));
+            @include button-variant($odoo-brand-optional, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0));
         }
         &.btn-success {
-            .button-variant(white; $o-we-color-success; darken($o-we-color-success, 5%));
+            @include button-variant(white; $o-we-color-success; darken($o-we-color-success, 5%));
         }
         &.btn-info {
-            .button-variant(white; $o-we-color-info; darken($o-we-color-info, 5%));
+            @include button-variant(white; $o-we-color-info; darken($o-we-color-info, 5%));
         }
         &.btn-warning {
-            .button-variant(white; $o-we-color-warning; darken($o-we-color-warning, 5%));
+            @include button-variant(white; $o-we-color-warning; darken($o-we-color-warning, 5%));
         }
         &.btn-danger {
-            .button-variant(white; $o-we-color-danger; darken($o-we-color-danger, 5%));
+            @include button-variant(white; $o-we-color-danger; darken($o-we-color-danger, 5%));
         }
 
         &.btn-lg {
-            .button-size(10px; 16px; 18px; 1.3333333; 0);
+            @include button-size(10px; 16px; 18px; 1.3333333; 0);
         }
         &.btn-sm {
-            .button-size(5px; 10px; 12px; 1.5; 0);
+            @include button-size(5px; 10px; 12px; 1.5; 0);
         }
         &.btn-xs {
-            .button-size(1px; 5px; 12px; 1.5; 0);
+            @include button-size(1px; 5px; 12px; 1.5; 0);
         }
     }
 }
@@ -191,6 +191,6 @@ $o-we-md-ease: cubic-bezier(0.19, 1, 0.22, 1);
         background-color: $o-we-color-paper;
         border: 1px solid darken($o-we-color-paper,5%);
         border-radius: 0;
-        .box-shadow(none);
+        @include box-shadow(none);
     }
 }

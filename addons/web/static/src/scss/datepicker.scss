@@ -20,10 +20,10 @@ $odoo-datepicker-week-bg-color: lighten($odoo-datepicker-week-color, 30%);
     }
 
     .o_datepicker_button {
-        .o-position-absolute(2px, 4px);
+        @include o-position-absolute(2px, 4px);
         cursor: pointer;
         &:after {
-            .o-caret-down;
+            @include o-caret-down;
         }
     }
 }

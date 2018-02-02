@@ -4,7 +4,7 @@
 $mail-chat-sidebar-width: 250px;
 
 .o_mail_chat {
-    .o-position-absolute(0, 0, 0, 0);
+    @include o-position-absolute(0, 0, 0, 0);
     height: 100%;
     overflow: hidden;
 
@@ -13,13 +13,13 @@ $mail-chat-sidebar-width: 250px;
         background-color: #DFA941;
         color: white;
         text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.25);
-        .o-flex-display();
+        @include o-flex-display;
         border-bottom: 1px solid $odoo-main-color-muted;
 
         .o_mail_request_permission {
-            .o-flex-display();
+            @include o-flex-display;
             justify-content: center;
-            .o-flex(1,1, auto);
+            @include o-flex(1,1, auto);
         }
         > span {
             font-size: 16px;
@@ -49,7 +49,7 @@ $mail-chat-sidebar-width: 250px;
         }
 
         .o_mail_sidebar_title {
-            .o-flex-display();
+            @include o-flex-display;
             padding: 6px $odoo-horizontal-padding 0 $odoo-horizontal-padding;
             align-items: center;
             justify-content: space-between;
@@ -65,16 +65,16 @@ $mail-chat-sidebar-width: 250px;
             }
         }
         .o_mail_chat_channel_item {
-            .o-flex-display();
+            @include o-flex-display;
             width: 100%;
             padding: 2px $odoo-horizontal-padding 2px ($odoo-horizontal-padding + 23px); // compensate icon
 
             .o_channel_name {
-                .o-flex(1, 1, auto);
-                .o-text-overflow();
+                @include o-flex(1, 1, auto);
+                @include o-text-overflow;
             }
             .o_mail_sidebar_needaction, .o_mail_partner_unpin {
-                .o-flex(0, 0, auto);
+                @include o-flex(0, 0, auto);
             }
             .o_mail_sidebar_needaction {
                 margin: 0 0 0 5px;
@@ -106,14 +106,14 @@ $mail-chat-sidebar-width: 250px;
                 padding: 2px 5px;
             }
             > span {
-                .o-position-absolute(7px, $left: 27px);
+                @include o-position-absolute(7px, $left: 27px);
             }
         }
     }
 
     .o_mail_chat_content {
-        .o-flex-display();
-        .o-flex-flow(column, nowrap);
+        @include o-flex-display;
+        @include o-flex-flow(column, nowrap);
         height: 100%;
         margin-left: $mail-chat-sidebar-width;
         position: relative;
@@ -126,7 +126,7 @@ $mail-chat-sidebar-width: 250px;
         }
 
         .o_mail_thread {
-            .o-flex(1, 0, 0);
+            @include o-flex(1, 0, 0);
             overflow: auto;
             padding: 0 0 15px 0;
             -webkit-overflow-scrolling: touch; // smooth scrolling in iOS app (Safari)
@@ -138,7 +138,7 @@ $mail-chat-sidebar-width: 250px;
         }
 
         .o_mail_snackbar {
-            .o-position-absolute(15px, 15px);
+            @include o-position-absolute(15px, 15px);
             padding-top: 10px;
             padding-bottom: 10px;
             cursor: pointer;
@@ -179,7 +179,7 @@ $sidebar-icon-opacity: 0.7;
             }
 
             .o_mail_partner_unpin {
-                .o-hover-opacity($default-opacity: 0, $hover-opacity: 1);
+                @include o-hover-opacity($default-opacity: 0, $hover-opacity: 1);
             }
             &.o_unread_message {
                 color: white;
@@ -230,8 +230,8 @@ $sidebar-icon-opacity: 0.7;
             }
             .o_add {
                 cursor: pointer;
-                .o-hover-opacity($sidebar-icon-opacity, 1);
-                .o-hover-text-color($gray-light, white);
+                @include o-hover-opacity($sidebar-icon-opacity, 1);
+                @include o-hover-text-color($gray-light, white);
             }
         }
     }
@@ -269,12 +269,12 @@ $sidebar-icon-opacity: 0.7;
 // ------------------------------------------------------------------
 @media (max-width: $screen-xs-max) {
     .o_mail_chat {
-        .o-flex-display();
-        .o-flex-flow(column, nowrap);
+        @include o-flex-display;
+        @include o-flex-flow(column, nowrap);
         background: white;
 
         .o_mail_chat_mobile_control_panel {
-            .o-flex(0, 0, auto);
+            @include o-flex(0, 0, auto);
             padding: 5px;
             min-height: 44px;
             border-bottom: 1px solid #ebebeb;
@@ -292,7 +292,7 @@ $sidebar-icon-opacity: 0.7;
             }
             .o_enable_searchview, .o_enable_searchview:focus,
                 .o_enable_searchview:hover, .o_enable_searchview:active  {
-                    .o-position-absolute($right: 5px, $top: 5px);
+                    @include o-position-absolute($right: 5px, $top: 5px);
                     color: gray;
                     background: none;
                     font-size: 15px;
@@ -303,13 +303,13 @@ $sidebar-icon-opacity: 0.7;
         }
 
         .o_mail_chat_mobile_inbox_buttons {
-            .o-flex-display();
-            .o-flex(0, 0, auto);
+            @include o-flex-display;
+            @include o-flex(0, 0, auto);
             z-index: 2;
             box-shadow: 0 2px 4px $gray-lighter-darker;
 
             .o_channel_inbox_item {
-                .o-flex(1, 1, auto);
+                @include o-flex(1, 1, auto);
                 width: 50%;
                 padding: 2%;
 
@@ -320,11 +320,11 @@ $sidebar-icon-opacity: 0.7;
         }
 
         .o_mail_chat_content {
-            .o-flex(1, 0, 0);
+            @include o-flex(1, 0, 0);
             margin-left: 0;
             background-color: transparent;
             .o_mail_no_content {
-                .o-position-absolute($top: 30%);
+                @include o-position-absolute($top: 30%);
                 text-align: center;
             }
         }
@@ -340,7 +340,7 @@ $sidebar-icon-opacity: 0.7;
                 border: 1px solid #afafaf;
                 border-radius: 4px;
                 > span {
-                    .o-position-absolute($top: 10px, $left: 10px);
+                    @include o-position-absolute($top: 10px, $left: 10px);
                 }
                 > input {
                     border: none;
@@ -350,7 +350,7 @@ $sidebar-icon-opacity: 0.7;
             }
         }
         .o_mail_mobile_tabs {
-            .o-flex(0, 0, auto);
+            @include o-flex(0, 0, auto);
         }
     }
 }
@@ -360,7 +360,7 @@ $sidebar-icon-opacity: 0.7;
 // ------------------------------------------------------------------
 
 .o_mail_channel_preview {
-    .o-flex-display();
+    @include o-flex-display;
     background-color: $gray-lighter;
     color: $odoo-main-text-color;
     cursor: pointer;
@@ -376,33 +376,33 @@ $sidebar-icon-opacity: 0.7;
         border-bottom: 1px solid $gray-lighter-darker;
     }
     .o_mail_channel_image {
-        .o-flex(0, 0, auto);
+        @include o-flex(0, 0, auto);
         position: relative;
         > img {
-            .square(100%);
+            @include square(100%);
             border-radius: 50%;
         }
         &.o_mail_channel_app > img {
             border-radius: 2px;
         }
         .o_mail_user_status {
-            .o-position-absolute($bottom: 0px, $right: 0px);
+            @include o-position-absolute($bottom: 0px, $right: 0px);
         }
     }
     .o_channel_info {
-        .o-flex(1, 1, 100%);
+        @include o-flex(1, 1, 100%);
         overflow: hidden;
         .o_channel_title {
-            .o-flex-display();
+            @include o-flex-display;
             .o_channel_name {
-                .o-flex(0, 1, auto);
-                .o-text-overflow();
+                @include o-flex(0, 1, auto);
+                @include o-text-overflow;
             }
             .o_channel_counter {
-                .o-flex(1, 1, auto);
+                @include o-flex(1, 1, auto);
             }
             .o_last_message_date {
-                .o-flex(0, 0, auto);
+                @include o-flex(0, 0, auto);
                 color: $odoo-main-color-muted;
                 font-weight: 500;
             }
@@ -411,7 +411,7 @@ $sidebar-icon-opacity: 0.7;
             width: 100%;
             max-height: 20px;
             color: $odoo-main-color-muted;
-            .o-text-overflow();
+            @include o-text-overflow;
         }
     }
     &.o_channel_unread {
@@ -464,15 +464,15 @@ $sidebar-icon-opacity: 0.7;
     }
 
     .o_mail_mobile_tabs {
-        .o-flex-display();
+        @include o-flex-display;
         box-shadow: 0 0 8px $gray-lighter-darker;
 
         .o_mail_mobile_tab {
-            .o-flex-display();
-            .o-flex(1, 1, auto);
+            @include o-flex-display;
+            @include o-flex(1, 1, auto);
             width: 20%;
-            .o-flex-flow(column, nowrap);
-            .o-justify-content(space-between);
+            @include o-flex-flow(column, nowrap);
+            @include o-justify-content(space-between);
             padding: $o-mail-chatter-mobile-gap $o-mail-chatter-mobile-gap*2;
             box-shadow: 1px 0 0 $gray-lighter-darker;
             text-align: center;

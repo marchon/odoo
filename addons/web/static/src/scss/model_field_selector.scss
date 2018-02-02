@@ -3,9 +3,9 @@
     position: relative;
 
     > .o_field_selector_value {
-        .o-flex-display();
-        .o-flex-flow(row, wrap);
-        .o-align-items(center);
+        @include o-flex-display;
+        @include o-flex-flow(row, wrap);
+        @include o-align-items(center);
         height: 100%;
         min-height: 20px; // needed when there is no value in it and used standalone
         &:active, &:focus, &:active:focus {
@@ -19,26 +19,26 @@
             margin-bottom: 1px;
         }
         > i {
-            .o-align-self(center);
+            @include o-align-self(center);
             margin: 0 2px;
             font-size: 10px;
         }
     }
     > .o_field_selector_controls {
-        .o-position-absolute(0, 0, 1px);
-        .o-flex-display();
-        .o-align-items(center);
+        @include o-position-absolute(0, 0, 1px);
+        @include o-flex-display;
+        @include o-align-items(center);
         cursor: pointer;
     }
 
     &.o_edit_mode {
         > .o_field_selector_controls::after {
-            .o-caret-down();
+            @include o-caret-down;
         }
 
         > .o_field_selector_popover {
             $o-field-selector-arrow-height: 7px;
-            .o-position-absolute($top: 100%, $left: 0);
+            @include o-position-absolute($top: 100%, $left: 0);
             z-index: 1051;
             width: 265px;
             margin-top: $o-field-selector-arrow-height;
@@ -57,12 +57,12 @@
 
                 .o_field_selector_title {
                     width: 100%;
-                    .o-text-overflow();
+                    @include o-text-overflow;
                     padding: 0px 35px;
                     text-align: center;
                 }
                 .o_field_selector_popover_option {
-                    .o-position-absolute($top: 0);
+                    @include o-position-absolute($top: 0);
                     padding: 7px 8px 8px 6px;
 
                     &.o_prev_page {
@@ -78,7 +78,7 @@
                     }
                 }
                 &:before {
-                    .o-position-absolute($top: -$o-field-selector-arrow-height, $left: $o-field-selector-arrow-height);
+                    @include o-position-absolute($top: -$o-field-selector-arrow-height, $left: $o-field-selector-arrow-height);
                     content: "";
                     border-left: $o-field-selector-arrow-height solid rgba(0, 0, 0, 0);
                     border-right: $o-field-selector-arrow-height solid rgba(0, 0, 0, 0);
@@ -109,9 +109,9 @@
                             font-size: 12px;
                         }
                         .o_field_selector_relation_icon {
-                            .o-position-absolute($top: 0, $right: 0, $bottom: 0);
-                            .o-flex-display();
-                            .o-align-items(center);
+                            @include o-position-absolute($top: 0, $right: 0, $bottom: 0);
+                            @include o-flex-display;
+                            @include o-align-items(center);
                             padding: 10px;
                         }
                     }

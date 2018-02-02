@@ -5,7 +5,7 @@
 @import url("//fonts.googleapis.com/css?family=Open+Sans:400,700");
 
 .btn-shadow($color) {
-  #gradient > .vertical-three-colors(lighten($color, 3%), $color, 6%, darken($color, 3%));
+  #gradient > @include vertical-three-colors(lighten($color, 3%), $color, 6%, darken($color, 3%));
   filter: none;
   border: 1px solid darken($color, 10%);
 }
@@ -31,32 +31,32 @@
 
 .btn-default,
 .btn-default:hover {
-  .btn-shadow($btn-default-bg);
+  @include btn-shadow($btn-default-bg);
 }
 
 .btn-primary,
 .btn-primary:hover {
-  .btn-shadow($btn-primary-bg);
+  @include btn-shadow($btn-primary-bg);
 }
 
 .btn-success,
 .btn-success:hover {
-  .btn-shadow($btn-success-bg);
+  @include btn-shadow($btn-success-bg);
 }
 
 .btn-info,
 .btn-info:hover {
-  .btn-shadow($btn-info-bg);
+  @include btn-shadow($btn-info-bg);
 }
 
 .btn-warning,
 .btn-warning:hover {
-  .btn-shadow($btn-warning-bg);
+  @include btn-shadow($btn-warning-bg);
 }
 
 .btn-danger,
 .btn-danger:hover {
-  .btn-shadow($btn-danger-bg);
+  @include btn-shadow($btn-danger-bg);
 }
 
 // Typography =================================================================

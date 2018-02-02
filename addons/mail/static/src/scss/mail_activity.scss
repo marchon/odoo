@@ -16,7 +16,7 @@
 
             &.collapsed {
                 margin-bottom: 0;
-                .o-transition(margin, 0.8s);
+                @include o-transition(margin, 0.8s);
 
                 .o_chatter_planned_activities_summary {
                     display: inline-block;
@@ -44,12 +44,12 @@
                     margin-bottom: 8px;
 
                     img {
-                        .square(31px);
+                        @include square(31px);
                     }
 
                     .o_avatar_icon {
-                        .o-position-absolute($right: -5px, $bottom: -5px);
-                        .square(25px);
+                        @include o-position-absolute($right: -5px, $bottom: -5px);
+                        @include square(25px);
                         padding: 6px 5px;
                         text-align: center;
                         line-height: 1.2;
@@ -66,10 +66,10 @@
                     padding: 4px 6px;
                     background: $gray-lighter;
                     border-radius: 2px 2px 0 0;
-                    .o-hover-opacity(1, 1);
+                    @include o-hover-opacity(1, 1);
 
                     &.collapsed {
-                        .o-hover-opacity(0.5, 1);
+                        @include o-hover-opacity(0.5, 1);
                         background: transparent;
                     }
                 }

@@ -30,7 +30,7 @@ header {
         padding: 0 15px;
 
         img {
-            .o-w-fill-navbar();
+            @include o-w-fill-navbar;
         }
     }
 }
@@ -38,7 +38,7 @@ header {
     margin-bottom: 0;
     ul.nav > li {
         &.divider {
-            .o-w-fill-navbar();
+            @include o-w-fill-navbar;
             border-right: 1px solid $navbar-default-link-disabled-color;
             @media (max-width: $screen-xs-max) {
                 display: none;
@@ -154,7 +154,7 @@ img, .media_iframe_video, .o_image {
 }
 img {
     // Make all images responsive by default but with inline-block display
-    .img-responsive(inline-block);
+    @include img-responsive(inline-block);
 }
 
 // Others
@@ -170,7 +170,7 @@ img {
         width: 100%;
     }
     div {
-        .o-position-absolute($left: 0, $bottom: 0);
+        @include o-position-absolute($left: 0, $bottom: 0);
         background-color: rgba(0, 0, 0, 0.4);
         opacity: 0.85;
         width: 100%;

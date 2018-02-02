@@ -43,7 +43,7 @@ $mail-thread-note: $gray-lighter;
     }
 
     .o_thread_message {
-        .o-flex-display();
+        @include o-flex-display;
         padding: 4px $odoo-horizontal-padding;
         margin-bottom: 0px;
 
@@ -53,7 +53,7 @@ $mail-thread-note: $gray-lighter;
         }
 
         .o_thread_message_sidebar {
-            .o-flex(0, 0, $mail-thread-avatar-size);
+            @include o-flex(0, 0, $mail-thread-avatar-size);
             margin-right: 10px;
             margin-top: 2px;
             text-align: center;
@@ -104,7 +104,7 @@ $mail-thread-note: $gray-lighter;
         }
 
         .o_thread_message_core {
-            .o-flex(1, 1, auto);
+            @include o-flex(1, 1, auto);
             min-width: 0;
             max-width: 100%;
             word-wrap: break-word;
@@ -149,9 +149,9 @@ $mail-thread-note: $gray-lighter;
 
             .o_mail_info {
                 margin-bottom: 2px;
-                .text-muted();
+                @include text-muted;
                 .o_mail_mailto, .o_mail_mailto:hover {
-                    .text-muted();
+                    @include text-muted;
                 }
 
                 strong {
@@ -212,7 +212,7 @@ $mail-thread-note: $gray-lighter;
     }
 
     .o_mail_no_content {
-        .o-webclient-padding();
+        @include o-webclient-padding;
     }
 
     .o_thread_message .o_thread_message_core .o_mail_read_more {

@@ -4,7 +4,7 @@
     .o_website_dashboard {
         background-color: #ececec;
         div.o_box {
-            .clearfix();
+            @include clearfix;
             color: $odoo-main-color-muted;
             background-color: $odoo-view-background-color;
             background-size: cover;
@@ -210,7 +210,7 @@
             .o_properties_selection {
 
                 @media (min-width: $screen-md-min) {
-                    .o-flex-display();
+                    @include o-flex-display;
                 }
 
                 margin-top: 10px;

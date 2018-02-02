@@ -7,8 +7,8 @@ $keyframes backgroundfade {
 
 .o_calendar_container {
     height: 100%;
-    .o-webclient-padding($top: $odoo-horizontal-padding/2, $bottom: $odoo-horizontal-padding/2);
-    .o-flex-display();
+    @include o-webclient-padding($top: $odoo-horizontal-padding/2, $bottom: $odoo-horizontal-padding/2);
+    @include o-flex-display;
 
     .calendar_color_loop($index) when ($index < $nb-calendar-colors+1) {
         .o_calendar_color_@{index} {
@@ -24,20 +24,20 @@ $keyframes backgroundfade {
                 color: #666 !important;
             }
         }
-        .calendar_color_loop($index + 1);
+        @include calendar-color-loop($index + 1);
     }
-    .calendar_color_loop(1);
+    @include calendar-color-loop(1);
 
     .underline_color_loop($index) when ($index < $nb-calendar-colors+1) {
         .o_underline_color_@{index} {
             border-bottom: 4px solid spin(rgba(255, 192, 192, 0.7), 360/($nb-calendar-colors+1) * $index);
         }
-        .underline_color_loop($index + 1);
+        @include underline-color-loop($index + 1);
     }
-    .underline_color_loop(1);
+    @include underline-color-loop(1);
 
     .o_calendar_view {
-        .o-flex(1, 1, auto);
+        @include o-flex(1, 1, auto);
         min-width: 0;
 
         .o_calendar_widget {
@@ -79,7 +79,7 @@ $keyframes backgroundfade {
     }
 
     .o_calendar_sidebar_container {
-        .o-flex(0, 0, $odoo-horizontal-padding);
+        @include o-flex(0, 0, $odoo-horizontal-padding);
         position: relative;
 
         &.o_sidebar_hidden {
@@ -91,7 +91,7 @@ $keyframes backgroundfade {
         }
 
         .o_calendar_sidebar_toggler {
-            .o-position-absolute($top: 0, $right: 0);
+            @include o-position-absolute($top: 0, $right: 0);
             cursor: pointer;
             padding: 6px;
             z-index: 1;
@@ -114,13 +114,13 @@ $keyframes backgroundfade {
             padding: 0;
 
             .ui-widget-header {
-                .o-flex-display();
+                @include o-flex-display;
                 background: none;
                 background-color: lighten($odoo-brand-secondary, 30%);
                 border-radius: 0;
 
                 .ui-datepicker-prev, .ui-datepicker-next {
-                    .o-flex(0, 0, auto);
+                    @include o-flex(0, 0, auto);
                     position: static;
                     cursor: pointer;
                     padding: 2px;
@@ -150,7 +150,7 @@ $keyframes backgroundfade {
                     }
                 }
                 .ui-datepicker-title {
-                    .o-flex(0, 0, auto);
+                    @include o-flex(0, 0, auto);
                     order: 2;
                     display: inline-block;
                     margin: 0 10px;

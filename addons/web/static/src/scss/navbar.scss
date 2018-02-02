@@ -17,7 +17,7 @@
         color: inherit;
 
         font-size: 18px;
-        .user-select(none);
+        @include user-select(none);
 
         &:hover, &:focus {
             background-color: $odoo-navbar-inverse-link-hover-bg;
@@ -32,7 +32,7 @@
         display: block;
         float: left;
         margin-right: 35px;
-        .user-select(none);
+        @include user-select(none);
         color: white;
         font-size: 22px;
         font-weight: 500;
@@ -129,9 +129,9 @@
             > li.o_menu_header_lvl_@{index}, > li .o_menu_entry_lvl_@{index} {
                 padding-left: $odoo-dropdown-hpadding + ($index - 2)*12px;
             }
-            .o-menu-indentation($index + 1);
+            @include o-menu-indentation($index + 1);
         }
-        .o-menu-indentation(3);
+        @include o-menu-indentation(3);
     }
 
     .open .dropdown-toggle {
@@ -146,12 +146,12 @@
 
         .oe_topbar_avatar {
             height: 17px;
-            .o-transform(translateY(-2px));
+            @include o-transform(translateY(-2px));
         }
     }
 
     @media (max-width: $screen-xs-max) {
-        .o-transition(height, 200ms, linear);
+        @include o-transition(height, 200ms, linear);
 
         position: relative;
         height: $odoo-navbar-height;
@@ -188,7 +188,7 @@
             }
 
             &.o_menu_systray {
-                .o-position-absolute(0px, $odoo-navbar-height, auto, $odoo-navbar-height);
+                @include o-position-absolute(0px, $odoo-navbar-height, auto, $odoo-navbar-height);
                 height: $odoo-navbar-height;
                 text-align: right;
 
@@ -196,7 +196,7 @@
                     display: inline-block;
 
                     &.open .dropdown-menu {
-                        .o-position-absolute($odoo-navbar-height, 0, 0, 0);
+                        @include o-position-absolute($odoo-navbar-height, 0, 0, 0);
                         position: fixed;
                         width: auto;
                     }

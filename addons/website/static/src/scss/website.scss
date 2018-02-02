@@ -224,7 +224,7 @@ table.table_desc tr td {
 }
 div.carousel .container {
     > .carousel-caption {
-        .o-position-absolute($right: 50%, $left: 50%);
+        @include o-position-absolute($right: 50%, $left: 50%);
         bottom: 20px;
         > div {
             position: absolute;
@@ -235,7 +235,7 @@ div.carousel .container {
         }
     }
     > .carousel-image {
-        .o-position-absolute($top: 5%, $bottom: 5%);
+        @include o-position-absolute($top: 5%, $bottom: 5%);
         max-height: 90%;
         margin: 0 auto;
     }
@@ -481,7 +481,7 @@ div.carousel {
     }
 
     > .s_parallax_bg {
-        .o-position-absolute(0, 0, 0, 0);
+        @include o-position-absolute(0, 0, 0, 0);
         background-size: cover;
         background-attachment: scroll;
         pointer-events: none;
@@ -501,14 +501,14 @@ div.carousel {
 }
 
 #wrapwrap .o_header_affix {
-    .o-position-absolute(0, 0, auto, 0);
+    @include o-position-absolute(0, 0, auto, 0);
     position: fixed;
     z-index: $zindex-modal - 20;
     background: $navbar-default-bg;
     border-bottom: $navbar-default-border;
 
     margin-top: -200px;
-    .o-transition(margin-top, 500ms);
+    @include o-transition(margin-top, 500ms);
 
     &.affixed {
         margin-top: 0px;

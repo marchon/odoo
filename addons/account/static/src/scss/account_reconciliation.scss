@@ -180,21 +180,21 @@ $infoColor: #44c;
         /* Icons */
 
         .toggle_match, .toggle_create {
-            .o-transform(rotate(0deg));
-            .o-transition(transform, 300ms);
+            @include o-transform(rotate(0deg));
+            @include o-transition(transform, 300ms);
         }
         .visible_toggle {
             visibility: visible !important;
-            .o-transform(rotate(90deg));
+            @include o-transform(rotate(90deg));
         }
         &[data-mode="match"] {
             .toggle_match {
-                .visible_toggle;
+                @include visible-toggle;
             }
         }
         &[data-mode="create"] {
             .toggle_create {
-                .visible_toggle;
+                @include visible-toggle;
             }
         }
 
@@ -205,15 +205,15 @@ $infoColor: #44c;
             overflow: hidden;
             margin-top: 5px;
             margin-bottom: 5px;
-            .o-transition(max-height, 250ms);
+            @include o-transition(max-height, 250ms);
         }
         &[data-mode="match"] > .match {
             max-height: none;
-            .o-transition(max-height, 400ms);
+            @include o-transition(max-height, 400ms);
         }
         &[data-mode="create"] > .create {
             max-height: 210px;
-            .o-transition(max-height, 400ms);
+            @include o-transition(max-height, 400ms);
         }
     }
         

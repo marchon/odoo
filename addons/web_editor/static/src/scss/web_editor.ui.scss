@@ -1,13 +1,13 @@
 
 // TOP BAR (EDIT)
 #web_editor-top-edit {
-    .o-position-absolute(0, 0, auto, 0);
+    @include o-position-absolute(0, 0, auto, 0);
     position: fixed;
     height: $odoo-navbar-height;
     z-index: 1003;
 
     background-color: rgba(0,0,0,0);
-    .o-transition(background-color, 400ms, $o-we-md-ease);
+    @include o-transition(background-color, 400ms, $o-we-md-ease);
     font-family: $o-we-font-family;
 
     form.navbar-form {
@@ -15,8 +15,8 @@
         z-index: 1060;
         margin: 0;
         padding: 0;
-        .o-position-absolute($right: -$o-we-sidebar-width);
-        .o-transition(right, 0.4s, $o-we-md-ease);
+        @include o-position-absolute($right: -$o-we-sidebar-width);
+        @include o-transition(right, 0.4s, $o-we-md-ease);
         border-left: 1px solid $o-we-color-divider;
         background-color: inherit;
 
@@ -32,7 +32,7 @@
             font-size: 13px;
             font-family: $o-we-font-family;
 
-            .o-transition(all, 0.3s);
+            @include o-transition(all, 0.3s);
             border: none;
             border-radius: 0;
 
@@ -44,10 +44,10 @@
             }
 
             &.btn-primary {
-                .button-variant(white, $odoo-brand-primary, $odoo-brand-primary);
+                @include button-variant(white, $odoo-brand-primary, $odoo-brand-primary);
             }
             &.btn-default {
-                .button-variant(white, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0));
+                @include button-variant(white, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0));
 
                 &:hover {
                     background: fade(black, 50%);
@@ -86,23 +86,23 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 
 // SNIPPET PANEL
 #oe_snippets {
-    .o-w-preserve-btn();
+    @include o-w-preserve-btn;
 
-    .o-flex-display();
-    .o-flex-flow(column, nowrap);
-    .o-position-absolute(0, auto, 0, -$o-we-sidebar-width);
+    @include o-flex-display;
+    @include o-flex-flow(column, nowrap);
+    @include o-position-absolute(0, auto, 0, -$o-we-sidebar-width);
     position: fixed;
     width: $o-we-sidebar-width;
     z-index: 1003;
 
     font-family: Roboto, $font-family-sans-serif;
     border-right: 1px solid $o-we-color-divider;
-    .o-transition(left, 400ms, $o-we-md-ease);
-    .o-linear-gradient(45deg, $o-we-color-normal, darken($o-we-color-normal, 10%));
+    @include o-transition(left, 400ms, $o-we-md-ease);
+    @include o-linear-gradient(45deg, $o-we-color-normal, darken($o-we-color-normal, 10%));
     box-shadow: 0px 10px 10px -10px black inset;
 
     #snippets_menu {
-        .o-flex(0, 0, auto);
+        @include o-flex(0, 0, auto);
         height: $odoo-navbar-height;
         line-height: $odoo-navbar-height;
         margin: 0;
@@ -121,9 +121,9 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
 
         .o_panel_header {
             color: #999999;
-            .o-flex-display();
-            .o-align-items(center);
-            .o-justify-content(center);
+            @include o-flex-display;
+            @include o-align-items(center);
+            @include o-justify-content(center);
             padding: 3%;
             color: white;
             margin-bottom: 3%;
@@ -145,7 +145,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                 margin: 0 0 6% 3%;
                 box-shadow: none;
                 background-color: transparent;
-                .user-select(none);
+                @include user-select(none);
 
                 cursor: pointer;
                 cursor: copy;
@@ -161,8 +161,8 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                     }
 
                     &:hover .oe_snippet_thumbnail_img {
-                        .o-transition(transform, 200ms, ease);
-                        .scale(1.05);
+                        @include o-transition(transform, 200ms, ease);
+                        @include scale(1.05);
                     }
                 }
 
@@ -181,7 +181,7 @@ html[lang] > body.editor_enable [data-oe-translation-state] {
                     }
                     .btn.o_install_btn {
                         display: none;
-                        .o-position-absolute(16px, 4px, auto, 4px);
+                        @include o-position-absolute(16px, 4px, auto, 4px);
                     }
                     &:hover .btn.o_install_btn {
                         display: block;
@@ -244,7 +244,7 @@ $keyframes dropZoneInsert {
 }
 #wrapwrap .oe_drop_zone {
     background-color: fade($odoo-brand-primary, 5%);
-    .o-animation(dropZoneInsert, 1s, linear, 0s, infinite, alternate);
+    @include o-animation(dropZoneInsert, 1s, linear, 0s, infinite, alternate);
 
     &.oe_insert {
         $odoo-dropzone-size: 40px;
@@ -262,7 +262,7 @@ $keyframes dropZoneInsert {
         height: $odoo-dropzone-size;
         margin: -$odoo-dropzone-size/2 0;
 
-        .o-transition(margin, 400ms, linear);
+        @include o-transition(margin, 400ms, linear);
 
         &:after {
             content: "";
@@ -301,13 +301,13 @@ $keyframes dropZoneInsert {
 
     // SNIPPET MANIPULATORS
     .oe_overlay {
-        .o-position-absolute();
+        @include o-position-absolute;
         z-index: 1002;
         display: none;
         height: 0;
         background: transparent;
         text-align: center;
-        .o-transition(opacity, 400ms, linear);
+        @include o-transition(opacity, 400ms, linear);
         &.o_keypress {
             opacity: 0;
         }
@@ -318,7 +318,7 @@ $keyframes dropZoneInsert {
         // OVERLAY OPTIONS
         > .oe_overlay_options {
             font-family: $o-we-font-family;
-            .o-position-absolute($bottom: 0, $left: 0);
+            @include o-position-absolute($bottom: 0, $left: 0);
             width: 250px; // the parent oe_overlay has a width equal to the snippet width, the 250px is there to force the options to stay on one line without overriding bootstrap .btn-group
             text-align: left;
 
@@ -338,7 +338,7 @@ $keyframes dropZoneInsert {
                     border-radius: 0;
                     font-weight: normal;
 
-                    .o-transition(all, 400ms);
+                    @include o-transition(all, 400ms);
                     color: $o-we-color-text-light;
                     background-color: $o-we-color-light;
                     &:hover {
@@ -364,7 +364,7 @@ $keyframes dropZoneInsert {
                         }
                     }
                     &.oe_snippet_parent > i {
-                        .scaleX(-1);
+                        @include scaleX(-1);
                         font-size: 12px;
                     }
 
@@ -393,16 +393,16 @@ $keyframes dropZoneInsert {
                             width: 7px;
                             height: 2px;
                             background-color: $o-we-color-text-light;
-                            .o-position-absolute(46%);
-                            .o-transition(all, 0.3s);
+                            @include o-position-absolute(46%);
+                            @include o-transition(all, 0.3s);
                         }
                         &:before {
                             right: 9px;
-                            .rotate(45deg);
+                            @include rotate(45deg);
                         }
                         &:after {
                             right: 5px;
-                            .rotate(-45deg);
+                            @include rotate(-45deg);
                         }
                     }
                     // Open menu
@@ -416,7 +416,7 @@ $keyframes dropZoneInsert {
                             transform: translateX(5px) rotate(-45deg);
                         }
                         &:after {
-                            .rotate(45deg);
+                            @include rotate(45deg);
                         }
                     }
 
@@ -455,8 +455,8 @@ $keyframes dropZoneInsert {
                                 }
                             }
                             &.dropdown-submenu:before {
-                                .o-position-absolute($top: 10px, $right: 10px);
-                                .o-caret-right(3px);
+                                @include o-position-absolute($top: 10px, $right: 10px);
+                                @include o-caret-right(3px);
                                 border-left-color: $o-we-color-text-light;
                             }
                             &.divider {
@@ -467,7 +467,7 @@ $keyframes dropZoneInsert {
                                 color: white;
                                 background-color: fadeOut($o-we-color-dark, 50%);
                                 &:before {
-                                    .o-position-absolute($top: 5px, $left: 5px);
+                                    @include o-position-absolute($top: 5px, $left: 5px);
                                     content: "\f00c";
                                     font-family: "FontAwesome";
                                     color: $odoo-brand-optional;
@@ -493,9 +493,9 @@ $keyframes dropZoneInsert {
                                     margin: 7px 0 4px 4px;
                                     &::before {
                                         content: "\f148";
-                                        .o-position-absolute($top: 2px, $left: 8px);
+                                        @include o-position-absolute($top: 2px, $left: 8px);
                                         font-family: FontAwesome;
-                                        .scaleX(-1);
+                                        @include scaleX(-1);
                                     }
                                     ~ li:not(.dropdown-header) {
                                         a {
@@ -537,7 +537,7 @@ $keyframes dropZoneInsert {
         > .o_handles {
             $o-handles-offset-to-hide: 10000px;
             $o-handless-accent-color: #00e2ff;
-            .o-position-absolute(-$o-handles-offset-to-hide, 0, auto, 0);
+            @include o-position-absolute(-$o-handles-offset-to-hide, 0, auto, 0);
 
             &:hover > .o_handle {
                 background-color: fade($o-handless-accent-color, 5%);
@@ -548,14 +548,14 @@ $keyframes dropZoneInsert {
 
                 position: relative;
                 border: 0 solid $o-handless-accent-color;
-                .o-transition(background, 300ms);
+                @include o-transition(background, 300ms);
 
                 &:hover, &.o_active {
                     background-color: fade($o-handless-accent-color, 20%);
 
                     &:before {
                         content: '';
-                        .o-position-absolute(0, $left:50%);
+                        @include o-position-absolute(0, $left:50%);
                         width: 1px;
                         height: 100%;
                         margin-left: -1px;
@@ -563,7 +563,7 @@ $keyframes dropZoneInsert {
                     }
 
                     &.w:before {
-                        .o-position-absolute(50%, $left: 0);
+                        @include o-position-absolute(50%, $left: 0);
                         width: 100%;
                         height: 1px;
                     }
@@ -610,45 +610,45 @@ $keyframes dropZoneInsert {
                 }
 
                 &.w {
-                    .o-position-absolute($o-handles-offset-to-hide, auto, -$o-handles-offset-to-hide, 0);
+                    @include o-position-absolute($o-handles-offset-to-hide, auto, -$o-handles-offset-to-hide, 0);
                     width: $odoo-handle-edge-size;
                     border-width: $odoo-handle-border-width;
                     border-right-width: 0;
                     cursor: e-resize;
 
                     &:after {
-                        .o-position-absolute($top: 50%, $left: 40%);
+                        @include o-position-absolute($top: 50%, $left: 40%);
                         margin-top: -$o-handle-btn-size/2;
                     }
                 }
                 &.e {
-                    .o-position-absolute($o-handles-offset-to-hide, 0, -$o-handles-offset-to-hide, auto);
+                    @include o-position-absolute($o-handles-offset-to-hide, 0, -$o-handles-offset-to-hide, auto);
                     width: $odoo-handle-edge-size;
                     border-right-width: $odoo-handle-border-width;
                     cursor: w-resize;
 
                     &:after {
-                        .o-position-absolute($top: 50%, $right: 40%);
+                        @include o-position-absolute($top: 50%, $right: 40%);
                         margin-top: -$o-handle-btn-size/2;
                     }
                 }
                 &.n {
-                    .o-position-absolute($o-handles-offset-to-hide, 0, auto, 0);
+                    @include o-position-absolute($o-handles-offset-to-hide, 0, auto, 0);
                     border-top-width: $odoo-handle-border-width;
                     cursor: ns-resize;
 
                     &:after {
-                        .o-position-absolute($left: 50%, $top: 40%);
+                        @include o-position-absolute($left: 50%, $top: 40%);
                         margin-left: -$o-handle-btn-size/2;
                     }
                 }
                 &.s {
-                    .o-position-absolute(auto, 0, -$o-handles-offset-to-hide, 0);
+                    @include o-position-absolute(auto, 0, -$o-handles-offset-to-hide, 0);
                     border-bottom-width: $odoo-handle-border-width;
                     cursor: ns-resize;
 
                     &:after {
-                        .o-position-absolute($left: 50%, $bottom: 40%);
+                        @include o-position-absolute($left: 50%, $bottom: 40%);
                         margin-left: -$o-handle-btn-size/2;
                     }
                 }
@@ -715,7 +715,7 @@ $keyframes dropZoneInsert {
             background-color: $o-we-color-dark;
             color: $o-we-color-text-normal;
             border-top: 2px solid transparent;
-            .o-transition(all, 0.3s);
+            @include o-transition(all, 0.3s);
 
             > .fa {
                 color: $o-we-color-text-normal;
@@ -731,7 +731,7 @@ $keyframes dropZoneInsert {
             }
 
             .o_image_alt {
-                .o-text-overflow(inline-block);
+                @include o-text-overflow(inline-block);
                 max-width: 100px;
             }
 
@@ -808,7 +808,7 @@ $keyframes dropZoneInsert {
                 float: left;
                 margin: 1px 1px 0 0;
                 border-color: black;
-                .o_alpha_button_preview();
+                @include o-alpha-button-preview;
 
                 &.o_small {
                     width: 16px;
@@ -954,7 +954,7 @@ table.colorpicker {
             font-size: 12px;
             font-weight: bold;
             text-align: left;
-            .o_alpha_button_preview();
+            @include o-alpha-button-preview;
 
             &:hover, &.selected {
                 box-shadow: 0px 0px 2px 2px $o-we-color-light;
@@ -962,7 +962,7 @@ table.colorpicker {
 
             &:after {
                 content: "A";
-                .o-position-absolute(0, 0);
+                @include o-position-absolute(0, 0);
                 width: 25px;
                 text-align: center;
                 font-size: 13px;
@@ -1001,7 +1001,7 @@ table.colorpicker {
         font-weight: bold;
     }
     .palette-reset {
-        .o-position-absolute(0, 0);
+        @include o-position-absolute(0, 0);
         margin: 0;
         padding: 5px 10px 0;
         .note-color-reset {
@@ -1030,7 +1030,7 @@ body.editor_enable {
     }
 
     &.editor_has_snippets {
-        .o-transition(padding-left, 400ms, $o-we-md-ease);
+        @include o-transition(padding-left, 400ms, $o-we-md-ease);
         padding-left: $o-we-sidebar-width!important;
 
         #oe_snippets {
@@ -1075,7 +1075,7 @@ body.editor_enable {
     // Place an overlay that inherit the button's bg-color.
     &::before {
         content: "";
-        .o-position-absolute(0, 0, 0, 0);
+        @include o-position-absolute(0, 0, 0, 0);
         z-index: -1;
         background-color: inherit;
     }
@@ -1085,11 +1085,11 @@ body.editor_enable {
 $keyframes fadeInDownSmall {
     0% {
         opacity: 0;
-        .translate(0, -5px);
+        @include translate(0, -5px);
     }
     100% {
         opacity: 1;
-        .translate(0, 0);
+        @include translate(0, 0);
     }
 }
 $keyframes fadeInOut {
@@ -1116,8 +1116,8 @@ $o-switch-size: 2ex;
 $o-switch-inactive-color: $gray-lighter;
 
 .o_switch {
-    .o-flex-display();
-    .o-align-items(center);
+    @include o-flex-display;
+    @include o-align-items(center);
     font-weight: normal;
     cursor: pointer;
 
@@ -1132,7 +1132,7 @@ $o-switch-inactive-color: $gray-lighter;
             width: $o-switch-size * 1.8;
             margin-right: 0.5em;
             display: inline-block;
-            .transition(all 0.3s $o-we-md-ease);
+            @include transition(all 0.3s $o-we-md-ease);
 
             &:after {
                 content: "";
@@ -1143,14 +1143,14 @@ $o-switch-inactive-color: $gray-lighter;
                 margin-top: 0.1ex;
                 margin-left: 0.3ex;
                 border-radius: 100rem;
-                .transition(all 0.3s $o-we-md-ease);
+                @include transition(all 0.3s $o-we-md-ease);
                 box-shadow: 0 1px 1px darken($o-switch-inactive-color,35%), inset 0 0 0 1px lighten($o-switch-inactive-color,10%);
             }
         }
 
         &:checked + span {
             box-shadow: none;
-            .o-linear-gradient(0deg, $o-we-color-success, darken($o-we-color-success, 10%));
+            @include o-linear-gradient(0deg, $o-we-color-success, darken($o-we-color-success, 10%));
 
             &:after {
                 margin-left: ($o-switch-size*1.8 - $o-switch-size) + 0.1;
@@ -1183,7 +1183,7 @@ $o-switch-inactive-color: $gray-lighter;
         color: #999;
         font-size: 18px;
         font-weight: normal;
-        .o-position-absolute($top: 10px, $left: 5px);
+        @include o-position-absolute($top: 10px, $left: 5px);
         pointer-events: none;
         .transition(0.2s ease all)
     }
@@ -1202,9 +1202,9 @@ $o-switch-inactive-color: $gray-lighter;
         height: 2px;
         width: 0;
         bottom: 1px;
-        .o-position-absolute();
+        @include o-position-absolute;
         background: #5264AE;
-        .transition(0.2s ease all);
+        @include transition(0.2s ease all);
     }
     .bar:before {
         left: 50%;
@@ -1220,7 +1220,7 @@ $o-switch-inactive-color: $gray-lighter;
 
     /* HIGHLIGHTER ================================== */
     .highlight {
-        .o-position-absolute($top: 25%, $left: 0);
+        @include o-position-absolute($top: 25%, $left: 0);
         height: 60%;
         width: 100px;
         pointer-events: none;
@@ -1229,14 +1229,14 @@ $o-switch-inactive-color: $gray-lighter;
 
     /* active state */
     input:focus ~ .highlight {
-        .animation(inputHighlighter 0.3s ease);
+        @include animation(inputHighlighter 0.3s ease);
     }
 }
 
 // DRAG&DROP ANIMATIONS
 .oe_snippet_body {
     opacity: 0;
-    .o-animation(fadeInDownSmall, 700ms, $fill-mode: forwards);
+    @include o-animation(fadeInDownSmall, 700ms, $fill-mode: forwards);
 }
 
 // ACE EDITOR
@@ -1244,28 +1244,28 @@ $o-switch-inactive-color: $gray-lighter;
     $o-ace-color: #2F3129;
     background: $o-ace-color;
     color: white;
-    .o-flex-display();
-    .o-flex-flow(column, nowrap);
+    @include o-flex-display;
+    @include o-flex-flow(column, nowrap);
     opacity: 0.97;
 
     .o_ace_view_editor_title {
-        .o-flex(0, 0, auto);
-        .o-flex-display();
-        .o-align-items(center);
+        @include o-flex(0, 0, auto);
+        @include o-flex-display;
+        @include o-align-items(center);
         padding: $grid-gutter-width/4;
 
         > .o_ace_type_switcher > button::after {
-            .o-caret-down();
+            @include o-caret-down;
             margin-left: 4px;
         }
 
         > * {
-            .o-flex(0, 0, auto);
+            @include o-flex(0, 0, auto);
             margin: 0 $grid-gutter-width/4;
 
             &.o_include_option {
-                .o-flex-display();
-                .o-align-items(center);
+                @include o-flex-display;
+                @include o-align-items(center);
                 font-size: 11px;
 
                 > .o_checkbox {
@@ -1274,40 +1274,40 @@ $o-switch-inactive-color: $gray-lighter;
             }
 
             &.o_res_list {
-                .o-flex(1, 1, auto);
+                @include o-flex(1, 1, auto);
                 min-width: 60px;
             }
         }
     }
     #ace-view-id {
-        .o-flex(0, 0, auto);
+        @include o-flex(0, 0, auto);
         padding: $grid-gutter-width/4 $grid-gutter-width/2;
         background-color: lighten($o-ace-color, 10%);
     }
     #ace-view-editor {
         height: 70%; // in case flex is not supported
-        .o-flex(1, 1, auto);
+        @include o-flex(1, 1, auto);
         .ace_gutter {
             cursor: ew-resize;
 
             .ace_gutter-cell.o_error {
                 position: relative;
                 &::after {
-                    .o-position-absolute(-100%, 0, -100%, 0);
-                    .ace-line-error-mixin();
+                    @include o-position-absolute(-100%, 0, -100%, 0);
+                    @include ace-line-error-mixin;
                 }
             }
         }
         .ace_resize_bar {
-            .o-position-absolute($right: 0);
+            @include o-position-absolute($right: 0);
             width: 25px;
             height: 100%;
             cursor: ew-resize;
         }
         .ace_scroller.o_error::after {
-            .o-position-absolute(0, auto, 0, 0);
+            @include o-position-absolute(0, auto, 0, 0);
             width: 3px;
-            .ace-line-error-mixin();
+            @include ace-line-error-mixin;
         }
 
         .ace-line-error-mixin() {
@@ -1364,7 +1364,7 @@ body .modal {
                         padding-right: 30px;
                     }
                     > span {
-                        .o-position-absolute(7px, 7px);
+                        @include o-position-absolute(7px, 7px);
                         font-size: 1.3em;
                     }
                 }
@@ -1379,7 +1379,7 @@ body .modal {
                 $odoo-border-image: 2px;
 
                 .o_existing_attachment_remove {
-                    .o-position-absolute($odoo-border-image, 15px + $odoo-border-image);
+                    @include o-position-absolute($odoo-border-image, 15px + $odoo-border-image);
                     padding: 3px 5px 5px 5px;
                     background-color: fade(white, 80%);
                     text-shadow: 0 0 1px white;
@@ -1395,7 +1395,7 @@ body .modal {
                 .o_image {
                     border: $odoo-border-image solid transparent;
                     cursor: pointer;
-                    .o-transition(opacity, 400ms);
+                    @include o-transition(opacity, 400ms);
 
                     &.o_webimage {
                         width: 100%;
@@ -1450,11 +1450,11 @@ body .modal {
             // VIDEO TAB
             #editor-media-video .well {
                 padding: 0;
-                .o-flex-display();
-                .o-flex-flow(row, wrap);
+                @include o-flex-display;
+                @include o-flex-flow(row, wrap);
 
                 .o_video_dialog_form {
-                    .o-flex(1, 1, auto);
+                    @include o-flex(1, 1, auto);
                     min-width: 0;
                     padding: 20px;
 
@@ -1470,7 +1470,7 @@ body .modal {
                         }
 
                         > .o_validate_feedback {
-                            .o-position-absolute(auto, 10px, 10px);
+                            @include o-position-absolute(auto, 10px, 10px);
 
                             > .fa {
                                 display: none;
@@ -1487,12 +1487,12 @@ body .modal {
 
                 #video-preview {
                     position: relative;
-                    .o-flex(1, 0, 50%);
-                    .o-flex-display();
-                    .o-flex-flow(column, nowrap);
-                    .o-justify-content(center);
+                    @include o-flex(1, 0, 50%);
+                    @include o-flex-display;
+                    @include o-flex-flow(column, nowrap);
+                    @include o-justify-content(center);
 
-                    .o-we-preview-box(0 19px);
+                    @include o-we-preview-box(0 19px);
                     border: none;
 
                     .media_iframe_video {
@@ -1500,12 +1500,12 @@ body .modal {
                     }
 
                     .o_video_dialog_iframe {
-                        .o-we-preview-content();
+                        @include o-we-preview-content;
                         max-width: 100%;
                         max-height: 100%;
 
                         &.alert {
-                            .o-animation(fadeInDownSmall, 700ms, $fill-mode: forwards);
+                            @include o-animation(fadeInDownSmall, 700ms, $fill-mode: forwards);
                             margin: 0 auto;
                         }
                     }
@@ -1519,7 +1519,7 @@ body .modal {
         margin: 15px 0;
 
         .help-control {
-            .o-position-absolute(15px, 15px);
+            @include o-position-absolute(15px, 15px);
         }
         .help {
             margin: 15px 0;
@@ -1531,22 +1531,22 @@ body .modal {
                 width: 120px;
                 height: 100px;
                 .bg {
-                    .o-position-absolute(0, 0, 0, 0);
+                    @include o-position-absolute(0, 0, 0, 0);
                     border: 1px dotted #888787;
                     background-image: url(/web/image);
                     background-position: center center;
-                    .o-background-size(cover);
+                    @include o-background-size(cover);
                 }
                 .el {
-                    .o-position-absolute(10px, 0, 10px, 0);
+                    @include o-position-absolute(10px, 0, 10px, 0);
                     border: 1px solid #222;
                 }
                 &.contain_bg {
                     .bg {
-                        .o-position-absolute(0, 12px, 20px, 12px);
+                        @include o-position-absolute(0, 12px, 20px, 12px);
                     }
                     .el {
-                        .o-position-absolute(0, 0, 20px, 0);
+                        @include o-position-absolute(0, 0, 20px, 0);
                     }
                 }
             }
@@ -1556,7 +1556,7 @@ body .modal {
         }
 
         .o_bg_img_opt_cover_edition {
-            .o-we-preview-box();
+            @include o-we-preview-box;
 
             h6 {
                 color: white;
@@ -1566,7 +1566,7 @@ body .modal {
                 position: relative;
                 background: white;
                 min-height: 10px;
-                .o-we-preview-content();
+                @include o-we-preview-content;
 
                 > img {
                     cursor: crosshair;
@@ -1578,8 +1578,8 @@ body .modal {
                 }
             }
             .o_bg_img_opt_ui_info {
-                .animation(fadeInOut 2s ease forwards);
-                .o-position-absolute($bottom: 1px, $right: 0);
+                @include animation(fadeInOut 2s ease forwards);
+                @include o-position-absolute($bottom: 1px, $right: 0);
                 display: block;
                 padding: 3px 13px;
                 background-color: rgba(255, 255, 255, 0.8);
@@ -1595,7 +1595,7 @@ body .modal {
                 }
             }
             .grid {
-                .o-position-absolute($top: 33.33%, $left: 0);
+                @include o-position-absolute($top: 33.33%, $left: 0);
                 display: block;
                 width: 100%;
                 height: 1px;
@@ -1618,7 +1618,7 @@ body .modal {
                 }
             }
             .o_focus_point {
-                .o-position-absolute($top: 0, $left: 0);
+                @include o-position-absolute($top: 0, $left: 0);
                 width: 30px;
                 height: 30px;
                 border: 2px solid white;
@@ -1628,7 +1628,7 @@ body .modal {
                 box-shadow: 0 0 1px #333;
                 pointer-events: none;
                 &.o_with_transition {
-                    .o-transition(all, 0.2s);
+                    @include o-transition(all, 0.2s);
                 }
                 &:before {
                     pointer-events: none;
@@ -1643,7 +1643,7 @@ body .modal {
                     border-radius: 100em;
                     opacity: 1;
                     box-shadow: 0 0 0 100em rgba(0, 0, 0, 0.33);
-                    .o-transition(opacity, 0.2s);
+                    @include o-transition(opacity, 0.2s);
                 }
             }
         }
@@ -1661,7 +1661,7 @@ body .modal {
 
             input:checked + i::before {
                 content: "\f00c";
-                .o-position-absolute($top: 6px, $left: 5px);
+                @include o-position-absolute($top: 6px, $left: 5px);
             }
 
             &.btn-link {

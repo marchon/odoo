@@ -1,18 +1,18 @@
 .o_chat_window {
     &.o_thread_less {
         .o_chat_search_input {
-            .o-flex-display();
-            .o-align-items(baseline);
+            @include o-flex-display;
+            @include o-align-items(baseline);
             padding: $o-mail-chatter-gap*0.5 $o-mail-chatter-gap;
 
             > span {
-                .o-flex(0, 0, auto);
+                @include o-flex(0, 0, auto);
             }
 
             > input {
                 margin-left: 5px;
                 padding: $o-mail-chatter-gap*0.5;
-                .o-flex(1, 1, 100%);
+                @include o-flex(1, 1, 100%);
             }
         }
 
@@ -41,10 +41,10 @@
                 }
             }
             .o_chatter_composer_tools {
-                .o-position-absolute($right: 0px, $top: 0px);
+                @include o-position-absolute($right: 0px, $top: 0px);
 
                 @media (max-width: $screen-xs-max) {
-                    .o-position-absolute($right: 6px, $top: 0px);
+                    @include o-position-absolute($right: 6px, $top: 0px);
                 }
                 button {
                     padding: 8px;

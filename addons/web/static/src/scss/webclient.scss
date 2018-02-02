@@ -15,7 +15,7 @@ $notification-info-bg-color: #FCFBEA;
     width: 300px;
     max-width: 100%;
 
-    .o-position-absolute($navbar-height, 0px);
+    @include o-position-absolute($navbar-height, 0px);
     z-index: 1100; // Bootstrap modal z-index is 1050
 
     .o_notification {
@@ -29,14 +29,14 @@ $notification-info-bg-color: #FCFBEA;
 
         position: relative;
         .o_close {
-            .o-position-absolute(5px, 5px);
+            @include o-position-absolute(5px, 5px);
             color: rgba(0, 0, 0, 0.3);
             text-decoration: none;
         }
 
         .o_notification_title {
-            .o-flex-display();
-            .o-align-items(center);
+            @include o-flex-display;
+            @include o-align-items(center);
 
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
             padding: 10px 10px 10px 20px;
@@ -70,7 +70,7 @@ $notification-info-bg-color: #FCFBEA;
 }
 
 .oe_highlight {
-    .btn-primary;
+    @include btn-primary;
 }
 
 // Boolean Toggle widget
@@ -110,7 +110,7 @@ div.o_boolean_toggle {
         background-color: $odoo-brand-optional;
 
         &:before {
-            .translate(14px; 0px);
+            @include translate(14px, 0px);
         }
     }
 }

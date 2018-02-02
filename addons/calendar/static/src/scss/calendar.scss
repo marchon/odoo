@@ -42,10 +42,10 @@
 }
 
 .o_calendar_invitation_page {
-    .o-flex(0, 0, auto);
+    @include o-flex(0, 0, auto);
     width: 50%;
     margin: 30px auto 0;
-    .o-webclient-padding($top: 10px, $bottom: 10px);
+    @include o-webclient-padding($top: 10px, $bottom: 10px);
     background-color: $odoo-view-background-color;
 
     .o_logo {

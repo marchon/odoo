@@ -155,7 +155,7 @@ legend {
 // Containers =================================================================
 
 .panel {
-  .box-shadow(none);
+  @include box-shadow(none);
 
   &-default {
     .close {

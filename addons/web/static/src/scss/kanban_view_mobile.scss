@@ -12,8 +12,8 @@ $o-kanban-mobile-tabs-height: 40px;
             background-color: #5E5E5E;
 
             .o_kanban_mobile_tab {
-                .o-position-absolute($left: 100%);
-                .o-transform(translateX(-50%));
+                @include o-position-absolute($left: 100%);
+                @include o-transform(translateX(-50%));
                 height: $o-kanban-mobile-tabs-height;
                 padding: 10px;
                 font-size: 14px;
@@ -30,7 +30,7 @@ $o-kanban-mobile-tabs-height: 40px;
         }
 
         &.o_kanban_small_column .o_kanban_group:not(.o_column_folded) {
-            .o-position-absolute($top: $o-kanban-mobile-tabs-height, $left: 0, $bottom: 0);
+            @include o-position-absolute($top: $o-kanban-mobile-tabs-height, $left: 0, $bottom: 0);
             overflow-x: scroll;
             width: 100%;
             padding: 0;

@@ -59,11 +59,11 @@
                 outline: none;
             }
 
-            .li-a-padding;
+            @include li-a-padding;
         }
 
         &.dropdown-header {
-            .li-a-padding;
+            @include li-a-padding;
             color: $odoo-main-text-color;
 
             @media (max-width: $screen-xs-max) {
@@ -74,7 +74,7 @@
     }
 }
 
-.dropdown-menu-mixin();
+@include dropdown-menu-mixin;
 .navbar-nav {
-    .dropdown-menu-mixin();
+    @include dropdown-menu-mixin;
 }
