@@ -3146,7 +3146,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # update parent_left/parent_right
         if parent_records:
-            parent_records._parent_store_update(vals)
+            parent_records._parent_store_update()
 
         return True
 
@@ -3332,8 +3332,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
 
         # update parent_left, parent_right
         if parent_store:
-            for record, vals in pycompat.izip(records, valses):
-                record._parent_store_update(vals)
+            records._parent_store_update()
 
         with self.env.protecting(protected, records):
             # mark fields to recompute; do this before setting other fields,
@@ -3430,14 +3429,9 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         self._cr.execute(query, params)
         return self.browse([row[0] for row in self._cr.fetchall()])
 
-    def _parent_store_update(self, vals):
+    def _parent_store_update(self):
         """ Update the parent_left/parent_right fields of ``self``. """
         cr = self.env.cr
-        parent_val = vals[self._parent_name]
-        if parent_val:
-            clause, params = '{}=%s'.format(self._parent_name), [parent_val]
-        else:
-            clause, params = '{} IS NULL'.format(self._parent_name), []
 
         modified_ids = set()
         for record in self:
@@ -3445,9 +3439,16 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # outside the loop, as it needs to be refreshed after each
             # update, in case several nodes are sequentially inserted one
             # next to the other)
-            query = """ SELECT id, parent_left, parent_right FROM {}
-                        WHERE {} ORDER BY {} """
-            cr.execute(query.format(self._table, clause, self._parent_order), params)
+            query_siblings = """
+                SELECT id, parent_left, parent_right FROM {table}
+                WHERE COALESCE({parent}, 0) = COALESCE((SELECT {parent} FROM {table} WHERE id=%s), 0)
+                ORDER BY {order}
+            """.format(
+                table=self._table,
+                parent=self._parent_name,
+                order=self._parent_order,
+            )
+            cr.execute(query_siblings, [record.id])
             siblings = cr.fetchall()
 
             # determine record's position among its siblings
@@ -3465,12 +3466,18 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 pleft1 = (siblings[index - 1][2] or 0) + 1
             else:
                 # record is the first node of its parent
-                if not parent_val:
-                    pleft1 = 0          # the first node starts at 0
-                else:
-                    query = "SELECT parent_left FROM {} WHERE id=%s"
-                    cr.execute(query.format(self._table), [parent_val])
+                query_pleft = """
+                    SELECT parent_left FROM {table}
+                    WHERE id=(SELECT {parent} FROM {table} WHERE id=%s)
+                """.format(
+                    table=self._table,
+                    parent=self._parent_name,
+                )
+                cr.execute(query_pleft, [record.id])
+                if cr.rowcount:
                     pleft1 = cr.fetchone()[0] + 1
+                else:
+                    pleft1 = 0          # the first node starts at 0
 
             if pleft0 == pleft1:
                 continue
@@ -3486,7 +3493,7 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             #     before: A A A A A A B B B B B B B B B B B B
             #      after: B B B B B B B B B B B B A A A A A A
             #
-            query1 = """
+            query_update = """
                 UPDATE {}
                 SET parent_left = parent_left + (CASE
                         WHEN parent_left<%(x)s THEN 0
@@ -3501,15 +3508,15 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
                 WHERE (parent_left BETWEEN %(x)s AND %(x)s+%(a)s+%(b)s-1)
                    OR (parent_right BETWEEN %(x)s AND %(x)s+%(a)s+%(b)s-1)
                 RETURNING id
-            """
+            """.format(self._table)
             if pleft0 < pleft1:
                 # x = pleft0, a = width, x+a+b = pleft1
-                params1 = dict(x=pleft0, a=width, b=pleft1 - pleft0 - width)
+                params = dict(x=pleft0, a=width, b=pleft1 - pleft0 - width)
             else:
                 # x = pleft1, x+a = pleft0, b = width
-                params1 = dict(x=pleft1, a=pleft0 - pleft1, b=width)
+                params = dict(x=pleft1, a=pleft0 - pleft1, b=width)
 
-            cr.execute(query1.format(self._table), params1)
+            cr.execute(query_update, params)
             modified_ids.update(row[0] for row in cr.fetchall())
 
         self.browse(modified_ids).modified(['parent_left', 'parent_right'])
