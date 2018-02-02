@@ -37,8 +37,10 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def unlink(self):
-        if len(self.invoice_line_ids) == 1 and self.invoice_line_ids.sale_line_ids.is_downpayment is True:
-            self.invoice_line_ids.sale_line_ids.unlink()
+        # remove the downpayment line from SO when invoice of downpayment is deleted
+        downpayment_line = self.invoice_line_ids.mapped("sale_line_ids").filtered(lambda x: x.is_downpayment)
+        if downpayment_line:
+            downpayment_line.unlink()
         return super(AccountInvoice, self).unlink()
 
     @api.onchange('partner_id', 'company_id')
