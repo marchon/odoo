@@ -5,6 +5,7 @@
     'name': 'Timesheet when on Leaves',
     'version': '1.0',
     'category': 'Human Resources',
+    'website': '',
     'summary': 'Schedule timesheet when on leaves',
     'description': """
 Bridge module to integrate leaves in timesheet

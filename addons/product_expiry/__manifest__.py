@@ -2,6 +2,7 @@
 {
     'name' : 'Products Expiration Date',
     'category' : 'Operations',
+    'website': '',
     'depends' : ['stock'],
     'demo' : ['data/product_expiry_demo.xml'],
     'description': """

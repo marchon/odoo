@@ -4,6 +4,7 @@
 {
     'name': 'Website Sale Stock - Website Delivery Information',
     'category': 'Website',
+    'website': '',
     'description': """
     Display delivery orders (picking) infos on the website
 """,

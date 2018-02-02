@@ -18,7 +18,7 @@ This is the latest Ethiopian Odoo localization and consists of:
     - Regional State listings
     """,
     'author':'Michael Telahun Makonnen <mmakonnen@gmail.com>',
-    'website':'http://miketelahun.wordpress.com',
+    'website':'',
     'depends': [
         'account',
     ],

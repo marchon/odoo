@@ -12,7 +12,7 @@
     'category': 'Localization',
     'author': 'www.openerp-china.org',
     'maintainer': 'jeff@osbzr.com',
-    'website': 'http://openerp-china.org',
+    'website': '',
     'description': """
 
     科目类型\会计科目表模板\增值税\辅助核算类别\管理会计凭证簿\财务会计凭证簿

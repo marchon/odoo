@@ -5,6 +5,7 @@
     'name': 'France - VAT Anti-Fraud Certification (CGI 286 I-3 bis) - Sale Closings',
     'version': '1.0',
     'category': 'Localization',
+    'website': '',
     'description': """
 This module adds support for automatic sales closings with computation of both period and cumulative totals (daily, monthly, annually)
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

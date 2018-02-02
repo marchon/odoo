@@ -3,6 +3,7 @@
     'name': 'test-inherit',
     'version': '0.1',
     'category': 'Tests',
+    'website': '',
     'description': """A module to verify the inheritance.""",
     'depends': ['base'],
     'data': [

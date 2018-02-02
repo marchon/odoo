@@ -7,6 +7,7 @@
     'version': '1.0',
     'category': 'Hidden',
     'sequence': 6,
+    'website': '',
     'summary': 'Link module between Point of Sale and Sales',
     'description': """
 

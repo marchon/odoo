@@ -3,6 +3,7 @@
 {
     'name': 'Payment - Sale',
     'category': 'Sales',
+    'website': '',
     'summary': 'Link Sales and Payment',
     'version': '1.0',
     'description': """Link Sales and Payment

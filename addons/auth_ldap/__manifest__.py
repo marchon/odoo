@@ -5,6 +5,7 @@
     'depends' : ['base', 'base_setup'],
     #'description': < auto-loaded from README file
     'category' : 'Productivity',
+    'website': '',
     'data' : [
         'views/ldap_installer_views.xml',
         'security/ir.model.access.csv',

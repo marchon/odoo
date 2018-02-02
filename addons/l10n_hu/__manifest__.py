@@ -19,7 +19,7 @@ This module consists :
  - Hungarian Bank information
  """,
     'author': 'InnOpen Group Kft',
-    'website': 'http://www.innopen.eu',
+    'website': '',
     'depends': ['account'],
     'data': [
         'data/l10n_hu_chart_data.xml',

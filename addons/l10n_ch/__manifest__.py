@@ -26,6 +26,7 @@ Here is how it works:
     - Clicking the 'Send by mail' button will attach two files to your draft mail : the invoice, and the corresponding ISR.
     """,
     'version': '10.0',
+    'website': '',
     'author': 'Odoo S.A',
     'category': 'Localization',
 

@@ -4,6 +4,7 @@
 {
     'name': 'Website Mail',
     'category': 'Hidden',
+    'website': '',
     'summary': 'Website Module for Mail',
     'version': '0.1',
     'description': """

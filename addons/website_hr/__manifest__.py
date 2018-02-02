@@ -3,6 +3,7 @@
 {
     'name': 'Team Page',
     'category': 'Human Resources',
+    'website': '',
     'summary': 'Present Your Team',
     'description': """
 Our Team Page

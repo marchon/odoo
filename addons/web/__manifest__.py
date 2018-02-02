@@ -5,6 +5,7 @@
     'name': 'Web',
     'category': 'Hidden',
     'version': '1.0',
+    'website': '',
     'description':
         """
 Odoo Web core module.

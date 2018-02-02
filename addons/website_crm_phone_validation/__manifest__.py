@@ -5,6 +5,7 @@
     'summary': 'Validate and format contact form numbers',
     'sequence': '9999',
     'category': 'Hidden',
+    'website': '',
     'description': """
 Contact Number Validation on Website
 ====================================

@@ -10,6 +10,7 @@ This module allows authorized users to import a custom data module (.xml files a
 for customization purpose.
 """,
     'category': 'Productivity',
+    'website': '',
     'depends': ['web'],
     'installable': True,
     'auto_install': False,

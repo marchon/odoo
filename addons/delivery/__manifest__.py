@@ -6,6 +6,7 @@
     'name': 'Delivery Costs',
     'version': '1.0',
     'category': 'Operations',
+    'website': '',
     'description': """
 Allows you to add delivery methods in sale orders and picking.
 ==============================================================

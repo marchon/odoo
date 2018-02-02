@@ -25,7 +25,7 @@ This module manages:
     """,
     'category': 'Finance',
     'sequence': 20,
-    'website' : 'https://www.odoo.com/page/billing',
+    'website' : '',
     'depends' : ['account'],
     'demo' : [],
     'data' : [

@@ -4,6 +4,7 @@
     'name': 'test-limits',
     'version': '0.1',
     'category': 'Tests',
+    'website': '',
     'description': """A module with dummy methods.""",
     'depends': ['base'],
     'data': ['ir.model.access.csv'],

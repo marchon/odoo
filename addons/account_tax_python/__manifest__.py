@@ -13,6 +13,7 @@
         "Python Code" defines the amount of the tax.
         """,
     'category': 'Finance',
+    'website': '',
     'version': '1.0',
     'depends': ['account'],
     'data': [

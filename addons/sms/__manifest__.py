@@ -3,6 +3,7 @@
 {
     'name': 'SMS gateway',
     'category': 'Productivity',
+    'website': '',
     'summary': 'SMS Text Messaging',
     'description': """
 This module gives a framework for SMS text messaging

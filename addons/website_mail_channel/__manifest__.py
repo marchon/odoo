@@ -3,6 +3,7 @@
 {
     'name': 'Mailing List Archive',
     'category': 'Website',
+    'website': '',
     'description': """
 Odoo Mail Group : Mailing List Archives
 ==========================================

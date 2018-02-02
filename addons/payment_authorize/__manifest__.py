@@ -3,6 +3,7 @@
 {
     'name': 'Authorize.Net Payment Acquirer',
     'category': 'Finance',
+    'website': '',
     'summary': 'Payment Acquirer: Authorize.net Implementation',
     'version': '1.0',
     'description': """Authorize.Net Payment Acquirer""",

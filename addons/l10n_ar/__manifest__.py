@@ -14,7 +14,7 @@ Plan contable argentino e impuestos de acuerdo a disposiciones vigentes
 
     """,
     'author': ['Cubic ERP'],
-    'website': 'http://cubicERP.com',
+    'website': '',
     'category': 'Localization',
     'depends': ['base', 'account'],
     'data':[

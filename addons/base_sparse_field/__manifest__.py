@@ -9,6 +9,7 @@
         fields are stored in a "serialized" field in the form of a JSON mapping.
     """,
     'category': 'Hidden',
+    'website': '',
     'version': '1.0',
     'depends': ['base'],
     'data': [

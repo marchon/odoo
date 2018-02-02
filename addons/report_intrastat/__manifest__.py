@@ -4,6 +4,7 @@
 {
     'name': 'Intrastat Reporting',
     'category': 'Finance',
+    'website': '',
     'description': """
 A module that adds intrastat reports.
 =====================================

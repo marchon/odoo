@@ -3,7 +3,7 @@
     'name': 'Purchase Agreements',
     'version': '0.1',
     'category': 'Operations',
-    'website': 'https://www.odoo.com/page/purchase',
+    'website': '',
     'description': """
 This module allows you to manage your Purchase Agreements.
 ===========================================================

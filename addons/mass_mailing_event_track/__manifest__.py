@@ -4,6 +4,7 @@
 {
     'name': 'Mass mailing on track speakers',
     'category': 'Hidden',
+    'website': '',
     'version': '1.0',
     'description':
         """

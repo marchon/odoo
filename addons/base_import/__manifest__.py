@@ -23,6 +23,7 @@ Re-implement Odoo's file import system:
 """,
     'depends': ['web'],
     'category': 'Productivity',
+    'website': '',
     'installable': True,
     'auto_install': True,
     'data': [

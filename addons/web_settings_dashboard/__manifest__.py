@@ -6,6 +6,7 @@
     'version': '1.0',
     'summary': 'Quick actions for installing new app, adding users, etc.',
     'category': 'Productivity',
+    'website': '',
     'description':
     """
 Odoo dashboard

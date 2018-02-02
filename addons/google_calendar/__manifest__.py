@@ -6,7 +6,7 @@
     'version': '1.0',
     'category': 'Productivity',
     'description': "",
-    'website': 'https://www.odoo.com/page/crm',
+    'website': '',
     'depends': ['google_account', 'calendar'],
     'qweb': ['static/src/xml/*.xml'],
     'data': [

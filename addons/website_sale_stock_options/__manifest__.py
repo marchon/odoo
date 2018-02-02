@@ -4,6 +4,7 @@
 {
     'name': 'Website Sale Stock&Options',
     'category': 'Website',
+    'website': '',
     'description': """
 Odoo E-Commerce
 ==================

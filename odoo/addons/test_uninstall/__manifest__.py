@@ -4,6 +4,7 @@
     'name': 'test-uninstall',
     'version': '0.1',
     'category': 'Tests',
+    'website': '',
     'description': """A module to test the uninstall feature.""",
     'depends': ['base'],
     'data': ['ir.model.access.csv'],

@@ -9,6 +9,7 @@
     """,
 
     'category': 'Tests',
+    'website': '',
     'version': '0.1',
     'data': [
         'ir.model.access.csv',

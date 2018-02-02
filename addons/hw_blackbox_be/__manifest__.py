@@ -6,7 +6,7 @@
     'category': 'Sales',
     'sequence': 6,
     'summary': 'Hardware Driver for Belgian Fiscal Data Modules',
-    'website': 'https://www.odoo.com/page/point-of-sale',
+    'website': '',
     'description': """
 Fiscal Data Module Hardware Driver
 ==================================

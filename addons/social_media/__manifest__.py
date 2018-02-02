@@ -11,7 +11,7 @@
     """,
 
     'author': "Odoo S.A.",
-    'website': "https://wwww.odoo.com",
+    'website': "",
 
     'category': 'Productivity',
     'version': '0.1',

@@ -6,7 +6,7 @@
     'category': 'Sales',
     'sequence': 6,
     'summary': 'Hardware Driver for Weighing Scales',
-    'website': 'https://www.odoo.com/page/point-of-sale',
+    'website': '',
     'description': """
 Weighing Scale Hardware Driver
 ================================

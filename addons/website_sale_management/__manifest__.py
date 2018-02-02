@@ -3,6 +3,7 @@
     'name': 'Website Sale - Sale Management',
     'version': '1.0',
     'category': 'Website',
+    'website': '',
     'description': """
 Display orders to invoice in website dashboard.
 """,

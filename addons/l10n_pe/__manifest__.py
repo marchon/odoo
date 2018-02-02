@@ -14,7 +14,7 @@ SUNAT 2011 (PCGE 2010).
 
     """,
     'author': ['Cubic ERP'],
-    'website': 'http://cubicERP.com',
+    'website': '',
     'category': 'Localization',
     'depends': ['account'],
     'data': [

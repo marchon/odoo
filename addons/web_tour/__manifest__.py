@@ -4,6 +4,7 @@
 {
     'name': 'Tours',
     'category': 'Hidden',
+    'website': '',
     'description': """
 Odoo Web tours.
 ========================

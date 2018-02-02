@@ -3,6 +3,7 @@
     'name': "Hr Recruitment Interview Forms",
     'version': '1.0',
     'category': 'Human Resources',
+    'website': '',
     'summary': 'Surveys',
     'description': """
         Use interview forms during recruitment process.

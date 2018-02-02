@@ -8,7 +8,7 @@
     'name': 'Accounting Consistency Tests',
     'version': '1.0',
     'category': 'Finance',
-    'website': 'https://www.odoo.com/page/accounting',
+    'website': '',
     'description': """
 Asserts on accounting.
 ======================

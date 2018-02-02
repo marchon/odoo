@@ -4,6 +4,7 @@
 {
     'name': 'Gauge Widget for Kanban',
     'category': 'Hidden',
+    'website': '',
     'description': """
 This widget allows to display gauges using d3 library.
 """,

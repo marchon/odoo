@@ -3,6 +3,7 @@
 {
     'name': 'Payroll Accounting',
     'category': 'Human Resources',
+    'website': '',
     'description': """
 Generic Payroll system Integrated with Accounting.
 ==================================================

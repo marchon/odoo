@@ -4,6 +4,7 @@
 {
     'name': 'Google Users',
     'category': 'Productivity',
+    'website': '',
     'description': """
 The module adds google user in res user.
 ========================================

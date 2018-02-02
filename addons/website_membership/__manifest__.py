@@ -5,6 +5,7 @@
     'name': 'Associations: Members',
     'summary': 'Online Directory of Members',
     'category': 'Website',
+    'website': '',
     'summary': 'Publish Associations, Groups and Memberships',
     'version': '1.0',
     'description': """

@@ -4,6 +4,7 @@
 {
     'name': 'Documentation',
     'category': 'Website',
+    'website': '',
     'summary': 'Forum, Documentation',
     'description': """
 Documentation based on question and pertinent answers of Forum

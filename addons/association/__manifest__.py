@@ -6,6 +6,7 @@
     'name': 'Associations Management',
     'version': '0.1',
     'category': 'Marketing',
+    'website': '',
     'description': """
 This module is to configure modules related to an association.
 ==============================================================

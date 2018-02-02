@@ -6,6 +6,7 @@
     'version': '1.0',
     'summary': 'Add a link to edit a translation in Transifex',
     'category': 'Productivity',
+    'website': '',
     'description':
     """
 Transifex integration

@@ -4,6 +4,7 @@
 {
     'name': 'CRM Livechat',
     'category': 'Sales',
+    'website': '',
     'summary': 'Create lead from livechat conversation',
     'depends': [
         'crm',

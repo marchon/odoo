@@ -3,6 +3,7 @@
 {
     'name': 'Adyen Payment Acquirer',
     'category': 'Finance',
+    'website': '',
     'summary': 'Payment Acquirer: Adyen Implementation',
     'version': '1.0',
     'description': """Adyen Payment Acquirer""",

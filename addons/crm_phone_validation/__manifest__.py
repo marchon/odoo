@@ -6,6 +6,7 @@
     'summary': 'Validate and format phone numbers for leads and contacts',
     'sequence': '9999',
     'category': 'Hidden',
+    'website': '',
     'description': """
 CRM Phone Numbers Validation
 ============================

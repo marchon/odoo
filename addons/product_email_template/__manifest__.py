@@ -4,6 +4,7 @@
     'name': 'Product Email Template',
     'depends': ['account'],
     'category': 'Finance',
+    'website': '',
     'description': """
 Add email templates to products to be sent on invoice confirmation
 ==================================================================

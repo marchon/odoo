@@ -4,6 +4,7 @@
     'description': "Tests for read_group",
 
     'category': 'Tests',
+    'website': '',
     'version': '0.1',
 
     'depends': ['base'],

@@ -4,6 +4,7 @@
     'name': 'test-exceptions',
     'version': '0.1',
     'category': 'Tests',
+    'website': '',
     'description': """A module to generate exceptions.""",
     'depends': ['base'],
     'data': ['view.xml', 'ir.model.access.csv'],

@@ -4,6 +4,7 @@
 {
     'name': 'Odoo Web Diagram',
     'category': 'Hidden',
+    'website': '',
     'description': """
 Openerp Web Diagram view.
 =========================

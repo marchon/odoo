@@ -4,7 +4,7 @@
 {
     'name' : 'Analytic Accounting',
     'version': '1.1',
-    'website' : 'https://www.odoo.com/page/accounting',
+    'website' : '',
     'category': 'Finance',
     'depends' : ['base', 'decimal_precision', 'mail'],
     'description': """

@@ -3,6 +3,7 @@
 {
     'name': 'Automated Translations through Gengo API',
     'category': 'Productivity',
+    'website': '',
     'description': """
 Automated Translations through Gengo API
 ========================================

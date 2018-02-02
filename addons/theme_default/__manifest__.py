@@ -5,6 +5,7 @@
     'name': 'Default Theme',
     'description': 'Default website theme to showcase customization possibilities.',
     'category': 'Theme/Corporate',
+    'website': '',
     'sequence': 1000,
     'version': '1.0',
     'depends': ['website'],

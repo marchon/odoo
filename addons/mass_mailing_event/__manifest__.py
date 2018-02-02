@@ -4,6 +4,7 @@
 {
     'name': 'Mass mailing on attendees',
     'category': 'Hidden',
+    'website': '',
     'version': '1.0',
     'description':
         """

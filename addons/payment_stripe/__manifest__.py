@@ -3,6 +3,7 @@
 {
     'name': 'Stripe Payment Acquirer',
     'category': 'Hidden',
+    'website': '',
     'summary': 'Payment Acquirer: Stripe Implementation',
     'version': '1.0',
     'description': """Stripe Payment Acquirer""",

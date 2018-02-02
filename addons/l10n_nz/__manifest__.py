@@ -18,7 +18,7 @@ Also:
     - sets up New Zealand taxes.
     """,
     'author': 'Richard deMeester - Willow IT',
-    'website': 'http://www.willowit.com',
+    'website': '',
     'depends': ['account'],
     'data': [
              'data/l10n_nz_chart_data.xml',

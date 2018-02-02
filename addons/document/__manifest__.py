@@ -4,6 +4,7 @@
     'name': 'Attachments List and Document Indexation',
     'version': '2.1',
     'category': 'Productivity',
+    'website': '',
     'description': """
 Attachments list and document indexation
 ========================================

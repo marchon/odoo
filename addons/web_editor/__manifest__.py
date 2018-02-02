@@ -4,6 +4,7 @@
 {
     'name': 'Web Editor',
     'category': 'Hidden',
+    'website': '',
     'description': """
 Odoo Web Editor widget.
 ==========================

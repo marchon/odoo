@@ -4,6 +4,7 @@
 {
     'name': 'Website Gengo Translator',
     'category': 'Website',
+    'website': '',
     'description': """
 Website Gengo Translator
 ========================

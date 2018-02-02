@@ -4,6 +4,7 @@
     'name': 'Questions on Events',
     'description': 'Questions on Events',
     'category': 'Marketing',
+    'website': '',
     'version': '1.0',
     'depends': ['website_event'],
     'data': [

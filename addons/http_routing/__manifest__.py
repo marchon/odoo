@@ -6,6 +6,7 @@
     'summary': 'Web Routing',
     'sequence': '9100',
     'category': 'Hidden',
+    'website': '',
     'description': """
 Proposes advanced routing options not available in web or base to keep
 base modules simple.

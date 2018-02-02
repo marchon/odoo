@@ -6,6 +6,7 @@
     "version" : "1.0",
     "depends" : ["mrp", "stock_account"],
     "category" : "Operations",
+    'website': '',
     "description": """
 Product extension. This module adds:
   * Computes standard price from the BoM of the product with a button on the product variant based

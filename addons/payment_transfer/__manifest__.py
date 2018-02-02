@@ -3,6 +3,7 @@
 {
     'name': 'Transfer Payment Acquirer',
     'category': 'Finance',
+    'website': '',
     'summary': 'Payment Acquirer: Transfer Implementation',
     'version': '1.0',
     'description': """Transfer Payment Acquirer""",

@@ -9,6 +9,7 @@ Configure the price accuracy you need for different kinds of usage: accounting, 
 """,
     'version': '0.1',
     'depends': ['base'],
+    'website': '',
     'category' : 'Hidden',
     'data': [
         'views/decimal_precision_views.xml',

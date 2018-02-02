@@ -9,6 +9,7 @@
     'name': 'Luxembourg - Accounting',
     'version': '2.0',
     'category': 'Localization',
+    'website': '',
     'description': """
 This is the base module to manage the accounting chart for Luxembourg.
 ======================================================================

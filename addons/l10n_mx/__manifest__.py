@@ -11,6 +11,7 @@
     "version": "2.0",
     "author": "Vauxoo",
     'category': 'Localization',
+    'website': '',
     "description": """
 Minimal accounting configuration for Mexico.
 ============================================

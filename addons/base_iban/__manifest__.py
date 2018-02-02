@@ -3,6 +3,7 @@
 {
     'name': 'IBAN Bank Accounts',
     'category': 'Productivity',
+    'website': '',
     'description': """
 This module installs the base for IBAN (International Bank Account Number) bank accounts and checks for it's validity.
 ======================================================================================================================

@@ -1,6 +1,7 @@
 {
     'name': 'Generic Form Controller',
     'category': 'Hidden',
+    'website': '',
     'summary': 'Generic controller for web forms',
     'description': 'Generic controller for web forms',
     'version': '1.0',

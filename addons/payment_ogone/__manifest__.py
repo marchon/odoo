@@ -3,6 +3,7 @@
 {
     'name': 'Ogone Payment Acquirer',
     'category': 'Finance',
+    'website': '',
     'summary': 'Payment Acquirer: Ogone Implementation',
     'version': '1.0',
     'description': """Ogone Payment Acquirer""",

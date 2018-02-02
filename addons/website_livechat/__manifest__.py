@@ -2,6 +2,7 @@
 {
     'name': 'Website Live Support',
     'category': 'Website',
+    'website': '',
     'summary': 'Chat With Your Website Visitors',
     'version': '1.0',
     'description': """

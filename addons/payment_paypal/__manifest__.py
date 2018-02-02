@@ -3,6 +3,7 @@
 {
     'name': 'Paypal Payment Acquirer',
     'category': 'Finance',
+    'website': '',
     'summary': 'Payment Acquirer: Paypal Implementation',
     'version': '1.0',
     'description': """Paypal Payment Acquirer""",

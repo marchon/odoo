@@ -4,6 +4,7 @@
     'name': 'Partners Geolocation',
     'version': '2.0',
     'category': 'Sales',
+    'website': '',
     'description': """
 Partners Geolocation
 ========================

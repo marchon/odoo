@@ -1,6 +1,7 @@
 {
     'name': 'UTM Trackers',
     'category': 'Hidden',
+    'website': '',
     'description': """
 Enable UTM trackers in shared links.
 =====================================================

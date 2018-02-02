@@ -5,6 +5,7 @@
     'summary': 'Add extra fields on addresses',
     'sequence': '19',
     'category': 'Hidden',
+    'website': '',
     'complexity': 'easy',
     'description': """
 Extended Addresses Management

@@ -3,6 +3,7 @@
 {
     'name': 'Payment: Website Integration',
     'category': 'Website',
+    'website': '',
     'summary': 'Payment: Website Integration',
     'version': '1.0',
     'description': """Bridge module for acquirers and website.""",

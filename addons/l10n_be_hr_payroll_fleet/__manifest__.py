@@ -4,6 +4,7 @@
 {
     'name': 'Belgium - Payroll - Fleet',
     'category': 'Localization',
+    'website': '',
     'depends': ['l10n_be_hr_payroll', 'fleet'],
     'description': """
     """,

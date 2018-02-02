@@ -6,7 +6,7 @@
     'category': 'Sales',
     'sequence': 6,
     'summary': 'Connect the Web Client to Hardware Peripherals',
-    'website': 'https://www.odoo.com/page/point-of-sale',
+    'website': '',
     'description': """
 Hardware Poxy
 =============

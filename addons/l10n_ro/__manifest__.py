@@ -10,7 +10,7 @@
 {
     "name" : "Romania - Accounting",
     "author" : "Fekete Mihai (Forest and Biomass Services Romania)",
-    "website": "http://www.forbiom.eu",
+    "website": "",
     'category': 'Localization',
     "depends" : [
         'account',

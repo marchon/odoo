@@ -18,6 +18,6 @@
     'qweb': [
     ],
     'installable': True,
-    'website': 'https://www.odoo.com/page/point-of-sale',
+    'website': '',
     'auto_install': False,
 }

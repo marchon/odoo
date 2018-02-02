@@ -4,6 +4,7 @@
 {
     'name': 'Website Rating',
     'category': 'Hidden',
+    'website': '',
     'version': '1.0',
     'description': """
 Bridge module for rating on website stuff.

@@ -5,6 +5,7 @@
     'name': 'Resource',
     'version': '1.1',
     'category': 'Hidden',
+    'website': '',
     'description': """
 Module for resource management.
 ===============================

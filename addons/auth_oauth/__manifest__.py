@@ -4,6 +4,7 @@
 {
     'name': 'OAuth2 Authentication',
     'category': 'Productivity',
+    'website': '',
     'description': """
 Allow users to login through OAuth2 Provider.
 =============================================

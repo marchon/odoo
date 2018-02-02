@@ -4,6 +4,7 @@
 {
     'name': 'French Payroll',
     'category': 'Localization',
+    'website': '',
     'author': 'Yannick Buron (SYNERPGY)',
     'depends': ['hr_payroll', 'l10n_fr'],
     'description': """

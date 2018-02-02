@@ -8,6 +8,7 @@
         Bridge between HR and Maintenance.""",
     'depends': ['hr', 'maintenance'],
     'category': 'Human Resources',
+    'website': '',
     'summary': 'Equipments, Assets, Internal Hardware, Allocation Tracking',
     'data': [
         'security/equipment.xml',

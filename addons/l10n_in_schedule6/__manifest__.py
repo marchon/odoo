@@ -17,6 +17,7 @@ Note: The Schedule VI has been revised by MCA and is applicable for all Balance 
 Sheet, now only Vertical format has been permitted Which is Supported By OpenERP.
   """,
     'category': 'Localization',
+    'website': '',
     'depends': [
         'account_tax_python',
     ],

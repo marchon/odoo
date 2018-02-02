@@ -5,6 +5,7 @@
     'name': 'United States - Accounting',
     'version': '1.1',
     'category': 'Localization',
+    'website': '',
     'description': """
 United States - Chart of accounts.
 ==================================

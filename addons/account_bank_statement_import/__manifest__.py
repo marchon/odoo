@@ -3,6 +3,7 @@
     'name': 'Account Bank Statement Import',
     'category': 'Finance',
     'version': '1.0',
+    'website': '',
     'depends': ['account'],
     'description': """Generic Wizard to Import Bank Statements. Includes the import of files in .OFX format""",
     'data': [

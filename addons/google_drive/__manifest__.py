@@ -6,6 +6,7 @@
     'version': '0.2',
     'category': 'Productivity',
     'installable': True,
+    'website': '',
     'auto_install': False,
     'data': [
         'security/ir.model.access.csv',

@@ -3,6 +3,7 @@
     'name': 'Test API',
     'version': '1.0',
     'category': 'Tests',
+    'website': '',
     'description': """A module to test the API.""",
     'depends': ['base', 'web', 'web_tour'],
     'installable': True,

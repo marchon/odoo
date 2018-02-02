@@ -6,7 +6,7 @@
     'category': 'Sales',
     'sequence': 6,
     'summary': 'Provides support for customer facing displays',
-    'website': 'https://www.odoo.com/page/point-of-sale',
+    'website': '',
     'description': """
 Screen Driver
 =============

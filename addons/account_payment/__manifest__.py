@@ -5,6 +5,7 @@
     'category': 'Finance',
     'summary': 'Account and Payment Link and Portal',
     'version': '1.0',
+    'website': '',
     'description': """Link Account and Payment and add Portal Payment
 
 Provide tools for account-related payment as well as portal options to

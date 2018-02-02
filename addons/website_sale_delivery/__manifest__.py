@@ -2,7 +2,7 @@
     'name': 'eCommerce Delivery',
     'category': 'Website',
     'summary': 'Add Delivery Costs to Online Sales',
-    'website': 'https://www.odoo.com/page/e-commerce',
+    'website': '',
     'version': '1.0',
     'description': """
 Delivery Costs

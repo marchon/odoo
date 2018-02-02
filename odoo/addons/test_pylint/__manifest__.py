@@ -3,6 +3,7 @@
     'name': 'test-eval',
     'version': '0.1',
     'category': 'Tests',
+    'website': '',
     'description': """A module to test Odoo with pylint.""",
     'maintainer': 'Odoo SA',
     'depends': ['base'],

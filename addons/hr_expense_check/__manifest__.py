@@ -3,6 +3,7 @@
     'name': "Check Printing in Expenses",
     'summary': """Print amount in words on checks issued for expenses""",
     'category': 'Finance',
+    'website': '',
     'description': """
         Print amount in words on checks issued for expenses
     """,

@@ -5,6 +5,7 @@
     'name': 'HR Org Chart',
     'category': 'Hidden',
     'version': '1.0',
+    'website': '',
     'description':
         """
 Org Chart Widget for HR

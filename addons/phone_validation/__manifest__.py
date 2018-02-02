@@ -6,6 +6,7 @@
     'summary': 'Validate and format phone numbers',
     'sequence': '9999',
     'category': 'Hidden',
+    'website': '',
     'description': """
 Phone Numbers Validation
 ========================

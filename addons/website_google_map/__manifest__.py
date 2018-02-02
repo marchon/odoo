@@ -3,6 +3,7 @@
 {
     'name': 'Website Google Map',
     'category': 'Website',
+    'website': '',
     'summary': '',
     'version': '1.0',
     'description': """

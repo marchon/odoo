@@ -5,6 +5,7 @@
     'name': 'Automated Action Rules',
     'version': '1.0',
     'category': 'Sales',
+    'website': '',
     'description': """
 This module allows to implement action rules for any object.
 ============================================================

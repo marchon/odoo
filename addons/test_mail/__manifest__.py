@@ -4,6 +4,7 @@
     'name': 'Mail Tests',
     'version': '1.0',
     'category': 'Hidden',
+    'website': '',
     'sequence': 9876,
     'summary': 'Mail Tests: performances and tests specific to mail',
     'description': """This module contains tests related to mail. Those are

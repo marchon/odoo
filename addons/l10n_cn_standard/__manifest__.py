@@ -13,7 +13,7 @@
     'category': 'Localization',
     'author': ['lvxin@gmail.co', 'oldrev@gmail.co', 'ccdos@intoerp.com', 'jeff@osbzr.com', 'jeffery9@gmail.com'],
 
-    'website': 'http://shine-it.net',
+    'website': '',
     'description': """
 Including the following data in the Accounting Standards for Business Enterprises
 包含企业会计准则以下数据

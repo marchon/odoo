@@ -7,7 +7,7 @@
     'name': 'Austria - Accounting',
     'version': '2.0',
     'author': 'conexus.at',
-    'website': 'http://www.conexus.at',
+    'website': '',
     'category': 'Localization',
     'depends': ['account'],
     'description': """

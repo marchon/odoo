@@ -5,6 +5,7 @@
     'summary': 'Create Tasks from Leads',
     'sequence': '19',
     'category': 'Services',
+    'website': '',
     'complexity': 'easy',
     'description': """
 Lead to Tasks

@@ -4,6 +4,7 @@
 {
     'name': 'PayuMoney Payment Acquirer',
     'category': 'Finance',
+    'website': '',
     'summary': 'Payment Acquirer: PayuMoney Implementation',
     'description': """
     PayuMoney Payment Acquirer for India.

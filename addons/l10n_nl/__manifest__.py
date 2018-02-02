@@ -8,7 +8,7 @@
     'version': '3.0',
     'category': 'Localization',
     'author': 'Onestein',
-    'website': 'http://www.onestein.eu',
+    'website': '',
     'depends': [
         'account',
         'base_iban',

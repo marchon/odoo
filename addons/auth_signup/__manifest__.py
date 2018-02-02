@@ -9,6 +9,7 @@ Allow users to sign up and reset their password
     """,
     'version': '1.0',
     'category': 'Productivity',
+    'website': '',
     'auto_install': True,
     'depends': [
         'base_setup',

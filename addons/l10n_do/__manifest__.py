@@ -83,7 +83,7 @@ en Odoo):
 11010101 Caja General
     """,
     'author': 'Gustavo Valverde - iterativo | Consultores de Odoo',
-    'website': 'http://iterativo.do',
+    'website': '',
     'depends': ['account',
                 'base_iban'
                 ],

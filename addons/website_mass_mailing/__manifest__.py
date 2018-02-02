@@ -8,6 +8,7 @@ Add a snippet in the website builder to subscribe a mass_mailing list
     """,
     'version': '1.0',
     'category': 'Marketing',
+    'website': '',
     'depends': ['website', 'mass_mailing'],
     'data': [
         'security/mass_mailing_security.xml',

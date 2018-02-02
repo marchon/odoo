@@ -6,6 +6,7 @@
     'version': '1.0',
     'description': """GST Sale Report""",
     'category': 'Localization',
+    'website': '',
     'depends': [
         'l10n_in',
         'sale',
