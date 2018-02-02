@@ -51,6 +51,10 @@ class CRMLeadRule(models.Model):
     lead_ids = fields.One2many('crm.lead', 'reveal_rule_id', string="Generated Lead / Opportunity")
     leads_count = fields.Integer(compute='_compute_leads_count', string="Number of Generated Leads")
 
+    _sql_constraints = [
+        ('limit_extra_contacts', 'check(extra_contacts >= 0 and extra_contacts <= 5)', "Extra Contacts are between 0 to 5!"),
+    ]
+
     @api.multi
     def _compute_leads_count(self):
         leads = self.env['crm.lead'].read_group([
