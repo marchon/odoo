@@ -135,6 +135,12 @@ var ThreadField = AbstractField.extend({
                 display_load_more: raw_messages.length < ids.length,
                 isCreateMode: isCreateMode,
             });
+            var attIndex = _.findLastIndex(self.thread.attachments, function (attachment) {
+                return attachment.mimetype.match('(image|pdf)');
+            });
+            if (attIndex !== -1) {
+                self.trigger_up('preview_attachment', self.thread.attachments[attIndex]);
+            }
         });
     },
 
