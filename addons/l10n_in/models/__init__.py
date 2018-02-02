@@ -8,4 +8,4 @@ from . import res_country_state
 from . import res_partner
 from . import res_config_settings
 from . import account_refund_reason
-from . import product_uom
+

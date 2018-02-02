@@ -2,10 +2,10 @@
 <odoo>
 
     <record id="export_gst_return_xls_view_form" model="ir.ui.view">
-        <field name="name">Export Gst Return</field>
+        <field name="name">Export Gstr-1</field>
         <field name="model">export.gst.return.xls</field>
         <field name="arch" type="xml">
-        <form string="Export GSTR xls">
+        <form string="Export GSTR-1 xls">
             <group>
                 <group>
                     <field name="month"/>
@@ -29,13 +29,12 @@
                 <button name="export_gstr" string="Export(XLSX)" type="object" class="btn-primary"/>
                 <button string="Cancel" class="btn-default" special="cancel" />
             </footer>
-
         </form>
         </field>
     </record>
 
     <record id="export_gst_return_xls_action" model="ir.actions.act_window">
-        <field name="name">Export GSTR</field>
+        <field name="name">Export GSTR-1</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">export.gst.return.xls</field>
         <field name="view_type">form</field>
@@ -44,7 +43,7 @@
     </record>
 
     <menuitem
-        name="Export GSTR"
+        name="Export GSTR-1"
         parent="l10n_in.account_reports_in_statements_menu"
         sequence="2"
         action="export_gst_return_xls_action"

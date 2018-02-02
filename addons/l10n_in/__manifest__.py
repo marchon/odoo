@@ -27,8 +27,6 @@ Sheet, now only Vertical format has been permitted Which is Supported By Odoo.
         'data/account_fiscal_position_data.xml',
         'data/res_country_state_data.xml',
         'data/account_chart_template_data.xml',
-        'data/account_invoice_refund_reason.xml',
-        'data/product_uom_uqc.xml',
         'wizard/export_gst_return_xls_views.xml',
         'wizard/account_invoice_refund_view.xml',
         'views/product_template_view.xml',
@@ -37,7 +35,6 @@ Sheet, now only Vertical format has been permitted Which is Supported By Odoo.
         'views/res_country_state_view.xml',
         'views/res_partner_views.xml',
         'views/res_config_settings_views.xml',
-        'views/account_refund_reason_view.xml',
         'views/account_invoice_view.xml',
     ],
 }

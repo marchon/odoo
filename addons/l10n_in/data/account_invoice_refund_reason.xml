@@ -1,35 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
-    <data>
-        <!-- Account invoice refund reason -->
-        <record id="refund_reason_01" model="account.invoice.refund.reason">
-            <field name="code">01</field>
-            <field name="name">Sales Return</field>
-        </record>
-        <record id="refund_reason_02" model="account.invoice.refund.reason">
-            <field name="code">02</field>
-            <field name="name">Post Sale Discount</field>
-        </record>
-        <record id="refund_reason_03" model="account.invoice.refund.reason">
-            <field name="code">03</field>
-            <field name="name">Deficiency in services</field>
-        </record>
-        <record id="refund_reason_04" model="account.invoice.refund.reason">
-            <field name="code">04</field>
-            <field name="name">Correction in Invoice</field>
-        </record>
-        <record id="refund_reason_05" model="account.invoice.refund.reason">
-            <field name="code">05</field>
-            <field name="name">Change in POS</field>
-        </record>
-        <record id="refund_reason_06" model="account.invoice.refund.reason">
-            <field name="code">06</field>
-            <field name="name">Finalization of Provisional assessment</field>
-        </record>
-        <record id="refund_reason_07" model="account.invoice.refund.reason">
-            <field name="code">07</field>
-            <field name="name">Others</field>
-        </record>
+<odoo noupdate="1">
 
-    </data>
+    <!-- Account invoice refund reason -->
+    <record id="refund_reason_01" model="account.invoice.refund.reason">
+        <field name="code">01</field>
+        <field name="name">Sales Return</field>
+    </record>
+    <record id="refund_reason_02" model="account.invoice.refund.reason">
+        <field name="code">02</field>
+        <field name="name">Post Sale Discount</field>
+    </record>
+    <record id="refund_reason_03" model="account.invoice.refund.reason">
+        <field name="code">03</field>
+        <field name="name">Deficiency in services</field>
+    </record>
+    <record id="refund_reason_04" model="account.invoice.refund.reason">
+        <field name="code">04</field>
+        <field name="name">Correction in Invoice</field>
+    </record>
+    <record id="refund_reason_05" model="account.invoice.refund.reason">
+        <field name="code">05</field>
+        <field name="name">Change in POS</field>
+    </record>
+    <record id="refund_reason_06" model="account.invoice.refund.reason">
+        <field name="code">06</field>
+        <field name="name">Finalization of Provisional assessment</field>
+    </record>
+    <record id="refund_reason_07" model="account.invoice.refund.reason">
+        <field name="code">07</field>
+        <field name="name">Others</field>
+    </record>
+
 </odoo>

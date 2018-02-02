@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <record id="view_account_invoice_refund_l10n_in_inherit" model="ir.ui.view">
-            <field name="name">account.invoice.refund.l10n.in.inherit.form</field>
-            <field name="model">account.invoice.refund</field>
-             <field name="inherit_id" ref="account.view_account_invoice_refund"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='description']" position="after">
-                    <field name="refund_reason_id" widget="selection"/>
-                </xpath>
-            </field>
-        </record>
-    </data>
+
+    <record id="view_account_invoice_refund_inherit_l10n_in" model="ir.ui.view">
+        <field name="name">account.invoice.refund.inherit.form</field>
+        <field name="model">account.invoice.refund</field>
+         <field name="inherit_id" ref="account.view_account_invoice_refund"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='description']" position="after">
+                <field name="refund_reason_id" widget="selection"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

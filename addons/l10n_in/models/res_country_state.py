@@ -11,7 +11,5 @@ class CountryState(models.Model):
 
     @api.multi
     def tin_and_name(self):
-        if not self.ids:
-            return ''
         self.ensure_one()
         return self.l10n_in_tin and "%s-%s"%(self.l10n_in_tin, self.name) or ''
