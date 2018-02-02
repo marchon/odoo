@@ -79,7 +79,7 @@ var Policy = core.Class.extend({
 // Since 2class12 is a superset of 3class12 and 2word16, either pick it or
 // pick the other two (and get the highest score of the two). We're picking
 // the other two.
-var recommandations = [
+var recommendations = [
     new Policy({minlength: 16, minwords: 2}),
     new Policy({minlength: 12, minclasses: 3})
 ];
@@ -142,9 +142,9 @@ var PasswordField = fields.InputField.extend({
         // Compute quality factor of password & update meter
         var password = this._getValue();
         var actual = this._policy.score(password);
-        // get the highest score of all recommandations
+        // get the highest score of all recommendations
         var recommended = Math.max.apply(null,
-            recommandations.map(function (p) {
+            recommendations.map(function (p) {
                 return p.score(password);
             })
         );
