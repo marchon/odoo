@@ -1003,13 +1003,6 @@ class Tree(object):
 
 class TestParentStore(common.TransactionCase):
 
-    def setUp(self):
-        super(TestParentStore, self).setUp()
-        # pretend the pool has finished loading to avoid deferring parent_store
-        # computation
-        self.patch(self.registry, '_init', False)
-        self.registry.do_parent_store(self.cr)
-
     def assertTree(self, tree):
         self.assertLess(tree.node.parent_left, tree.node.parent_right,
                         "incorrect node %s" % tree)

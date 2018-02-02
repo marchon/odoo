@@ -249,6 +249,9 @@ class TransactionCase(BaseCase):
             self.cr.rollback()
             self.cr.close()
 
+        # pretend the pool has finished loading to avoid deferring parent_store
+        # computation
+        self.patch(self.registry, '_init', False)
         self.patch(type(self.env['res.partner']), '_get_gravatar_image', lambda *a: False)
 
     def patch(self, obj, key, val):

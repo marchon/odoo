@@ -91,19 +91,9 @@ class Registry(Mapping):
                     del cls.registries[db_name]
                     raise
 
-                # load_modules() above can replace the registry by calling
-                # indirectly new() again (when modules have to be uninstalled).
-                # Yeah, crazy.
-                init_parent = registry._init_parent
-                registry = cls.registries[db_name]
-                registry._init_parent.update(init_parent)
-
-                with closing(registry.cursor()) as cr:
-                    registry.do_parent_store(cr)
-                    cr.commit()
-
-        registry.ready = True
-        registry.registry_invalidated = bool(update_module)
+            registry._init = False
+            registry.ready = True
+            registry.registry_invalidated = bool(update_module)
 
         return registry
 
@@ -212,7 +202,7 @@ class Registry(Mapping):
         for model_name in self._init_parent:
             if model_name in env:
                 env[model_name]._parent_store_compute()
-        self._init = False
+        self._init_parent.clear()
 
     def descendants(self, model_names, *kinds):
         """ Return the models corresponding to ``model_names`` and all those

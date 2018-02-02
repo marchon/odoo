@@ -174,6 +174,10 @@ def load_module_graph(cr, graph, status=None, perform_checks=True, skip_modules=
             # validate all the views at a whole
             env['ir.ui.view']._validate_module_views(module_name)
 
+            # compute parent_left/parent_right
+            registry.do_parent_store(cr)
+            cr.commit()
+
             if has_demo:
                 # launch tests only in demo mode, allowing tests to use demo data.
                 if tools.config.options['test_enable']:
