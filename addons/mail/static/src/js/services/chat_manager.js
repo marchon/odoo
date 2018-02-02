@@ -369,7 +369,7 @@ var ChatManager =  AbstractService.extend({
                         }));
                     });
 
-                    return [suggestions];
+                    return [members];
                 });
         }
         return channel.membersDeferred;
