@@ -87,7 +87,7 @@
 
     <template id="s_product_catalog_snippet_options_inherited" inherit_id="website_sale.s_product_catalog_snippet_options">
         <xpath expr="//div[@data-js='product_catalog']/li[last()]/ul/li[hasclass('separator')]" position="before">
-            <li data-toggle-class="products_add_to_wishlist"><a href="#"><i class="fa fa-heart"></i>Add to Wishlist</a></li>
+            <li data-toggle-class="enable_add_to_wishlist"><a href="#"><i class="fa fa-heart"></i>Add to Wishlist</a></li>
         </xpath>
     </template>
 

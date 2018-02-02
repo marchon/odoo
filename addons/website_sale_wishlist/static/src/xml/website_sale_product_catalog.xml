@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <template>
 
-    <t t-extend="website_sale.product_cell">
-        <t t-jquery=".o_button_container" t-operation="append">
-            <a t-if="product.product_variant_count gte 1" href="#" title="Add to Wishlist" class="o_action_button text-center add_to_wishlist text-gamma" t-att-disabled='in_wish or None' t-att-data-product-product-id="product.product_variant_id"><i class="fa fa-heart"></i></a>
+    <t t-extend="website_sale.product_box">
+        <t t-jquery=".o-action-buttons .btn-group-justified" t-operation="append">
+            <div class="btn-group o_add_to_wishlist" role="group">
+                <a t-if="product.product_variant_count gte 1" href="#" title="Add to Wishlist" class="btn btn-default text-gamma" t-att-disabled='in_wish or None' t-att-data-product-product-id="product.product_variant_id">
+                    <i class="fa fa-heart"></i>
+                </a>
+            </div>
         </t>
     </t>
 

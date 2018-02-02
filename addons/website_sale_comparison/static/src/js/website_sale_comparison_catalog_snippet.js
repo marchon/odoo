@@ -12,7 +12,7 @@ ProductCatalog.ProductCatalog.include({
         ['/website_sale_comparison/static/src/xml/website_sale_comparison_product_catalog.xml']
     ),
     events: _.extend({}, ProductCatalog.ProductCatalog.prototype.events, {
-        'click .add_to_compare': '_onClickAddToCompare',
+        'click .o_add_to_compare .btn': '_onClickAddToCompare',
     }),
     /**
      * Append the comparison block append to body.

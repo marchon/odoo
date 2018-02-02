@@ -74,16 +74,20 @@
                     <div class="o-product-description text-info">
                         <t t-if="product.description_sale" t-raw="product.description_sale"/>
                     </div>
-                    <div class="o_button_container">
-                        <form action="/shop/cart/update" method="post" class="o-add-to-cart o-action-button">
-                            <input name="product_id" type="hidden" t-att-value="product.product_variant_id"/>
-                            <button t-if="product.product_variant_count == 1" type="submit" class="btn text-center text-primary" title="Add to cart" t-att-data-product-variant-id="product.product_variant_id">
-                                <i class="fa fa-shopping-cart"/> Add to cart
-                            </button>
-                            <button t-if="product.product_variant_count gt 1" type="submit" class="btn text-center text-primary" t-attf-href="/shop/product/#{product.id}" title="Add to cart">
-                                <i class="fa fa-shopping-cart"/> Add to cart
-                            </button>
-                        </form>
+                    <div class="o-action-buttons">
+                        <div class="btn-group btn-group-justified" role="group">
+                            <div class="btn-group o_add_to_cart" role="group">
+                                <form t-if="product.product_variant_count == 1" action="/shop/cart/update" method="post">
+                                    <input name="product_id" type="hidden" t-att-value="product.product_variant_id"/>
+                                    <button type="submit" class="btn btn-default text-primary" title="Add to cart" t-att-data-product-variant-id="product.product_variant_id">
+                                        <i class="fa fa-shopping-cart"/>
+                                    </button>
+                                </form>
+                                <a t-if="product.product_variant_count gt 1" class="btn btn-default text-primary" t-attf-href="/shop/product/#{product.id}" title="Add to cart">
+                                    <i class="fa fa-shopping-cart"/>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

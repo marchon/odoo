@@ -12,7 +12,7 @@ ProductCatalog.ProductCatalog.include({
         ['/website_sale_wishlist/static/src/xml/website_sale_product_catalog.xml']
     ),
     events: _.extend({}, ProductCatalog.ProductCatalog.prototype.events, {
-        'click .add_to_wishlist': '_onClickAddToWishlist',
+        'click .o_add_to_wishlist .btn': '_onClickAddToWishlist',
     }),
 
     /**
@@ -27,7 +27,7 @@ ProductCatalog.ProductCatalog.include({
             if (!odoo.session_info.is_website_user) {
                 $.get('/shop/wishlist', {'count': 1}).then(function (res) {
                     _.each(JSON.parse(res), function (val) {
-                        self.$el.find('.add_to_wishlist[data-product-product-id="' + val + '"]').addClass('disabled').attr('disabled', 'disabled');
+                        self.$el.find('.o_add_to_wishlist .btn[data-product-product-id="' + val + '"]').addClass('disabled').attr('disabled', 'disabled');
                         Wishlist.update_wishlist_view();
                     });
                 });

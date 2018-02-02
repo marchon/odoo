@@ -153,7 +153,6 @@ var ProductCatalog = Widget.extend({
             return _.indexOf(productIDs, product.id);
         });
     },
-
 });
 
 sAnimation.registry.productCatalog = sAnimation.Class.extend({
