@@ -120,6 +120,10 @@
                     You can mark any message as 'starred', and it shows up in this channel.
                 </p>
             </t>
+            <t t-if="options.channel_id==='channel_history'">
+                <p class="o_view_nocontent_neutral_face">No history message</p>
+                <p> Your history is clear.</p>
+            </t>
         </div>
     </div>
 

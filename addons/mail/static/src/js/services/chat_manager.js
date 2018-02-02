@@ -88,6 +88,12 @@ var ChatManager =  AbstractService.extend({
             name: _lt("Starred"),
             type: "static"
         });
+
+        this._addChannel({
+            id: "channel_history",
+            name: _lt("History"),
+            type: "static"
+        });
     },
 
     //--------------------------------------------------------------------------
@@ -526,6 +532,11 @@ var ChatManager =  AbstractService.extend({
      * @return {$.Promise}
      */
     markAllAsRead: function (channel, domain) {
+        var self = this;
+        _.each(channel.cache["[]"].messages, function(message) {
+            self._addChannelToMessage(message, 'channel_history');
+            self._addToCache(message, []);
+        });
         if ((channel.id === "channel_inbox" && this.needactionCounter) ||
             (channel && channel.needaction_counter)) {
             return this._rpc({
@@ -549,6 +560,8 @@ var ChatManager =  AbstractService.extend({
         var self = this;
         var ids = _.filter(msgIDs, function (id) {
             var message = _.findWhere(self.messages, {id: id});
+            self._addChannelToMessage(message, 'channel_history');
+            self._addToCache(message, []);
             // If too many messages, not all are fetched, and some might not be found
             return !message || message.is_needaction;
         });
@@ -1040,6 +1053,7 @@ var ChatManager =  AbstractService.extend({
         var domain =
             (channel.id === "channel_inbox") ? [['needaction', '=', true]] :
             (channel.id === "channel_starred") ? [['starred', '=', true]] :
+            (channel.id === "channel_history") ? [['notification_ids.active', '=', false]] :
                                                 [['channel_ids', 'in', channel.id]];
         var cache = this._getChannelCache(channel, options.domain);
 
@@ -1050,6 +1064,7 @@ var ChatManager =  AbstractService.extend({
             var minMessageID = cache.messages[0].id;
             domain = [['id', '<', minMessageID]].concat(domain);
         }
+        LIMIT = channel.id === "channel_history" ? 40 : LIMIT;
 
         return this._rpc({
                 model: 'mail.message',
@@ -1313,7 +1328,7 @@ var ChatManager =  AbstractService.extend({
             msg.is_starred = true;
         }
         if (msg.model === 'mail.channel') {
-            var realChannels = _.without(msg.channel_ids, 'channel_inbox', 'channel_starred');
+            var realChannels = _.without(msg.channel_ids, 'channel_inbox', 'channel_starred', 'channel_history');
             var origin = realChannels.length === 1 ? realChannels[0] : undefined;
             var channel = origin && this.getChannel(origin);
             if (channel) {
