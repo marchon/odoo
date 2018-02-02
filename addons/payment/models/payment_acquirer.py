@@ -651,7 +651,7 @@ class PaymentTransaction(models.Model):
         '''
         if any(trans.state != 'draft' or trans.pending or trans.capture for trans in self):
             raise UserError(_('Some transactions can\'t be processed because they are already pending, capture or not linked to draft payment.'))
-        self.write(pending=True)
+        self.write({'pending': True})
         self._log_payment_transaction_received()
 
     @api.multi
@@ -662,7 +662,7 @@ class PaymentTransaction(models.Model):
         '''
         if any(trans.state != 'draft' or trans.pending or trans.capture for trans in self):
             raise UserError(_('Some transactions can\'t be processed because they are already pending, capture or not linked to draft payment.'))
-        self.write(pending=True, capture=True)
+        self.write({'pending': True, 'capture': True})
         self._log_payment_transaction_received()
 
     @api.multi
@@ -673,13 +673,13 @@ class PaymentTransaction(models.Model):
         if any(trans.state != 'draft' for trans in self):
             raise UserError(_('Some transactions can\'t be processed because they are not linked to draft payment.'))
         self.post()
-        self.write(pending=True)
+        self.write({'pending': True})
 
         # Validate invoices automatically upon the transaction is posted.
         invoices = self.mapped('invoice_ids').filtered(lambda inv: inv.state == 'draft')
         invoices.action_invoice_open()
 
-        self.filtered(lambda t: t.capture).write(capture=False)
+        self.filtered(lambda t: t.capture).write({'capture': False})
         self._log_payment_transaction_received()
 
     @api.multi
@@ -690,9 +690,9 @@ class PaymentTransaction(models.Model):
         if any(trans.state != 'draft' for trans in self):
             raise UserError(_('Some transactions can\'t be cancelled because they are not linked to draft payment.'))
         self.cancel()
-        self.filtered(lambda t: not t.pending).write(pending=True)
+        self.filtered(lambda t: not t.pending).write({'pending': True})
         self._log_payment_transaction_received()
-        self.filtered(lambda t: t.capture).write(capture=False)
+        self.filtered(lambda t: t.capture).write({'capture': False})
 
     @api.multi
     def on_change_partner_id(self, partner_id):
@@ -800,7 +800,7 @@ class PaymentTransaction(models.Model):
             payment_record = self.env['account.payment'].browse(values['payment_id'])
         else:
             payment_record = self.env['account.payment'].sudo().create(
-                self._prepare_account_payment_vals(values, acquirer_id=acquirer))
+                self._prepare_account_payment_vals(values, acquirer=acquirer))
             values['payment_id'] = payment_record.id
 
         if not values.get('reference'):

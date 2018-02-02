@@ -35,7 +35,7 @@ class AccountInvoice(models.Model):
 
         :return: The transactions to display in the portal.
         '''
-        return self.sudo().mapped('payment_ids.payment_transaction_ids')\
+        return self.sudo().mapped('payment_ids.payment_transaction_id')\
             .filtered(lambda trans: trans.state == 'posted' or (trans.state == 'draft' and trans.pending))
 
     @api.multi
