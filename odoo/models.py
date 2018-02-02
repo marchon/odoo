@@ -3237,11 +3237,6 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
         self = self.browse()
         cr = self.env.cr
 
-        # set boolean fields to False by default (to make search more powerful)
-        for name, field in self._fields.items():
-            if field.type == 'boolean' and field.store:
-                vals.setdefault(name, False)
-
         # prepare the update of parent_left, parent_right
         parent_store = self._parent_store_create_prepare(vals)
 
