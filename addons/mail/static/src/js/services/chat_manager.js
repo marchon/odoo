@@ -1064,7 +1064,6 @@ var ChatManager =  AbstractService.extend({
             var minMessageID = cache.messages[0].id;
             domain = [['id', '<', minMessageID]].concat(domain);
         }
-        LIMIT = channel.id === "channel_history" ? 40 : LIMIT;
 
         return this._rpc({
                 model: 'mail.message',
@@ -1319,9 +1318,11 @@ var ChatManager =  AbstractService.extend({
         Object.defineProperties(msg, {
             is_starred: propertyDescr("channel_starred"),
             is_needaction: propertyDescr("channel_inbox"),
+            is_read: propertyDescr("channel_history"),
         });
 
-        if (_.contains(data.needaction_partner_ids, session.partner_id)) {
+        msg.is_read = data.is_read;
+        if (_.contains(data.needaction_partner_ids, session.partner_id) && !data.is_read) {
             msg.is_needaction = true;
         }
         if (_.contains(data.starred_partner_ids, session.partner_id)) {

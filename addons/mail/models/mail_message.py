@@ -148,17 +148,11 @@ class Message(models.Model):
             given, restrict to messages written in one of those channels. """
         partner_id = self.env.user.partner_id.id
         delete_mode = not self.env.user.share  # delete employee notifs, keep customer ones
-        if not domain and delete_mode:
-            query = "DELETE FROM mail_message_res_partner_needaction_rel WHERE res_partner_id IN %s"
-            args = [(partner_id,)]
-            if channel_ids:
-                query += """
-                    AND mail_message_id in
-                        (SELECT mail_message_id
-                        FROM mail_message_mail_channel_rel
-                        WHERE mail_channel_id in %s)"""
-                args += [tuple(channel_ids)]
-            query += " RETURNING mail_message_id as id"
+        if not domain and delete_mode and channel_ids:
+            query = """DELETE FROM mail_message_res_partner_needaction_rel WHERE res_partner_id IN %s
+            AND mail_message_id in (SELECT mail_message_id FROM mail_message_mail_channel_rel WHERE mail_channel_id in %s)
+            RETURNING mail_message_id as id"""
+            args = [(partner_id,), tuple(channel_ids)]
             self._cr.execute(query, args)
             self.invalidate_cache()
 
@@ -176,7 +170,7 @@ class Message(models.Model):
                 ('res_partner_id', '=', self.env.user.partner_id.id),
                 ('is_read', '=', False)])
             if delete_mode:
-                notifications.unlink()
+                notifications.write({'is_read': True, 'active': False})
             else:
                 notifications.write({'is_read': True})
             ids = unread_messages.mapped('id')
@@ -219,7 +213,7 @@ class Message(models.Model):
         current_channel_ids = record.channel_ids
 
         if delete_mode:
-            notifications.unlink()
+            notifications.write({'is_read': True, 'active': False})
         else:
             notifications.write({'is_read': True})
 
@@ -326,8 +320,11 @@ class Message(models.Model):
                                 if partner.id in partner_tree]
 
             customer_email_data = []
-            for notification in message.notification_ids.filtered(lambda notif: notif.res_partner_id.partner_share and notif.res_partner_id.active):
-                customer_email_data.append((partner_tree[notification.res_partner_id.id][0], partner_tree[notification.res_partner_id.id][1], notification.email_status))
+            for notification in message.with_context(active_test=False).notification_ids:
+                if notification.active and notification.res_partner_id.partner_share and notification.res_partner_id.active:
+                    customer_email_data.append((partner_tree[notification.res_partner_id.id][0], partner_tree[notification.res_partner_id.id][1], notification.email_status))
+                if notification.res_partner_id == self.env.user.partner_id:
+                    message_dict['is_read'] = not notification.active
 
             attachment_ids = []
             for attachment in message.attachment_ids:
