@@ -233,6 +233,12 @@ class Users(models.Model):
         ('login_key', 'UNIQUE (login)',  'You can not have two users with the same login !')
     ]
 
+    @api.multi
+    def toggle_active(self):
+        super(Users, self).toggle_active()
+        for record in self:
+            record.partner_id.active = record.active
+
     def _compute_password(self):
         for user in self:
             user.password = ''
