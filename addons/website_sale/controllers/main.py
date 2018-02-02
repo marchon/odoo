@@ -1040,7 +1040,7 @@ class WebsiteSale(http.Controller):
         product_details = []
         products = ProductTemplate.search(domain, order=order, limit=limit)
         if products:
-            products_available = True
+            is_products_available = True
             currency_id = request.website.get_current_pricelist().currency_id
             for product in products:
                 product_details.append({
@@ -1053,10 +1053,10 @@ class WebsiteSale(http.Controller):
                     'rating': product.rating_get_stats(),
                 })
         else:
-            products_available = bool(ProductTemplate.search_count([]))
+            is_products_available = bool(ProductTemplate.search_count([]))
         return {
             'products': product_details,
             'is_rating_active': request.env.ref('website_sale.product_comment').active,
-            'products_available': products_available,
+            'is_products_available': is_products_available,
             'is_sales_manager': request.env.user.has_group('sales_team.group_sale_manager')
         }

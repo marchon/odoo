@@ -16,7 +16,7 @@ options.registry.product_catalog = options.Class.extend({
      * @override
      */
     start: function () {
-        this.productCatalogData = _.pick(this.$target.data(), 'catalog_type', 'product_selection', 'product_ids', 'order', 'x', 'y', 'category_id');
+        this.productCatalogData = _.pick(this.$target.data(), 'type', 'selection', 'product_ids', 'order', 'x', 'y', 'category_id');
         this._setGrid();
         this._bindGridEvents();
         return this._super.apply(this, arguments);
@@ -32,7 +32,7 @@ options.registry.product_catalog = options.Class.extend({
      * @see this.selectClass for parameters
      */
     catalogType: function (previewMode, value) {
-        this.productCatalogData.catalog_type = value;
+        this.productCatalogData.type = value;
         this._renderProducts();
     },
     /**
@@ -56,10 +56,10 @@ options.registry.product_catalog = options.Class.extend({
      *
      * @see this.selectClass for parameters
      */
-    productSelection: function (previewMode, value, $li) {
+    selection: function (previewMode, value, $li) {
         switch (value) {
             case 'all':
-                this.productCatalogData.product_selection = value;
+                this.productCatalogData.selection = value;
                 this._renderProducts();
                 break;
             case 'category':
@@ -124,10 +124,10 @@ options.registry.product_catalog = options.Class.extend({
                 buttons: [
                     {text: _t('Save'), classes: 'btn-primary', close: true, click: function () {
                         var categoryid = dialog.$content.find('[name="selection"]').val();
-                        self.productCatalogData.category_id = categoryid;
-                        self.productCatalogData.product_selection = 'category';
-                        self.$el.find('li[data-product-selection]').removeClass('active')
-                            .filter('li[data-product-selection="category"]').addClass('active');
+                        self.productCatalogData.category_id = parseInt(categoryid);
+                        self.productCatalogData.selection = 'category';
+                        self.$el.find('li[data-selection]').removeClass('active')
+                            .filter('li[data-selection="category"]').addClass('active');
                         self._renderProducts();
                     }},
                     {text: _t('Discard'), close: true}
@@ -146,7 +146,7 @@ options.registry.product_catalog = options.Class.extend({
                     method: 'search_count',
                     args:[[['public_categ_ids', 'child_of', [parseInt($(this).val())]], ['website_published', '=', true]]]
                 }).then(function (result) {
-                    dialog.$('.alert-info').toggleClass('hidden', result !== 0);
+                    dialog.$('.alert').toggleClass('hidden', result !== 0);
                     dialog.$footer.find('.btn-primary').prop('disabled', result === 0);
                 });
             });
@@ -183,10 +183,10 @@ options.registry.product_catalog = options.Class.extend({
                 buttons: [
                     {text: _t('Save'), classes: 'btn-primary', close: true, click: function () {
                         self.productCatalogData.product_ids = dialog.$content.find('[name="selection"]').val();
-                        self.productCatalogData.product_selection = 'manual';
+                        self.productCatalogData.selection = 'manual';
                         self.productCatalogData.order = '';
-                        self.$el.find('li[data-product-selection]').removeClass('active')
-                            .filter('li[data-product-selection="manual"]').addClass('active');
+                        self.$el.find('li[data-selection]').removeClass('active')
+                            .filter('li[data-selection="manual"]').addClass('active');
                         self._renderProducts();
                     }},
                     {text: _t('Discard'), close: true}
@@ -196,7 +196,7 @@ options.registry.product_catalog = options.Class.extend({
             dialog.$content.find('[name="selection"]').select2({
                 width: '100%',
                 multiple: true,
-                maximumSelectionSize: self.productCatalogData.catalog_type === 'grid' ? self.productCatalogData.x * self.productCatalogData.y : 16,
+                maximumSelectionSize: self.productCatalogData.type === 'grid' ? self.productCatalogData.x * self.productCatalogData.y : 16,
                 data: _.map(result, function (r) {
                     return {'id': r.id, 'text': r.name};
                 }),
@@ -216,14 +216,14 @@ options.registry.product_catalog = options.Class.extend({
      */
     _setActive: function () {
         this._super.apply(this, arguments);
-        var mode = this.productCatalogData.catalog_type;
-        this.$el.find('li[data-product-selection]').removeClass('active')
-            .filter('li[data-product-selection=' + this.productCatalogData.product_selection + ']').addClass('active');
+        var mode = this.productCatalogData.type;
+        this.$el.find('li[data-selection]').removeClass('active')
+            .filter('li[data-selection=' + this.productCatalogData.selection + ']').addClass('active');
         this.$el.find('[data-grid-size]:first').parent().parent().toggle(mode === 'grid');
         this.$el.find('li[data-catalog-type]').removeClass('active')
-            .filter('li[data-catalog-type=' + this.productCatalogData.catalog_type + ']').addClass('active');
-        this.$el.find('[data-order]:first').parent().parent().toggle(this.productCatalogData.product_selection !== 'manual');
-        if (this.productCatalogData.product_selection !== 'manual') {
+            .filter('li[data-catalog-type=' + this.productCatalogData.type + ']').addClass('active');
+        this.$el.find('[data-order]:first').parent().parent().toggle(this.productCatalogData.selection !== 'manual');
+        if (this.productCatalogData.selection !== 'manual') {
             this.$el.find('li[data-order]').removeClass('active')
             .filter('li[data-order=' + this.productCatalogData.order + ']').addClass('active');
         }
@@ -268,7 +268,7 @@ options.registry.product_catalog = options.Class.extend({
             self.$target.data(key, value);
         });
         // Disable order when manual selection
-        this.$el.find('[data-order]:first').parent().parent().toggle(this.productCatalogData.product_selection !== 'manual');
+        this.$el.find('[data-order]:first').parent().parent().toggle(this.productCatalogData.selection !== 'manual');
         this.trigger_up('animation_start_demand', {
             editableMode: true,
             $target: self.$target,

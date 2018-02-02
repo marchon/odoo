@@ -52,7 +52,7 @@
 
 <!-- Snippets -->
 <template id="s_product_catalog" name="Product Catalog">
-    <section class="s_product_catalog" data-catalog_type="horizontal" data-x="3" data-y="1" data-order="name_asc" data-product_selection="all">
+    <section class="s_product_catalog" data-type="horizontal" data-x="3" data-y="1" data-order="name_asc" data-selection="all">
         <div class="container">
             <div class="o_catalog_header">
                 <h1 class="text-center">Our New Products</h1>
@@ -89,10 +89,10 @@
             </li>
             <li class="dropdown-submenu">
                 <a tabindex="-1" href="#"><i class="fa fa-hand-pointer-o"></i>Product Selection</a>
-                <ul class="dropdown-menu" name="product-selection">
-                    <li data-product-selection="all" data-no-preview="true"><a href="#">All</a></li>
-                    <li data-product-selection="category" data-no-preview="true"><a href="#">Specific Category</a></li>
-                    <li data-product-selection="manual" data-no-preview="true"><a href="#">Manually</a></li>
+                <ul class="dropdown-menu" name="selection">
+                    <li data-selection="all" data-no-preview="true"><a href="#">All</a></li>
+                    <li data-selection="category" data-no-preview="true"><a href="#">Specific Category</a></li>
+                    <li data-selection="manual" data-no-preview="true"><a href="#">Manually</a></li>
                 </ul>
             </li>
             <li class="dropdown-submenu">

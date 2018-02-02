@@ -21,14 +21,14 @@ var ProductCatalog = Widget.extend({
      */
     init: function (options) {
         this._super.apply(this, arguments);
-        this.options = _.pick(options, 'catalog_type', 'product_selection', 'product_ids', 'order', 'x', 'y', 'category_id');
+        this.options = _.pick(options, 'type', 'selection', 'product_ids', 'order', 'x', 'y', 'category_id');
         this.isMobile = config.device.isMobile;
-        this.isGrid = this.options.catalog_type === 'grid';
-        this.size = this.isGrid ? 12 / this.options.x : 12 / config.device.size_class;
-        this.carouselID = _.uniqueId('product-catalog-carousel-');
+        this.isGrid = this.options.type === 'grid';
+        this.size = this.isGrid ? 12 / this.options.x : 12 / (config.device.size_class || 1);
+        this.sliderID = _.uniqueId('product-catalog-slider-');
     },
     /**
-     * Fetch product details
+     * Fetch product catalog details
      *
      * @override
      */
@@ -43,12 +43,12 @@ var ProductCatalog = Widget.extend({
             }
         }).then(function (result) {
             self.isRatingActive = result.is_rating_active;
-            self.productsAvailable = result.products_available;
+            self.isProductsAvailable = result.is_products_available;
             self.isSalesManager = result.is_sales_manager;
-            if (self.options.product_selection === 'manual') {
-                result.products = self._reorderingProducts(result.products);
+            if (self.options.selection === 'manual') {
+                result.products = self._rearrangeManualProducts(result.products);
             }
-            self.products = self.isGrid ? result.products : self._getCarouselProducts(result.products);
+            self.products = self.isGrid ? result.products : self._getSliderProducts(result.products);
         });
         return $.when(this._super.apply(this, arguments), def);
     },
@@ -70,29 +70,27 @@ var ProductCatalog = Widget.extend({
     //--------------------------------------------------------------------------
 
     /**
-     * It is responsible to decide how many numbers of products
-     * are display in each slide of carousel.
+     * Group products to display in slider
      *
      * @private
      * @param {Object} products
-     * @returns {Array} Contains arrays of products.
+     * @returns {Array} Contains arrays of products
      */
-    _getCarouselProducts: function (products) {
-        var lists = _.groupBy(products, function (product, index) {
-            return Math.floor(index/config.device.size_class);
+    _getSliderProducts: function (products) {
+        var group = _.groupBy(products, function (product, index) {
+            return Math.floor(index / (config.device.size_class || 1));
         });
-        return _.toArray(lists);
+        return _.toArray(group);
     },
     /**
      * @private
-     * @returns {Array} domain
+     * @returns {Array[]} domain
      */
     _getDomain: function () {
-        if (this.options.product_selection === 'category') {
-            return [['public_categ_ids', 'child_of', [parseInt(this.options.category_id)]], ['website_published', '=', true]];
-        } else if (this.options.product_selection === 'manual') {
-            var productIDs = this.options.product_ids.split(',').map(Number);
-            return [['id', 'in', productIDs], ['website_published', '=', true]];
+        if (this.options.selection === 'category') {
+            return [['public_categ_ids', 'child_of', [this.options.category_id]], ['website_published', '=', true]];
+        } else if (this.options.selection === 'manual') {
+            return [['id', 'in', this._getManualProductIDs()], ['website_published', '=', true]];
         } else {
             return [['website_published', '=', true]];
         }
@@ -135,14 +133,24 @@ var ProductCatalog = Widget.extend({
         });
     },
     /**
-     * Reordering products when order Reorder option is selected
+     * Get manual selected product IDs
      *
      * @private
+     * @returns {Array}
      */
-    _reorderingProducts: function (products) {
-        var reorderIDs = this.options.product_ids.split(',').map(Number);
+    _getManualProductIDs: function () {
+        return this.options.product_ids.split(',').map(Number);
+    },
+    /**
+     * Rearrange products for manual selection
+     *
+     * @private
+     * @returns {Object} Rearranged products
+     */
+    _rearrangeManualProducts: function (products) {
+        var productIDs = this._getManualProductIDs();
         return _.sortBy(products, function (product) {
-            return _.indexOf(reorderIDs, product.id);
+            return _.indexOf(productIDs, product.id);
         });
     },
 

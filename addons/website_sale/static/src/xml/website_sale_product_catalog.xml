@@ -1,70 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <template>
+
     <t t-name="website_sale.product_catalog">
         <div class="row products_container o_not_editable" contenteditable="false">
             <t t-if="!widget.products.length">
-                <div class="form-group text-center mt16">
-                    <div class="text-center text-muted oe_product">
-                        <t t-if="!widget.productsAvailable">
-                            <h3 class="css_editable_display">No product defined.</h3>
-                            <p t-if="widget.isSalesManager">Click <i>'New'</i> in the top-right corner to create your first product.</p>
-                        </t>
-                        <t t-else="">
-                            <h3 class="css_editable_display">No products are publish yet.</h3>
-                        </t>
-                    </div>
+                <div class="text-center text-muted">
+                    <t t-if="!widget.isProductsAvailable">
+                        <h3>No product defined.</h3>
+                        <p t-if="widget.isSalesManager">Click <i>'New'</i> in the top-right corner to create your first product.</p>
+                    </t>
+                    <t t-else="">
+                        <h3>No products are publish yet.</h3>
+                    </t>
                 </div>
             </t>
             <t t-else="">
+                <t t-set="size" t-value="widget.size"/>
                 <t t-if="widget.isGrid">
                     <t t-set="products" t-value="widget.products"/>
-                    <t t-set="size" t-value="widget.size"/>
                     <t t-call="website_sale.product_box"/>
-                    <div class="col-md-12 col-sm-12 text-center mt16">
-                        <a class="btn btn-default o_btn_all_products" href="/shop/">View All Products</a>
+                    <div class="col-md-12 col-sm-12 text-center mt16 mb16">
+                        <a class="btn btn-default o-btn-all-products" href="/shop/">View All Products</a>
                     </div>
                 </t>
                 <t t-else="">
-                    <t t-call="website_sale.carousel"/>
-                    <div class="col-md-12 col-sm-12 text-center mt16">
-                        <a t-if="widget.products.length > 1 &amp;&amp; widget.isMobile" class="fa fa-chevron-left btn btn-default" t-attf-href="##{widget.carouselID}" data-slide="prev"></a>
-                        <a class="btn btn-default o_btn_all_products" href="/shop/">View All Products</a>
-                        <a t-if="widget.products.length > 1 &amp;&amp; widget.isMobile" class="fa fa-chevron-right btn btn-default" t-attf-href="##{widget.carouselID}"
+                    <div class="o-product-catalog-slider">
+                        <div t-att-id="widget.sliderID" class="carousel slide" data-ride="carousel" data-interval="false">
+                            <div class="carousel-inner">
+                                <t t-foreach="widget.products" t-as="products">
+                                    <div t-attf-class="item #{products_index ==  0 ? 'active' : ''}">
+                                        <t t-call="website_sale.product_box"/>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        <t t-if="widget.products.length > 1 and !widget.isMobile">
+                            <a class="o_control left fa fa-chevron-left btn btn-default" t-att-href="'#' + widget.sliderID" data-slide="prev"></a>
+                            <a class="o_control right fa fa-chevron-right btn btn-default" t-att-href="'#' + widget.sliderID" data-slide="next"></a>
+                        </t>
+                    </div>
+                    <div class="col-md-12 col-sm-12 text-center mt16 mb16">
+                        <a t-if="widget.products.length > 1 and widget.isMobile" class="fa fa-chevron-left btn btn-default" t-att-href="'#' + widget.sliderID" data-slide="prev"></a>
+                        <a class="btn btn-default o-btn-all-products" href="/shop/">View All Products</a>
+                        <a t-if="widget.products.length > 1 and widget.isMobile" class="fa fa-chevron-right btn btn-default" t-att-href="'#' + widget.sliderID"
                         data-slide="next"></a>
                     </div>
                 </t>
             </t>
         </div>
     </t>
-    <div t-name="website_sale.carousel" class="o-product-catalog-slider">
-        <div t-attf-id="#{widget.carouselID}" class="carousel slide mt48" data-ride="carousel" data-interval="false">
-            <div class="carousel-inner">
-                <t t-set="size" t-value="widget.size"/>
-                <t t-foreach="widget.products" t-as="products">
-                    <div t-att-class="'item ' + (products_index ==  0 ? 'active' : '')">
-                        <t t-call="website_sale.product_box"/>
-                    </div>
-                </t>
-            </div>
-        </div>
-        <t t-if="widget.products.length > 1 &amp;&amp; !widget.isMobile">
-            <a class="o_control left fa fa-chevron-left btn btn-default" t-attf-href="##{widget.carouselID}" data-slide="prev"></a>
-            <a class="o_control right fa fa-chevron-right btn btn-default" t-attf-href="##{widget.carouselID}" data-slide="next"></a>
-        </t>
-    </div>
+
+    <!-- Product Box -->
     <t t-name="website_sale.product_box">
         <t t-foreach="products" t-as="product">
-            <div t-attf-class="col-md-#{size} col-sm-#{size} o_product_item" t-att-data-product-id="product.id" t-att-data-product-name="product.name">
-                <div class="o_product_wrapper mb8">
-                    <div class="o_product_image">
+            <div t-attf-class="col-md-#{size} col-sm-#{size}" t-att-data-product-id="product.id" t-att-data-product-name="product.name">
+                <div class="o-product-item mb8">
+                    <div class="o-product-image">
                         <a t-attf-href="/shop/product/#{product.id}">
-                            <img t-attf-src="/web/image/product.template/#{product.id}/image/300x300" class="img img-responsive o_not_editable"/>
+                            <img t-attf-src="/web/image/product.template/#{product.id}/image/300x300" class="img img-responsive"/>
                         </a>
                         <span class="rating"/>
                     </div>
-                    <div class="o_product_details">
+                    <div class="o-product-details">
                         <strong>
-                            <a class="o_product_name" t-attf-href="/shop/product/#{product.id}">
+                            <a class="o-product-name" t-attf-href="/shop/product/#{product.id}">
                                 <t t-esc="product.name"/>
                             </a>
                         </strong>
@@ -72,16 +71,16 @@
                             <t t-esc="product.price" />
                         </strong>
                     </div>
-                    <div class="o_product_description text-info">
+                    <div class="o-product-description text-info">
                         <t t-if="product.description_sale" t-raw="product.description_sale"/>
                     </div>
                     <div class="o_button_container">
-                        <form action="/shop/cart/update" method="post" class="o_add_to_cart o_action_button">
+                        <form action="/shop/cart/update" method="post" class="o-add-to-cart o-action-button">
                             <input name="product_id" type="hidden" t-att-value="product.product_variant_id"/>
-                            <button type="submit" t-if="product.product_variant_count == 1" class="btn text-center text-primary" title="Add to cart" t-att-data-product-variant-id="product.product_variant_id">
+                            <button t-if="product.product_variant_count == 1" type="submit" class="btn text-center text-primary" title="Add to cart" t-att-data-product-variant-id="product.product_variant_id">
                                 <i class="fa fa-shopping-cart"/> Add to cart
                             </button>
-                            <button type="submit" t-if="product.product_variant_count gt 1" class="btn text-center text-primary" t-attf-href="/shop/product/#{product.id}" title="Add to cart">
+                            <button t-if="product.product_variant_count gt 1" type="submit" class="btn text-center text-primary" t-attf-href="/shop/product/#{product.id}" title="Add to cart">
                                 <i class="fa fa-shopping-cart"/> Add to cart
                             </button>
                         </form>
@@ -90,9 +89,11 @@
             </div>
         </t>
     </t>
+
+    <!-- Category Selection Dialog -->
     <t t-name="website_sale.categorySelection">
         <div class="form-group">
-            <div class="alert alert-info hidden">
+            <div class="alert alert-warning hidden">
                 Selected catagory has no saleable products. Please select another category!
             </div>
             <label class="col-sm-2 control-label">Select Category</label>
@@ -101,6 +102,8 @@
             </div>
         </div>
     </t>
+
+    <!-- Manual Selection Dialog -->
     <t t-name="website_sale.manualSelection">
         <div>
             <div class="form-group">
@@ -112,22 +115,4 @@
         </div>
     </t>
 
-     <t t-name="website_sale.reorderProducts">
-        <div class="modal-body">
-            <ul class="reorder_products list-unstyled ui-sortable">
-                <t t-foreach="products" t-as="submenu">
-                    <li t-att-data-menu-id="submenu.id">
-                        <div class="input-group col-sm-12">
-                            <span class="input-group-addon fa fa-bars"/>
-                            <span class="form-control">
-                                <span class="js_menu_label">
-                                    <t t-esc="submenu.name"/>
-                                </span>
-                            </span>
-                        </div>
-                    </li>
-                </t>
-            </ul>
-        </div>
-    </t>
 </template>
