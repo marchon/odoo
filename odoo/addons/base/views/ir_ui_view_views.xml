@@ -20,7 +20,6 @@
                             <field name="priority"/>
                             <field name="active"/>
                             <field name="arch_fs" invisible="1"/>
-                            <field name="arch_db" invisible="1"/>
                         </group>
                         <group groups="base.group_no_one">
                             <field name="field_parent"/>
