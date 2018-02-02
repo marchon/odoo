@@ -497,3 +497,71 @@ odoo.define('website_sale.website_sale', function (require) {
         $('.ecom-zoomable img[data-zoom]').zoomOdoo({ attach: '#o-carousel-product'});
     }
 });
+
+odoo.define('website_sale.website_sale_product_gallery', function (require) {
+    "use strict";
+
+    require('web.dom_ready');
+
+    if(!$('#o-carousel-product').length) {
+        return $.Deferred().reject("DOM doesn't contain '#o-carousel-product'");
+    }
+
+        self.$carousel = $(self.$.find("#o-carousel-product"));
+        self.$indicator = self.$carousel.find('.carousel-indicators');
+        self.$prev = self.$indicator.find('li.fa:first').css('visibility', ''); // force visibility as some databases have it hidden
+        self.$next = self.$indicator.find('li.fa:last').css('visibility', '');
+        var $lis = self.$indicator.find('li:not(.fa,.o_website_sale_product_add_img)');
+        var nbPerPage = Math.floor((self.$indicator.width() - $lis.first().outerWidth(true)) / $lis.first().outerWidth(true)) - 3; // - navigator - 1 to leave some space
+        var realNbPerPage = nbPerPage || 1;
+        var nbPages = Math.ceil($lis.length / realNbPerPage);
+
+        var index;
+        var page;
+        update();
+
+        function hide() {
+            $lis.each(function (i) {
+                $($lis[i]).toggleClass('hidden', !(i >= page*nbPerPage && i < (page+1)*nbPerPage));
+            });
+            if (self.editableMode) { // do not remove DOM in edit mode
+                return;
+            }
+            if (page <= 0) {
+                self.$prev.detach();
+            } else {
+                self.$prev.prependTo(self.$indicator);
+            }
+            if (page >= nbPages - 1) {
+                self.$next.detach();
+            } else {
+                self.$next.appendTo(self.$indicator);
+            }
+        }
+
+        function update() {
+            index = $lis.index($lis.filter('.active')) || 0;
+            page = Math.floor(index / realNbPerPage);
+            hide();
+        }
+
+        self.$carousel.on('slide.bs.carousel.gallery_slider', function () {
+            setTimeout(function () {
+                var $item = self.$carousel.find('.carousel-inner .prev, .carousel-inner .next');
+                var index = $item.index();
+                $lis.removeClass('active')
+                    .filter('[data-slide-to="'+index+'"]')
+                    .addClass('active');
+            }, 0);
+        });
+        self.$indicator.on('click', '> li.fa', function () {
+            page += ($(this).hasClass('o_indicators_left') ? -1 : 1);
+            page = Math.max(0, Math.min(nbPages - 1, page)); // should not be necessary
+            self.$carousel.carousel(page * realNbPerPage);
+            hide();
+        });
+        self.$carousel.on('slid.bs.carousel.gallery_slider', update);
+        return this._super.apply(this, arguments);
+
+
+});
