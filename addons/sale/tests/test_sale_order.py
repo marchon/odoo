@@ -257,24 +257,32 @@ class TestSaleOrder(TestCommonSaleNoChart):
 
     def test_sale_with_pricelist_formulas(self):
         """ Test sale order with a pricelist which one have compute price formula"""
-        pricelist = Form(self.env['product.pricelist'])
-        pricelist.name = 'Pricelist A'
-        pricelist.discount_policy = 'without_discount'
-        with pricelist.item_ids.new() as item:
-            item.applied_on = '2_product_category'
-            item.categ_id = self.product_category
-            item.compute_price = 'formula'
-            item.price_discount = 15
-        pricelist_a = pricelist.save()
+        product_categ = self.env.ref('product.product_category_1')
+        # set product category for consumable products and apply also on peicelist.
+        with Form(self.product_order) as product:
+            product.categ_id = product_categ
+        with Form(self.product_deliver) as product:
+            product.categ_id = product_categ
 
-        pricelist = Form(self.env['product.pricelist'])
-        pricelist.name = 'Pricelist B'
-        pricelist.discount_policy = 'with_discount'
-        with pricelist.item_ids.new() as item:
+        pricelist_form = Form(self.env['product.pricelist'])
+        pricelist_form.name = 'Pricelist A'
+        pricelist_form.discount_policy = 'without_discount'
+        with pricelist_form.item_ids.new() as item:
+            item.applied_on = '2_product_category'
+            item.categ_id = product_categ
+            item.compute_price = 'formula'
+            item.base = 'standard_price'
+            item.price_discount = 15
+        pricelist_a = pricelist_form.save()
+
+        pricelist_form = Form(self.env['product.pricelist'])
+        pricelist_form.name = 'Pricelist B'
+        pricelist_form.discount_policy = 'with_discount'
+        with pricelist_form.item_ids.new() as item:
             item.applied_on = '3_global'
             item.compute_price = 'percentage'
             item.price_discount = 10
-        pricelist_b = pricelist.save()
+        pricelist_b = pricelist_form.save()
 
         order_form = Form(self.env['sale.order'])
         order_form.partner_id = self.partner_customer_usd
@@ -283,5 +291,65 @@ class TestSaleOrder(TestCommonSaleNoChart):
             line.product_id = self.product_order
         with order_form.order_line.new() as line:
             line.product_id = self.service_deliver
+        with order_form.order_line.new() as line:
+            line.product_id = self.service_order
+        with order_form.order_line.new() as line:
+            line.product_id = self.product_deliver
 
         order = order_form.save()
+        # check pricelist of SO apply or not on order lines where SO contain pricelist which have formula that add 15% on the cost price.
+        for line in order.order_line:
+            if line.product_id.categ_id in order.pricelist_id.item_ids.mapped('categ_id'):
+                for item in order.pricelist_id.item_ids:
+                    if item.categ_id == line.product_id.categ_id:
+                        discount = item.price_discount
+                self.assertEquals(line.discount, discount, 'Pricelist of sale order should be applied.')
+                self.assertEquals(line.price_unit, line.product_id.standard_price, 'pricelist formula should be applied on cost price.')
+            else:
+                self.assertEquals(line.discount, 0.0, 'Pricelist of sale order should not be applied.')
+                self.assertEquals(line.price_unit, line.product_id.list_price, 'unit price of order line should be a sale price as pricelist not apply on products of other category.')
+
+    def test_sale_wtih_taxes(self):
+        """ Test SO with taxes """
+        # create tax with price included
+        tax_form = Form(self.env['account.tax'])
+        tax_form.name = 'Tax with price include'
+        tax_form.amount = 10
+        tax_form.price_include = True
+        tax_include = tax_form.save()
+        # create tax with price not included
+        tax_form = Form(self.env['account.tax'])
+        tax_form.name = 'Tax with no price include'
+        tax_form.amount = 10
+        tax_exclude = tax_form.save()
+
+        # Apply tax with price included on two products and tax with price not included on other two products.
+        with Form(self.product_order) as product:
+            product.taxes_id.add(tax_include)
+        with Form(self.service_deliver) as product:
+            product.taxes_id.add(tax_include)
+        with Form(self.service_order) as product:
+            product.taxes_id.add(tax_exclude)
+        with Form(self.product_deliver) as product:
+            product.taxes_id.add(tax_exclude)
+
+        # create SO
+        order_form = Form(self.env['sale.order'])
+        order_form.partner_id = self.partner_customer_usd
+        with order_form.order_line.new() as line:
+            line.product_id = self.product_order
+        with order_form.order_line.new() as line:
+            line.product_id = self.service_deliver
+        with order_form.order_line.new() as line:
+            line.product_id = self.service_order
+        with order_form.order_line.new() as line:
+            line.product_id = self.product_deliver
+
+        order = order_form.save()
+
+        for line in order.order_line:
+            if line.tax_id == tax_include:
+                self.assertEquals(line.price_subtotal, line.price_unit - line.price_tax, 'Tax should be included on product price')
+            else:
+                self.assertEquals(line.price_subtotal, line.price_unit, 'Tax should not be included on product price')
+        self.assertEquals(order.amount_total, order.amount_untaxed + order.amount_tax, 'Taxes should be applied')
