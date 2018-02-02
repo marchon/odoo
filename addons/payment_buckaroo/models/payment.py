@@ -169,15 +169,15 @@ class TxBuckaroo(models.Model):
         status_code = int(data.get('BRQ_STATUSCODE', '0'))
         if status_code in self._buckaroo_valid_tx_status:
             self.write({'acquirer_reference': data.get('BRQ_TRANSACTIONS')})
-            self._postprocess_payment_transaction('post')
+            self._set_transaction_posted()
             return True
         elif status_code in self._buckaroo_pending_tx_status:
             self.write({'acquirer_reference': data.get('BRQ_TRANSACTIONS')})
-            self._postprocess_payment_transaction('pending')
+            self._set_transaction_pending()
             return True
         elif status_code in self._buckaroo_cancel_tx_status:
             self.write({'acquirer_reference': data.get('BRQ_TRANSACTIONS')})
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
             return True
         else:
             error = 'Buckaroo: feedback error'
@@ -186,5 +186,5 @@ class TxBuckaroo(models.Model):
                 'state_message': error,
                 'acquirer_reference': data.get('BRQ_TRANSACTIONS'),
             })
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
             return False

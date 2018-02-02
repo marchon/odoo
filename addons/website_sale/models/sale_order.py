@@ -30,12 +30,10 @@ class SaleOrder(models.Model):
     is_abandoned_cart = fields.Boolean('Abandoned Cart', compute='_compute_abandoned_cart', search='_search_abandoned_cart')
     cart_recovery_email_sent = fields.Boolean('Cart recovery email already sent')
 
-    @api.depends('state', 'payment_ids.state',
-                 'payment_ids.payment_transaction_ids.acquirer_id', 'payment_ids.payment_transaction_ids.acquirer_id.provider')
+    @api.depends('state', 'payment_tx_id', 'payment_tx_id.state', 'payment_tx_id.acquirer_id.provider')
     def _compute_can_directly_mark_as_paid(self):
         for order in self:
-            order.can_directly_mark_as_paid = order.state in ['sent', 'sale'] and order.payment_tx_id\
-                and order.payment_tx_id.acquirer_id.provider in ['transfer', 'manual']
+            order.can_directly_mark_as_paid = order.state in ['sent', 'sale'] and order.payment_tx_id and order.payment_tx_id.acquirer_id.provider in ['transfer', 'manual']
 
     @api.multi
     @api.depends('website_order_line.product_uom_qty', 'website_order_line.product_id')
@@ -251,6 +249,6 @@ class SaleOrder(models.Model):
             """
         self.ensure_one()
         if self.can_directly_mark_as_paid:
-            self.payment_tx_id.post()
+            self.payment_tx_id._set_transaction_posted()
         else:
             raise ValidationError(_("The quote should be sent and the payment acquirer type should be manual or wire transfer"))

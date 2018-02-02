@@ -12,6 +12,13 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def create_payment_transaction(self, vals):
+        '''Similar to self.env['payment.transaction'].create(vals) but the values are filled with the
+        current invoices fields (e.g. the partner or the currency).
+        Furthermore, this method allows to tracking the last transaction done by the portal user.
+
+        :param vals: The values to create a new payment.transaction.
+        :return: The newly created payment.transaction record.
+        '''
         # Ensure the currencies are the same.
         currency = self[0].currency_id
         if any([inv.currency_id != currency for inv in self]):

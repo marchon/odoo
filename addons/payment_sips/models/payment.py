@@ -187,44 +187,44 @@ class TxSips(models.Model):
             _logger.info(msg)
             data.update(state_message=msg)
             self.write(data)
-            self._postprocess_payment_transaction('post')
+            self._set_transaction_posted()
             res = True
         elif status in self._sips_error_tx_status:
             msg = 'Payment for tx ref: %s, got response [%s], set as ' \
                   'error.' % (self.reference, status)
             data.update(state_message=msg)
             self.write(data)
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
         elif status in self._sips_wait_tx_status:
             msg = 'Received wait status for payment ref: %s, got response ' \
                   '[%s], set as error.' % (self.reference, status)
             data.update(state_message=msg)
             self.write(data)
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
         elif status in self._sips_refused_tx_status:
             msg = 'Received refused status for payment ref: %s, got response' \
                   ' [%s], set as error.' % (self.reference, status)
             data.update(state_message=msg)
             self.write(data)
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
         elif status in self._sips_pending_tx_status:
             msg = 'Payment ref: %s, got response [%s] set as pending.' \
                   % (self.reference, status)
             data.update(state_message=msg)
             self.write(data)
-            self._postprocess_payment_transaction('pending')
+            self._set_transaction_pending()
         elif status in self._sips_cancel_tx_status:
             msg = 'Received notification for payment ref: %s, got response ' \
                   '[%s], set as cancel.' % (self.reference, status)
             data.update(state_message=msg)
             self.write(data)
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
         else:
             msg = 'Received unrecognized status for payment ref: %s, got ' \
                   'response [%s], set as error.' % (self.reference, status)
             data.update(state_message=msg)
             self.write(data)
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
 
         _logger.info(msg)
         return res

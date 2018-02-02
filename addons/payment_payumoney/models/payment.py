@@ -130,9 +130,9 @@ class PaymentTransactionPayumoney(models.Model):
             'payment_date': fields.Datetime.now(),
         }
         result = self.write(vals)
-        self._postprocess_payment_transaction('pending')
+        self._set_transaction_pending()
         if status == 'success':
-            self._postprocess_payment_transaction('post')
+            self._set_transaction_posted()
         elif status != 'pending':
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
         return result

@@ -11,8 +11,20 @@ class AccountInvoice(models.Model):
 
     @api.depends('payment_ids')
     def _compute_payment_ids_nbr(self):
-        for so in self:
-            so.payment_ids_nbr = len(so.payment_ids)
+        '''Compute the number of payments for each invoice in self.'''
+        self.check_access_rights('write')
+        self.env['account.payment'].check_access_rights('read')
+
+        self._cr.execute('''
+            SELECT inv.id, COUNT(rel.payment_id)
+            FROM account_invoice inv
+            LEFT JOIN account_invoice_payment_rel rel ON inv.id = rel.invoice_id
+            WHERE inv.id IN %s
+            GROUP BY inv.id
+        ''', [tuple(self.ids)])
+        records = dict((r.id, r) for r in self)
+        for res in self._cr.fetchall():
+            records[res[0]].payment_ids_nbr = res[1]
 
     @api.multi
     def get_portal_transactions(self):

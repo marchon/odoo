@@ -208,18 +208,18 @@ class TxPaypal(models.Model):
                 payment_date = fields.Datetime.now()
             res.update(payment_date=payment_date)
             result = self.write(res)
-            self._postprocess_payment_transaction('post')
+            self._set_transaction_posted()
             return result
         elif status in ['Pending', 'Expired']:
             _logger.info('Received notification for Paypal payment %s: set as pending' % (self.reference))
             res.update(state_message=data.get('pending_reason', ''))
             result = self.write(res)
-            self._postprocess_payment_transaction('pending')
+            self._set_transaction_pending()
             return result
         else:
             error = 'Received unrecognized status for Paypal payment %s: %s, set as error' % (self.reference, status)
             _logger.info(error)
             res.update(state_message=error)
             result = self.write(res)
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
             return result

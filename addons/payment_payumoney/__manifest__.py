@@ -16,5 +16,5 @@
         'views/payment_payumoney_templates.xml',
         'data/payment_acquirer_data.xml',
     ],
-    'post_init_hook': '_auto_create_journal',
+    'post_init_hook': 'create_missing_journal_for_acquirers',
 }

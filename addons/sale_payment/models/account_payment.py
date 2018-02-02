@@ -12,8 +12,20 @@ class AccountPayment(models.Model):
 
     @api.depends('sale_order_ids')
     def _compute_sale_orders_ids(self):
-        for pay in self:
-            pay.sale_order_ids_nbr = len(pay.sale_order_ids)
+        '''Compute the number of payments for each invoice in self.'''
+        self.check_access_rights('write')
+        self.env['sale.order'].check_access_rights('read')
+
+        self._cr.execute('''
+            SELECT pay.id, COUNT(rel.account_payment_id)
+            FROM account_payment pay
+            LEFT JOIN account_payment_sale_order_rel rel ON pay.id = rel.sale_order_id
+            WHERE pay.id IN %s
+            GROUP BY pay.id
+        ''', [tuple(self.ids)])
+        records = dict((r.id, r) for r in self)
+        for res in self._cr.fetchall():
+            records[res[0]].sale_order_ids_nbr = res[1]
 
     @api.depends('invoice_ids')
     def _compute_sale_order_ids(self):

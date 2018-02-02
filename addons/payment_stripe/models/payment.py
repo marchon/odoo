@@ -199,7 +199,7 @@ class PaymentTransactionStripe(models.Model):
                 'payment_date': fields.datetime.now(),
                 'acquirer_reference': tree.get('id'),
             })
-            self._postprocess_payment_transaction('post')
+            self._set_transaction_posted()
             self.execute_callback()
             if self.payment_token_id:
                 self.payment_token_id.verified = True
@@ -212,7 +212,7 @@ class PaymentTransactionStripe(models.Model):
                 'acquirer_reference': tree.get('id'),
                 'payment_date': fields.datetime.now(),
             })
-            self._postprocess_payment_transaction('cancel')
+            self._set_transaction_cancel()
             return False
 
     @api.multi

@@ -4,9 +4,4 @@
 from . import models
 from . import controllers
 
-from odoo import api, SUPERUSER_ID
-
-
-def _auto_create_journal(cr, registry):
-    env = api.Environment(cr, SUPERUSER_ID, {})
-    env.ref('payment.payment_acquirer_transfer').try_loading_for_acquirer()
+from odoo.addons.payment.models.payment_acquirer import create_missing_journal_for_acquirers

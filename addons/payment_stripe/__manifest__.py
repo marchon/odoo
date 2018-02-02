@@ -14,5 +14,5 @@
     ],
     'images': ['static/description/icon.png'],
     'installable': True,
-    'post_init_hook': '_auto_create_journal',
+    'post_init_hook': 'create_missing_journal_for_acquirers',
 }

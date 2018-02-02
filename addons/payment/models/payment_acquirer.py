@@ -9,6 +9,7 @@ from odoo import api, exceptions, fields, models, _
 from odoo.tools import consteq, float_round, image_resize_images, image_resize_image, ustr
 from odoo.addons.base.models import ir_module
 from odoo.exceptions import ValidationError, UserError
+from odoo import api, SUPERUSER_ID
 
 _logger = logging.getLogger(__name__)
 
@@ -19,6 +20,11 @@ def _partner_format_address(address1=False, address2=False):
 
 def _partner_split_name(partner_name):
     return [' '.join(partner_name.split()[:-1]), ' '.join(partner_name.split()[-1:])]
+
+
+def create_missing_journal_for_acquirers(cr, registry):
+    env = api.Environment(cr, SUPERUSER_ID, {})
+    env['payment.acquirer']._create_missing_journal_for_acquirers()
 
 
 class PaymentAcquirer(models.Model):
@@ -218,15 +224,29 @@ class PaymentAcquirer(models.Model):
             'default_credit_account_id': account.id,
         }
 
-    @api.multi
-    def try_loading_for_acquirer(self):
-        '''Try to create the acquirer's journal.
+    @api.model
+    def _create_missing_journal_for_acquirers(self):
+        '''Create the journal for active acquirers.
 
-        At the loading of this module, the chart of accounts could be not installed.
-        So, the journals are created ONLY if we are not in this case.
+        We want one journal per acquirer. However, we can't create them during the 'create' of the payment.acquirer
+        because every acquirers are defined on the 'payment' module but is active only when installing their own module
+        (e.g. payment_paypal for Paypal). We can't do that in such modules because we have no guarantee the chart template
+        is already installed.
         '''
+        # Search for installed acquirers modules.
+        # If this method is triggered by a post_init_hook, the module is 'to install'.
+        # If the trigger comes from the chart template wizard, the modules are already installed.
+        acquirer_modules = self.env['ir.module.module'].search(
+            [('name', 'like', 'payment_%'), ('state', 'in', ('to install', 'installed'))])
+        acquirer_names = [a.name.split('_')[1] for a in acquirer_modules]
+
+        # Search for acquirers having no journal
+        company = self.env.user.company_id
+        acquirers = self.env['payment.acquirer'].search(
+            [('provider', 'in', acquirer_names), ('journal_id', '=', False), ('company_id', '=', company.id)])
+
         journals = self.env['account.journal']
-        for acquirer in self.filtered(lambda l: not l.journal_id and l.company_id.chart_template_id):
+        for acquirer in acquirers.filtered(lambda l: not l.journal_id and l.company_id.chart_template_id):
             acquirer.journal_id = self.env['account.journal'].create(acquirer._prepare_account_journal_vals())
             journals += acquirer.journal_id
         return journals
@@ -507,6 +527,10 @@ class PaymentTransaction(models.Model):
     def _get_default_partner_country_id(self):
         return self.env['res.company']._company_default_get('payment.transaction').country_id.id
 
+    # Field making the one2one relation with the account.payment. Mirror of the payment_transaction_id field.
+    payment_id = fields.Many2one('account.payment', string='Payment',
+                                 required=True, readonly=True, ondelete='cascade')
+
     acquirer_id = fields.Many2one('payment.acquirer', 'Acquirer', required=True)
     provider = fields.Selection(string='Provider', related='acquirer_id.provider')
     type = fields.Selection([
@@ -525,7 +549,7 @@ class PaymentTransaction(models.Model):
         'Fees', currency_field='currency_id', track_visibility='always',
         help='Fees amount; set by the system because depends on the acquirer')
     reference = fields.Char('Reference', required=True, default='Draft Transaction', readonly=True,
-                            help='Internal reference of the TX')
+                            help='Internal reference of the transaction.')
     acquirer_reference = fields.Char('Acquirer Reference', help='Reference of the TX as stored in the acquirer database')
     # duplicate partner / transaction data to store the values at transaction time
     partner_name = fields.Char('Partner Name')
@@ -544,7 +568,6 @@ class PaymentTransaction(models.Model):
     callback_hash = fields.Char('Callback Hash', groups="base.group_system")
 
     payment_token_id = fields.Many2one('payment.token', 'Payment Token', domain="[('acquirer_id', '=', acquirer_id)]")
-    payment_id = fields.Many2one('account.payment', string='Payment', required=True, readonly=True, ondelete='cascade')
 
     token_implemented = fields.Boolean(related='acquirer_id.token_implemented')
     authorize_implemented = fields.Boolean(related='acquirer_id.authorize_implemented')
@@ -568,7 +591,12 @@ class PaymentTransaction(models.Model):
             self.payment_token_id = False
 
     @api.multi
-    def _preprocess_payment_transaction(self):
+    def _get_oe_log_html(self):
+        self.ensure_one()
+        return '<a href=# data-oe-model=payment.transaction data-oe-id=%d>%s</a>' % (self.id, self.reference)
+
+    @api.multi
+    def _log_payment_transaction_sent(self):
         '''Log the message saying the transaction has been sent to the remote server to be
         processed by the acquirer.
         '''
@@ -583,92 +611,88 @@ class PaymentTransaction(models.Model):
             trans.payment_id.message_post(body=post_message)
 
     @api.multi
-    def _postprocess_payment_transaction(self, state):
-        '''Update the transaction state/pending/capture and log these changes in the chatter.
-        This method should be called by the acquirer with a state passed in parameters depending of the response.
+    def _log_payment_transaction_received(self):
+        '''Log the message saying a response has been received from the remote server and some
+        additional informations like the old/new state, the reference of the payment... etc.
 
-        :param state: The new state of the transaction in:
-            * pending:  Need further action from the user.
-            * capture:  The amount can be captured manually.
-            * post:     Payment posted, transaction is done.
-            * cancel:   Payment cancelled, transaction voided or an error happened.
+        :param old_state:       The state of the transaction before the response.
+        :param add_messages:    Optional additional messages to log like the capture status.
         '''
-        message = 'Transaction %s updated by the acquirer %s:'
+        message = _('Transaction %s updated by the acquirer %s:')
+
         for trans in self:
             values = ['%s: %s' % (_('Date'), fields.datetime.now())]
-            old_state = trans.state
-            old_capture = trans.capture
 
             if trans.state_message:
-                values = ['%s: %s' % (_('Response Message'), trans.state_message)] + values
+                values = ['%s: %s' % (_('Response'), trans.state_message)] + values
 
             if trans.acquirer_reference:
                 values = ['%s: %s' % (_('Reference'), trans.acquirer_reference)] + values
 
-            if state == 'pending':
-                self.mark_as_pending()
-            elif state == 'capture':
-                self.mark_to_capture()
+            if trans.state == 'draft' and trans.capture:
                 values = ['%s: %s' % (_('Capture'), _('Allowed'))] + values
-            elif state == 'post':
-                self.mark_as_pending()
-                self.post()
-                if old_capture:
-                    values = ['%s: %s' % (_('Capture'), _('Success'))] + values
-            elif state == 'cancel':
-                self.mark_as_pending()
-                self.cancel()
-                if old_capture:
+            elif trans.state == 'posted' and trans.capture:
+                values = ['%s: %s' % (_('Capture'), _('Success'))] + values
+            elif trans.state == 'cancelled' and trans.capture:
                     values = ['%s: %s' % (_('Capture'), _('Voided'))] + values
-            else:
-                return
-            if trans.state != old_state:
-                values = ['%s -> %s' % (old_state, trans.state)] + values
+
+            if trans.state != 'draft':
+                values = ['%s -> %s' % (_('Draft'), trans.state)] + values
 
             post_message = message % (trans._get_oe_log_html(), trans.acquirer_id.name)
             post_message += '<ul><li>' + '</li><li>'.join(values) + '</li></ul>'
             trans.payment_id.message_post(body=post_message)
 
+    @api.multi
+    def _set_transaction_pending(self):
+        '''Move the transaction to the pending state(e.g. Wire Transfer).
+        Then, the account.payment must be processed manually by the user.
+        Only transaction that are not already processed can be set to the pending state.
+        '''
+        if any(trans.state != 'draft' or trans.pending or trans.capture for trans in self):
+            raise UserError(_('Some transactions can\'t be processed because they are already pending, capture or not linked to draft payment.'))
+        self.write(pending=True)
+        self._log_payment_transaction_received()
 
     @api.multi
-    def mark_to_capture(self):
-        # The 'capture' boolean means the transaction is allowed to capture the amount.
-        # If the 'capture' boolean is True, it means the transaction has been processed by the remote server and then,
-        # the 'pending' boolean must be True.
-        # If the acquirer doesn't allow the manual capture, the remaining transaction is just 'pending'.
-        self.mark_as_pending()
-        self.filtered(lambda t: not t.capture).write({'capture': True})
+    def _set_transaction_capture(self):
+        '''Move the transaction to the capture state(e.g. Authorize).
+        Then, the account.payment amount must be captured manually by the user using the 'Capture' button on the form view.
+        Only transaction that are not already processed can be set to the capture state.
+        '''
+        if any(trans.state != 'draft' or trans.pending or trans.capture for trans in self):
+            raise UserError(_('Some transactions can\'t be processed because they are already pending, capture or not linked to draft payment.'))
+        self.write(pending=True, capture=True)
+        self._log_payment_transaction_received()
 
     @api.multi
-    def mark_as_pending(self):
-        # The 'pending' boolean means the transaction has been processed.
-        self.filtered(lambda t: not t.pending).write({'pending': True})
+    def _set_transaction_posted(self):
+        '''Move the transaction's payment to the posted state(e.g. Paypal).
+        Only draft transactions can be posted (including the transactions to capture).
+        '''
+        if any(trans.state != 'draft' for trans in self):
+            raise UserError(_('Some transactions can\'t be processed because they are not linked to draft payment.'))
+        self.post()
+        self.write(pending=True)
+
+        # Validate invoices automatically upon the transaction is posted.
+        invoices = self.mapped('invoice_ids').filtered(lambda inv: inv.state == 'draft')
+        invoices.action_invoice_open()
+
+        self.filtered(lambda t: t.capture).write(capture=False)
+        self._log_payment_transaction_received()
 
     @api.multi
-    def _get_oe_log_html(self):
-        self.ensure_one()
-        return '<a href=# data-oe-model=payment.transaction data-oe-id=%d>%s</a>' % (self.id, self.reference)
-
-    @api.multi
-    def post(self):
-        '''Invoices are validated automatically upon the transaction is posted.'''
-        for trans in self:
-            invoices = trans.invoice_ids.filtered(lambda inv: inv.state == 'draft')
-            invoices.action_invoice_open()
-            if trans.state != 'draft':
-                continue
-            trans.payment_id.post()
-
-            if trans.capture:
-                trans.capture = False
-
-    @api.multi
-    def cancel(self):
-        for trans in self:
-            trans.payment_id.cancel()
-
-            if trans.capture:
-                trans.capture = False
+    def _set_transaction_cancel(self):
+        '''Move the transaction's payment to the cancelled state(e.g. Paypal).
+        Only draft transactions can be cancelled (including the transactions to capture).
+        '''
+        if any(trans.state != 'draft' for trans in self):
+            raise UserError(_('Some transactions can\'t be cancelled because they are not linked to draft payment.'))
+        self.cancel()
+        self.filtered(lambda t: not t.pending).write(pending=True)
+        self._log_payment_transaction_received()
+        self.filtered(lambda t: t.capture).write(capture=False)
 
     @api.multi
     def on_change_partner_id(self, partner_id):
@@ -693,14 +717,17 @@ class PaymentTransaction(models.Model):
             raise exceptions.ValidationError(_('The %s payment acquirers are not allowed to manual capture mode!' % failed_tx.mapped('acquirer_id.name')))
 
     @api.model
-    def _prepare_account_payment_vals(self, vals, acquirer_id=None):
+    def _prepare_account_payment_vals(self, vals, acquirer=None):
         '''Prepare values to create the account.payment record.
         :param vals: vals used during the create.
-        :param acquirer_id: The payment.acquirer record to browsing twice.
+        :param acquirer: The payment.acquirer record to browsing twice.
         :return: a dictionary of values.
         '''
-        if not acquirer_id:
-            acquirer_id = self.env['payment.acquirer'].browse(acquirer_id)
+        if not acquirer:
+            acquirer = self.env['payment.acquirer'].browse(vals['acquirer_id'])
+
+        if not acquirer.journal_id:
+            raise UserError(_('A journal must be specified of the acquirer %s.' % acquirer.name))
 
         amount = vals.get('amount')
         payment_type = 'inbound' if amount > 0 else 'outbound'
@@ -711,8 +738,8 @@ class PaymentTransaction(models.Model):
             'partner_type': 'customer',
             'invoice_ids': invoice_ids,
             'currency_id': vals.get('currency_id'),
-            'journal_id': acquirer_id.journal_id and acquirer_id.journal_id.id or self.env['account.journal'].search([('type', '=', 'bank')], limit=1).id, # TODO: TO CLEAR
-            'company_id': acquirer_id.company_id.id,
+            'journal_id': acquirer.journal_id.id,
+            'company_id': acquirer.company_id.id,
             'payment_method_id': self.env.ref('payment.account_payment_method_electronic_in').id,
             'payment_type': payment_type,
             'state': 'draft',
@@ -732,7 +759,7 @@ class PaymentTransaction(models.Model):
             many_list = self.resolve_2many_commands(many_field, vals[many_field], fields=[ref_field])
             return ','.join(dic[ref_field] for dic in many_list)
 
-        separator = '#'
+        separator = '-'
         reference = None
         if vals and vals.get('invoice_ids'):
             reference = as_reference('invoice_ids', 'number')
@@ -768,9 +795,13 @@ class PaymentTransaction(models.Model):
         if hasattr(acquirer, custom_method_name):
             values.update(getattr(self, custom_method_name)(values))
 
-        if not values.get('payment_id'):
-            values['payment_id'] = self.env['account.payment'].sudo().create(
-                self._prepare_account_payment_vals(values, acquirer_id=acquirer)).id
+        payment_record = None
+        if values.get('payment_id'):
+            payment_record = self.env['account.payment'].browse(values['payment_id'])
+        else:
+            payment_record = self.env['account.payment'].sudo().create(
+                self._prepare_account_payment_vals(values, acquirer_id=acquirer))
+            values['payment_id'] = payment_record.id
 
         if not values.get('reference'):
             values['reference'] = self._compute_reference(values)
@@ -782,6 +813,9 @@ class PaymentTransaction(models.Model):
 
         # Default value of reference is
         tx = super(PaymentTransaction, self).create(values)
+
+        # Assign the id to the account.payment to make a one2one relation.
+        payment_record.payment_transaction_id = tx.id
 
         # Generate callback hash if it is configured on the tx; avoid generating unnecessary stuff
         # (limited sudo env for checking callback presence, must work for manual transactions too)
@@ -859,7 +893,7 @@ class PaymentTransaction(models.Model):
 
     @api.multi
     def s2s_do_transaction(self, **kwargs):
-        self._preprocess_payment_transaction()
+        self._log_payment_transaction_sent()
         custom_method_name = '%s_s2s_do_transaction' % self.acquirer_id.provider
         if hasattr(self, custom_method_name):
             return getattr(self, custom_method_name)(**kwargs)
