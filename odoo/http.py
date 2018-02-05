@@ -1046,7 +1046,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         self.db = db
         self.uid = uid
         self.login = login
-        self.session_token = uid and security.compute_session_token(db, self.sid, uid)
+        self.session_token = uid and security.compute_session_token(self)
         request.uid = uid
         request.disable_db = False
 
@@ -1062,7 +1062,7 @@ class OpenERPSession(werkzeug.contrib.sessions.Session):
         if not self.db or not self.uid:
             raise SessionExpiredException("Session expired")
         # here we check if the session is still valid
-        if not security.check_session(self.db, self.sid, self.uid, self.session_token):
+        if not security.check_session(self):
             raise SessionExpiredException("Session expired")
 
     def logout(self, keep_db=False):
