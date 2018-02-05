@@ -66,7 +66,7 @@ class TestMultistepManufacturing(TestMrpCommon):
         # Confirm sale order.
         self.sale_order.action_confirm()
         # Check all procurements for created sale order
-        mo_procurement = self.MrpProduction.search([('procurement_group_id', '=', self.sale_order.procurement_group_id.id)])
+        mo_procurement = self.MrpProduction.search([('origin', '=', self.sale_order.name)])
         # Get manufactured procurement
         self.assertEqual(mo_procurement.location_src_id.id, self.warehouse.lot_stock_id.id, "Source loction does not match.")
         self.assertEqual(mo_procurement.location_dest_id.id, self.warehouse.lot_stock_id.id, "Destination location does not match.")
@@ -77,7 +77,7 @@ class TestMultistepManufacturing(TestMrpCommon):
         self.warehouse.manufacture_steps = 'pick_manu'
         self.sale_order.action_confirm()
         # Get manufactured procurement
-        mo_procurement = self.MrpProduction.search([('procurement_group_id', '=', self.sale_order.procurement_group_id.id)])
+        mo_procurement = self.MrpProduction.search([('origin', '=', self.sale_order.name)])
         self.assertEqual(mo_procurement.location_src_id.id, self.warehouse.wh_input_manu_loc_id.id, "Source loction does not match.")
         self.assertEqual(mo_procurement.location_dest_id.id, self.warehouse.lot_stock_id.id, "Destination location does not match.")
 
