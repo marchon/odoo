@@ -14,33 +14,41 @@ from odoo.addons.web.controllers.main import content_disposition
 
 class ExportXLS(http.Controller):
 
-    def export_xls(self, first_row_data, second_row_data, third_row_data, gstr_type, datas):
+    @http.route(['/xls/download/<string:month>/<string:year>/<float:advance_rate>'], type='http', auth='public')
+    def download_xls_report_all(self, month=None, year=None, advance_rate=0, **post ):
         workbook = xlwt.Workbook()
-        worksheet = workbook.add_sheet(gstr_type)
-        self.style_header = xlwt.easyxf('pattern: pattern solid, fore_colour light_blue; font: colour white, height 250; align: horiz center')
-        worksheet.write(0, 0, _('Summary for %s') % str(gstr_type).upper(), self.style_header)
-        for colm_index, value in enumerate(first_row_data):
-            worksheet.write(1, colm_index, value, self.style_header)
-            worksheet.col(colm_index).width = 8000
+        fp = io.BytesIO()
+        for gstr_type in  ['b2cl','b2cs','cdnr','cdnur', 'exp', 'at','atadj','exemp', 'hsn', 'docs']:
+            gstr_type_data = self.get_xls_report_data(month,year,gstr_type,advance_rate)
+            worksheet = workbook.add_sheet(gstr_type)
+            self.style_header = xlwt.easyxf('pattern: pattern solid, fore_colour light_blue; font: colour white, height 250; align: horiz center')
+            worksheet.write(0, 0, _('Summary for %s') % str(gstr_type).upper(), self.style_header)
+            for colm_index, value in enumerate(gstr_type_data['first_row_data']):
+                worksheet.write(1, colm_index, value, self.style_header)
+                worksheet.col(colm_index).width = 8000
 
-        for colm_index,  value in enumerate(second_row_data):
-            worksheet.write(2, colm_index, value)
+            for colm_index,  value in enumerate(gstr_type_data['second_row_data']):
+                worksheet.write(2, colm_index, value)
 
-        for colm_index,  value in enumerate(third_row_data):
-            style_header = xlwt.easyxf('pattern: pattern solid, fore_colour tan; font: height 250; align: horiz center')
-            worksheet.write(3, colm_index, value, style_header)
-            worksheet.col(colm_index).width = 8000
+            for colm_index,  value in enumerate(gstr_type_data['third_row_data']):
+                style_header = xlwt.easyxf('pattern: pattern solid, fore_colour tan; font: height 250; align: horiz center')
+                worksheet.write(3, colm_index, value, style_header)
+                worksheet.col(colm_index).width = 8000
 
-        for row_index, data in enumerate(datas):
-            for colm_index, colm_data  in enumerate(data):
-                worksheet.write(4+row_index, colm_index, colm_data)
-
+            for row_index, data in enumerate(gstr_type_data['data']):
+                for colm_index, colm_data  in enumerate(data):
+                    worksheet.write(4+row_index, colm_index, colm_data)
         fp = io.BytesIO()
         workbook.save(fp)
         fp.seek(0)
         data = fp.read()
         fp.close()
-        return data
+        return http.request.make_response(data,
+            headers=[('Content-Disposition',
+                            content_disposition("GSTR1-ALL.xls")),
+                     ('Content-Type', 'application/vnd.ms-excel')],
+            cookies={'fileToken': bytearray()})
+
 
     def change_date_to_other_format(self, str_date):
         return str_date and fields.Date.from_string(str_date).strftime('%d-%b-%Y') or ''
@@ -54,12 +62,10 @@ class ExportXLS(http.Controller):
             column_string = chr(65 + remainder) + column_string
         if function_type == 'sum':
             return xlwt.Formula("SUM({0}5:{0}19999)".format(column_string))
-            return k
         if function_type == 'count':
             return xlwt.Formula('SUMPRODUCT(({0}5:{0}19999<>"")/COUNTIF({0}5:{0}19999,{0}5:{0}19999&""))'.format(column_string))
 
-    @http.route(['/xls/download/<string:month>/<string:year>/<string:gstr_type>/<float:advance_rate>'], type='http', auth='public')
-    def download_xls_report(self, month=None, year=None, gstr_type=None, advance_rate=0,**post):
+    def get_xls_report_data(self, month=None, year=None, gstr_type=None, advance_rate=0,**post):
         invoice_data = []
         _, num_days = calendar.monthrange(int(year), int(month))
         first_day = datetime.date(int(year), int(month), 1)
@@ -225,8 +231,8 @@ class ExportXLS(http.Controller):
             second_row_data = ['', '', '', self.xls_count_and_sum('sum',4), self.xls_count_and_sum('sum',5)]
             third_row_data = ['Nature  of Document', 'Sr. No. From', 'Sr. No. To', 'Total Number', 'Cancelled']
 
-        return http.request.make_response(self.export_xls(first_row_data, second_row_data, third_row_data, gstr_type, invoice_data),
-            headers=[('Content-Disposition',
-                            content_disposition("GSTR-%s.xls"%(gstr_type.upper()))),
-                     ('Content-Type', 'application/vnd.ms-excel')],
-            cookies={'fileToken': bytearray()})
+        return {'first_row_data':first_row_data,
+                'second_row_data':second_row_data,
+                'third_row_data':third_row_data,
+                'gstr_type':gstr_type,
+                'data':invoice_data}

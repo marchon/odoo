@@ -28,13 +28,13 @@ class ExportGstReturnXls(models.TransientModel):
                                        ('b2cl', 'B2C Large'),
                                        ('b2cs', 'B2C Small'),
                                        ('cdnr', 'Credit/Debit Note'),
-                                       ('cdnur', 'Credit/Debit Note for unregistered Person'), 
+                                       ('cdnur', 'Credit/Debit Note for unregistered Person'),
                                        ('exp', 'Export'),
                                        ('at', 'Tax Liability on advances'),
                                        ('atadj', 'Advance adjustments'),
-                                       ('exemp', 'Nil Rated, Exempted and Non GST supplies'), 
+                                       ('exemp', 'Nil Rated, Exempted and Non GST supplies'),
                                        ('hsn', 'HSN Summary'),
-                                       ('docs', 'List of Documents issued') ], string="Export Summary For", default="b2b")  
+                                       ('docs', 'List of Documents issued') ], string="Export Summary For", default="b2b")
     advance_rate = fields.Float("Advances Tax Rate", default=18)
 
     @api.multi
@@ -42,5 +42,5 @@ class ExportGstReturnXls(models.TransientModel):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_url',
-            'url': '/xls/download/%s/%s/%s/%s' % (self.month, self.year, self.export_summary, self.advance_rate)
+            'url': '/xls/download/%s/%s/%s' % (self.month, self.year, self.advance_rate)
         }

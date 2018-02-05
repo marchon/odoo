@@ -16,13 +16,12 @@
             </group>
             <group>
                 <group>
-                    <field name="export_summary"/>
-                </group>
-                <group>
-                    <label for="advance_rate" attrs="{'invisible':[('export_summary','!=','at')]}"/>
-                    <div attrs="{'invisible':[('export_summary','!=','at')]}">
+                    <label for="advance_rate"/>
+                    <div>
                         <field name="advance_rate" class="oe_inline"/> %
                     </div>
+                </group>
+                <group>
                 </group>
             </group>
             <footer>
