@@ -303,7 +303,7 @@ class date(datetimelib.date):
             except ValueError:
                 pass
 
-        return cls.from_date(du_parser().parse(string))
+        return cls.from_date(du_parser().parse(string, yearfirst=True))
 
     def get_dateformat(self):
         """ Get date format """
@@ -526,7 +526,7 @@ class datetime(datetimelib.datetime, date):
             except ValueError:
                 pass
 
-        return du_parser().parse(string, default=cls.now())
+        return du_parser().parse(string, default=cls.now(), yearfirst=True)
 
     def get_end_month(self):
         """ Just before the end of month """
@@ -691,9 +691,12 @@ class DatetimeContext(object):
         return datetime.from_string(string, dateformat)
 
     @classmethod
-    def now(cls):
+    def now(cls, with_microsecond=False):
         """ Get current datetime """
-        return datetime.now()
+        result = datetime.now()
+        if not with_microsecond:
+            return result.replace(microsecond=False)
+        return result
 
     @classmethod
     def today(cls):
@@ -701,9 +704,12 @@ class DatetimeContext(object):
         return datetime.today()
 
     @classmethod
-    def utcnow(cls):
+    def utcnow(cls, with_microsecond=False):
         """ Get current datetime in UTC """
-        return datetime.utcnow()
+        result = datetime.utcnow()
+        if not with_microsecond:
+            return result.replace(microsecond=False)
+        return result
 
 date_types = (datetimelib.date, date, datetimelib.datetime, datetime)
 datetime_types = (datetimelib.datetime, datetime)

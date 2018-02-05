@@ -471,8 +471,8 @@ class TestFields(common.TransactionCase):
         record.date = '2012-05-01'
         self.assertEqual(record.date, '2012-05-01')
 
-        with self.assertRaises(ValueError):
-            record.date = '12-5-1'
+        record.date = '12-5-2'
+        self.assertEqual(record.date, '2012-05-02')
 
         record = self.env['test_new_api.testdatetime'].create({})
 
