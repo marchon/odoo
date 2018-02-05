@@ -98,10 +98,12 @@ class PaypalController(http.Controller):
             self.paypal_validate_data(**post)
         except ValidationError:
             _logger.exception('Unable to validate the Paypal payment')
-        return ''
+        return_url = self._get_return_url(**post)
+        return werkzeug.utils.redirect(return_url)
 
     @http.route('/payment/paypal/dpn', type='http', auth="none", methods=['POST', 'GET'], csrf=False)
     def paypal_dpn(self, **post):
+        return werkzeug.utils.redirect("/shop/confirmation")
         """ Paypal DPN """
         _logger.info('Beginning Paypal DPN form_feedback with post data %s', pprint.pformat(post))  # debug
         return_url = self._get_return_url(**post)
