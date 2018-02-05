@@ -27,7 +27,7 @@
         <field name="view_type">form</field>
         <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
         <field eval="False" name="view_id"/>
-        <field name="domain">[('type','in',('in_invoice', 'in_refund')),('purchase_id','=',active_id)]</field>
+        <field name="domain">[('type','in',('in_invoice', 'in_refund')),('purchase_ids','=',active_id)]</field>
         <field name="context">{'default_type': 'in_invoice', 'type': 'in_invoice', 'journal_type': 'purchase', 'default_purchase_id': active_id}</field>
         <field name="search_view_id" ref="account.view_account_invoice_filter"/>
         <field name="help" type="html">
@@ -58,7 +58,7 @@
         <field name="inherit_id" ref="account.invoice_supplier_form"/>
         <field name="arch" type="xml">
             <field name="reference" position="after" >
-                 <field name="purchase_id" widget="many2many_tags" attrs="{'readonly': [('state','not in',['draft'])], 'invisible': [('state', '=', 'purchase')]}" class="oe_edit_only"
+                 <field name="purchase_ids" widget="many2many_tags" attrs="{'readonly': [('state','not in',['draft'])], 'invisible': [('state', '=', 'purchase')]}" class="oe_edit_only"
                     options="{'no_create': True}" context="{'show_total_amount': True}"/>
             </field>
             <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='company_id']" position="after">

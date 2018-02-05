@@ -8,7 +8,7 @@ from odoo.tools.float_utils import float_compare
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
-    purchase_id = fields.Many2many('purchase.order', 'purchase_account_invoice_default_rel',
+    purchase_ids = fields.Many2many('purchase.order', 'purchase_account_invoice_default_rel',
         'account_invoice_id', 'purchase_order_id',
         string='Add Purchase Order',
         readonly=True, states={'draft': [('readonly', False)]},
@@ -27,7 +27,7 @@ class AccountInvoice(models.Model):
         purchase_line_ids = self.invoice_line_ids.mapped('purchase_line_id')
         purchase_ids = self.invoice_line_ids.mapped('purchase_id').filtered(lambda r: r.order_line <= purchase_line_ids)
 
-        result['domain'] = {'purchase_id': [
+        result['domain'] = {'purchase_ids': [
             ('invoice_status', '=', 'to invoice'),
             ('partner_id', 'child_of', self.partner_id.id),
             ('id', 'not in', purchase_ids.ids),
@@ -65,33 +65,25 @@ class AccountInvoice(models.Model):
 
     def _onchange_product_id(self):
         domain = super(AccountInvoice, self)._onchange_product_id()
-        if self.purchase_id:
+        if self.purchase_ids:
             # Use the purchase uom by default
             self.uom_id = self.product_id.uom_po_id
         return domain
 
     # Load all unsold PO lines
-    @api.onchange('purchase_id')
+    @api.onchange('purchase_ids')
     def purchase_order_change(self):
-        new_lines = self.env['account.invoice.line']
-        for line in self.purchase_id.order_line - self.invoice_line_ids.mapped('purchase_line_id'):
-            data = self._prepare_invoice_line_from_po_line(line)
-            new_line = new_lines.new(data)
-            new_line._set_additional_fields(self)
-            new_lines += new_line
+        if not self.purchase_ids:
+            return {}
 
-        self.invoice_line_ids += new_lines
-        self.payment_term_id = self.purchase_id.payment_term_id
-        self.env.context = dict(self.env.context, from_purchase_order_change=True)
-
-        due_dt = datetime.datetime.now()
-        for purchase in self.purchase_id:
+        max_payment_term = None
+        for purchase in self.purchase_ids:
             if not self.partner_id:
-                self.partner_id = self.purchase_id.partner_id.id
+                self.partner_id = self.purchase_ids.partner_id.id
 
             if not self.invoice_line_ids:
                 #as there's no invoice line yet, we keep the currency of the PO
-                self.currency_id = self.purchase_id.currency_id
+                self.currency_id = self.purchase_ids.currency_id
             new_lines = self.env['account.invoice.line']
             for line in purchase.order_line - self.invoice_line_ids.mapped('purchase_line_id'):
                 data = self._prepare_invoice_line_from_po_line(line)
@@ -100,23 +92,14 @@ class AccountInvoice(models.Model):
                 new_lines += new_line
 
             self.invoice_line_ids += new_lines
-            self.env.context = dict(self.env.context, from_purchase_order_change=True)
-            nxt_due = datetime.datetime.now() + timedelta(days=purchase.payment_term_id.days)
-            if nxt_due > due_dt:
-                due_dt = nxt_due
-        self.date_due = due_dt
-        # print ('ONCHANGE CALLING', self, self.purchase_id)
-        # payments = self.purchase_id.mapped('payment_term_id')
-        # payment_lines = payments.mapped('line_ids')
-        # print ('==========', payment_lines)
-        # max_days = max(line for line.days in payment_lines)
-        # print ('---------', max_days)
-        # self.payment_term_id = purchase.payment_term_id.id
 
-        # for date in self.purchase_id:
-        #     date_list = []
-        #     date_list += date.payment_term_id
-        #     print date_list
+            if max_payment_term == None:
+                max_payment_term = purchase.payment_term_id
+            if purchase.payment_term_id.line_ids.mapped('days') > max_payment_term.line_ids.mapped('days'):
+                max_payment_term = purchase.payment_term_id
+
+        self.payment_term_id = max_payment_term
+        self.env.context = dict(self.env.context, from_purchase_order_change=True)
 
         return {}
 
@@ -124,13 +107,13 @@ class AccountInvoice(models.Model):
     def _onchange_currency_id(self):
         if self.currency_id:
             for line in self.invoice_line_ids.filtered(lambda r: r.purchase_line_id):
-                line.price_unit = line.purchase_id.currency_id.with_context(date=self.date_invoice).compute(line.purchase_line_id.price_unit, self.currency_id, round=False)
+                line.price_unit = line.purchase_ids.currency_id.with_context(date=self.date_invoice).compute(line.purchase_line_id.price_unit, self.currency_id, round=False)
 
     @api.onchange('invoice_line_ids')
     def _onchange_origin(self):
-        purchase_ids = self.invoice_line_ids.mapped('purchase_id')
-        if purchase_ids:
-            self.origin = ', '.join(purchase_ids.mapped('name'))
+        new_purchase_ids = self.invoice_line_ids.mapped('purchase_id')
+        if new_purchase_ids:
+            self.origin = ', '.join(new_purchase_ids.mapped('name'))
 
     @api.onchange('partner_id', 'company_id')
     def _onchange_partner_id(self):
