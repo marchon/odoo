@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_gst_port_code_form" model="ir.ui.view">
+            <field name="name">gst.port.code.form</field>
+            <field name="model">gst.port.code</field>
+            <field name="arch" type="xml">
+                <form string=" GST Port Code">
+                    <sheet>
+	                    <group>
+	                        <group>
+	                        	<field name="sequence" invisible="1"/>
+	                            <field name="port_code"/>
+	                            <field name="port_name"/>    
+	                        </group>
+	                        <group>
+	                            <field name="state_id"/>
+	                        </group>
+	                    </group>
+	                    <notebook>
+	                        <page string="Port Code Details">
+	                            <field name="detail"/>
+	                        </page>
+                    	</notebook>
+					</sheet>
+				</form>
+			</field>
+		</record>
+    </data>
+</odoo>

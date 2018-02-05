@@ -1,0 +1,1261 @@
+id,state_id:id,sequence,port_code,port_name,detail
+port_code_incnb1,base.state_in_an,1,INCNB1,Car-Nicobar,Port code for Car-Nicobar is INCNB1
+port_code_incrn1,base.state_in_an,2,INCRN1,Cornwallis,Port code for Cornwallis is INCRN1
+port_code_inmyb1,base.state_in_an,3,INMYB1,Mayabandar,Port code for Mayabandar is INMYB1
+port_code_inesh1,base.state_in_an,4,INESH1,Elphinstone Harbour ,Port code for Elphinstone Harbour is INESH1
+port_code_inrgt1,base.state_in_an,5,INRGT1,Ranghat Bay ,Port code for Ranghat Bay is INRGT1
+port_code_inmdw1,base.state_in_an,6,INMDW1,Meadows,Port code for Meadows is INMDW1
+port_code_innan1,base.state_in_an,7,INNAN1,Nancowrie,Port code for Nancowrie is INNAN1
+port_code_inixz1,base.state_in_an,8,INIXZ1,Port Blair ,Port code for Port Blair is INIXZ1
+port_code_inixz4,base.state_in_an,9,INIXZ4,Port Blair ,Port code for Port Blair is INIXZ4
+port_code_inhyd4,base.state_in_ap,10,INHYD4,Hyderabad Air Cargo,"Port code for Hyderabad Air Cargois INHYD4
+"
+port_code_inbnp1,base.state_in_ap,11,INBNP1,Bheemunipatnam,"Port code for Bheemunipatnam is INBNP1
+"
+port_code_innvp1,base.state_in_ap,12,INNVP1,Navaspur,"Port code for Navaspur is INNVP1
+"
+port_code_invtz1,base.state_in_ap,13,INVTZ1,Vizac Sea ,"Port code for Vizac Sea is INVTZ1
+"
+port_code_insrv1,base.state_in_ap,14,INSRV1,Surasani – Yanam ,"Port code for Surasani – Yanam is INSRV1
+"
+port_code_invtz6,base.state_in_ap,15,INVTZ6,Visakhapatnam (EPZ/SEZ) ,"Port code for Visakhapatnam (EPZ/SEZ) is INVTZ6
+"
+port_code_invru1,base.state_in_ap,16,INVRU1,Vadarevu,Port code for Vadarevu is INVRU1
+port_code_inkak1,base.state_in_ap,17,INKAK1,Kakinada,"Port code for Kakinada is INKAK1
+"
+port_code_inrpl6,base.state_in_ap,18,INRPL6,Raddipalem,"Port code for Raddipalem is INRPL6
+"
+port_code_inkdd6,base.state_in_ap,19,INKDD6,Karedu,"Port code for Karedu is INKDD6
+"
+port_code_invtz4,base.state_in_ap,20,INVTZ4,Vishakapatnam,"Port code for Vishakapatnam is INVTZ4
+"
+port_code_inapt6,base.state_in_ap,21,INAPT6,Anaparthi,"Port code for Anaparthi is INAPT6
+"
+port_code_inclx6,base.state_in_ap,22,INCLX6,Chirala,"Port code for Chirala is INCLX6
+"
+port_code_insnf6,base.state_in_ap,23,INSNF6,Hyderabad,"Port code for Hyderabad is INSNF6
+"
+port_code_incoi6,base.state_in_ap,24,INCOI6,Kakinada,"Port code for Kakinada is INCOI6
+"
+port_code_inmap1,base.state_in_ap,25,INMAP1,Masulipatnam,"Port code for Masulipatnam is INMAP1
+"
+port_code_inkri6,base.state_in_ap,26,INKRI1,Krishnapatnam,"Port code for Krishnapatnam is INKRI1
+"
+port_code_inakp6,base.state_in_ap,27,INAKP6,APIICL SEZ/Visakhapatnam ,"Port code for APIICL SEZ/Visakhapatnam is INAKP6
+"
+port_code_intni6,base.state_in_ap,28,INTNI6,HIPL SEZ/Visakhapatnam ,"Port code for HIPL SEZ/Visakhapatnam is INTNI6
+"
+port_code_inakr6,base.state_in_ap,29,INAKR6,RPCIPL SEZ/Visakhapatnam ,"Port code for RPCIPL SEZ/Visakhapatnam is INAKR6
+"
+port_code_invzm6,base.state_in_ap,30,INVZM6,DLL SEZ/Visakhapatnam ,"Port code for DLL SEZ/Visakhapatnam is INVZM6
+"
+port_code_inakb6,base.state_in_ap,31,INAKB6,BIACPL SEZ/Visakhapatnam ,"Port code for BIACPL SEZ/Visakhapatnam is INAKB6
+"
+port_code_innrp6,base.state_in_ap,32,INNRP6,AAL-SEZ/Visakhapatnam ,"Port code for AAL-SEZ/Visakhapatnam is INNRP6
+"
+port_code_inmov6,base.state_in_ap,33,INMOV6,VBTL-SEZ/Medak ,"Port code for VBTL-SEZ/Medak is INMOV6
+"
+port_code_inkvr6,base.state_in_ap,34,INKVR6,WFPML-SEZ/KOVVUR ,"Port code for WFPML-SEZ/KOVVUR is INKVR6
+"
+port_code_infma6,base.state_in_ap,35,INFMA6,APIICL/Medak District ,"Port code for APIICL/Medak District is INFMA6
+"
+port_code_infmh6,base.state_in_ap,36,INFMH6,hgsezl/Ranga Reddy ,"Port code for hgsezl/Ranga Reddy is INFMH6
+"
+port_code_incoa6,base.state_in_ap,37,INCOA6,KSPL-SEZ/KAKINADA ,"Port code for KSPL-SEZ/KAKINADA is INCOA6
+"
+port_code_ingly6,base.state_in_ap,38,INGLY6,APIICL-SEZ/MAHABOOBNAGAR ,"Port code for APIICL-SEZ/MAHABOOBNAGAR is INGLY6
+"
+port_code_inspe6,base.state_in_ap,39,INSPE6,ASDIPL-SEZ/NELLORE ,"Port code for ASDIPL-SEZ/NELLORE is INSPE6
+"
+port_code_incop6,base.state_in_ap,40,INCOP6,PICPL-SEZ/KAKINADA ,"Port code for PICPL-SEZ/KAKINADA is INCOP6
+"
+port_code_inmde6,base.state_in_ap,41,INMDE6,APIICL SEZ/MEDAK ,"Port code for APIICL SEZ/MEDAK is INMDE6
+"
+port_code_inkoh6,base.state_in_ap,42,INKOH6,RLL-SEZ/Medak ,"Port code for RLL-SEZ/Medak is INKOH6
+"
+port_code_inurf6,base.state_in_ap,43,INURF 6 ,FAB CITY SPV Distt. Ranga Reddy ,"Port code for FAB CITY SPV Distt. Ranga Reddy is INURF 6
+"
+port_code_inmea6,base.state_in_ap,44,INMEA 6 ,APIIC-SEZ/Vill-Lalgadi Distt.-Ranga ,"Port code for APIIC-SEZ/Vill-Lalgadi Distt.-Ranga is INMEA 6
+"
+port_code_indbs6,base.state_in_ap,45,IN DBS 6 ,SANTA-SEZ/Vill-Muppireddipally ,"Port code for SANTA-SEZ/Vill-Muppireddipally is IN DBS 6
+"
+port_code_inurg6,base.state_in_ap,46,IN URG 6 ,GMR Hyderabad ,"Port code for GMR Hyderabad  is IN URG 6
+"
+port_code_intas6,base.state_in_ap,47,IN TAS 6 ,Sri City Private Limited ,"Port code for Sri City Private Limited is IN TAS 6
+"
+port_code_ingnr6,base.state_in_ap,48,IN GNR 6 ,"LIPL-ICD/Marripalem, Guntur ","Port code for LIPL-ICD/Marripalem, Guntur is IN GNR 6
+"
+port_code_infms6,base.state_in_ap,49,IN FMS 6 ,Stargaze/Rangareddy/SEZ ,"Port code for Stargaze/Rangareddy/SEZ is IN FMS 6
+"
+port_code_infmj6,base.state_in_ap,50,IN FMJ 6 ,J T/SEZ/Rangareddy ,"Port code for J T/SEZ/Rangareddy is IN FMJ 6
+"
+port_code_inlpi6,base.state_in_ap,51,IN LPI 6 ,Sundew/SEZ/Rangareddy ,"Port code for Sundew/SEZ/Rangareddy is IN LPI 6
+"
+port_code_inlpd6,base.state_in_ap,52,IN LPD 6 ,DLF/SEZ/Rangareddy ,"Port code for DLF/SEZ/Rangareddy is IN LPD 6
+"
+port_code_intmi6,base.state_in_ap,53,IN TMI 6 ,IIFFCO/SEZ/Nellore ,"Port code for IIFFCO/SEZ/Nellore is IN TMI 6
+"
+port_code_inhur6,base.state_in_ap,54,IN HUR 6  ,Rassi/SEZ/Anantpur ,"Port code for Rassi/SEZ/Anantpur is IN HUR 6
+"
+port_code_invzr6,base.state_in_ap,55,IN VZR 6 ,Reddy’r/SEZ/Srikakulam ,"Port code for Reddy’r/SEZ/Srikakulam is IN VZR 6
+"
+port_code_incdp6,base.state_in_ap,56,IN CDP 6 ,APIIC/SEZ/Cuddapah ,"Port code for APIIC/SEZ/Cuddapah is IN CDP 6
+"
+port_code_intmx6,base.state_in_ap,57,INTMX6 ,M/s CONTINENTAL MULTIMODAL ,"Port code for M/s CONTINENTAL MULTIMODAL is INTMX6
+"
+port_code_innpgb,base.state_in_ar,58,INNPGB,TNEaRmMpIoNnAgLS LTD. ,"Port code for TNEaRmMpIoNnAgLS LTD. is INNPGB
+"
+port_code_indrgb,base.state_in_as,59,INDRGB,Darranga,"Port code for Darranga is INDRGB
+"
+port_code_ingau4,base.state_in_as,60,INGAU4,Gauhati,"Port code for Gauhati is INGAU4
+"
+port_code_inghwb,base.state_in_as,61,INGHWB,Gauhati Steamerghat  ,"Port code for Gauhati Steamerghat is INGHWB
+"
+port_code_indhbb,base.state_in_as,62,INDHBB,Dhubri Steamerghat ,"Port code for Dhubri Steamerghat is INDHBB
+"
+port_code_ingtgb,base.state_in_as,63,INGTGB,Gitaldah road ,"Port code for Gitaldah road is INGTGB
+"
+port_code_ingkj2,base.state_in_as,64,INGKJ2,Golakganj Raiiway Station ,"Port code for Golakganj Raiiway Station is INGKJ2
+"
+port_code_inhtsb,base.state_in_as,65,INHTSB,Hatisar,"Port code for Hatisar is INHTSB
+"
+port_code_inkgjb,base.state_in_as,66,INKGJB,Karimganj Steamerghat and Ferry ,"Port code for Karimganj Steamerghat and Ferry is INKGJB
+"
+port_code_instrb,base.state_in_as,67,INSTRB,Sutarkandi,"Port code for Sutarkandi is INSTRB
+"
+port_code_inslrb,base.state_in_as,68,INSLRB,Silcher Steamerghat ,"Port code for Silcher Steamerghat is INSLRB
+"
+port_code_inslr2,base.state_in_as,69,INSLR2,Silcher R.M.S. Office ,"Port code for Silcher R.M.S. Office is INSLR2
+"
+port_code_inphbb,base.state_in_as,70,INPHBB,Phulbari,"Port code for Phulbari is INPHBB
+"
+port_code_innmtb,base.state_in_as,71,INNMTB,Neamati steamer Ghat ,"Port code for Neamati steamer Ghat is INNMTB
+"
+port_code_inmnub,base.state_in_as,72,INMNUB,Manu,"Port code for Manu is INMNUB
+"
+port_code_inmkcb,base.state_in_as,73,INMKCB,Manikarchar,"Port code for Manikarchar is INMKCB
+"
+port_code_inmhn2,base.state_in_as,74,INMHN2,Mahisashan Railway Station ,"Port code for Mahisashan Railway Station is INMHN2
+"
+port_code_inltbb,base.state_in_as,75,INLTBB,Latu Bazar ,"Port code for Latu Bazar is INLTBB
+"
+port_code_inulpb,base.state_in_as,76,INULPB,Ultapani ,"Port code for Ultapani is INULPB
+"
+port_code_intjpb,base.state_in_as,77,INTJPB,Tezpur Steamerghat ,"Port code for Tezpur Steamerghat is INTJPB
+"
+port_code_inkxj2,base.state_in_as,78,INKXJ2,Karimganj Railway Station ,"Port code for Karimganj Railway Station is INKXJ2
+"
+port_code_inhld2,base.state_in_as,79,INHLD2,Haldibari Railway Station ,"Port code for Haldibari Railway Station is INHLD2
+"
+port_code_ingkjb,base.state_in_as,80,INGKJB,Golakganj (LCS ) ,"Port code for Golakganj (LCS ) is INGKJB
+"
+port_code_inamg6,base.state_in_as,81,INAMG6,Amingaon(Gauhati) ,"Port code for Amingaon(Gauhati) is INAMG6
+"
+port_code_inrxl8,base.state_in_br,82,INRXL8,Rexaul,"Port code for Rexaul is INRXL8
+"
+port_code_ingalb,base.state_in_br,83,INGALB,Galgalia,"Port code for Galgalia is INGALB
+"
+port_code_injbnb,base.state_in_br,84,INJBNB,Jogbani,"Port code for Jogbani is INJBNB
+"
+port_code_insnbb,base.state_in_br,85,INSNBB,Sonabarsa,"Port code for Sonabarsa is INSNBB
+"
+port_code_inrxlb,base.state_in_br,86,INRXLB,Raxaul,"Port code for Raxaul is INRXLB
+"
+port_code_inknlb,base.state_in_br,87,INKNLB ,Kunauli,"Port code for Kunauli is INKNLB
+"
+port_code_inktrb,base.state_in_br,88,INKTRB,Kathihar,"Port code for Kathihar is INKTRB
+"
+port_code_injayb,base.state_in_br,89,INJAYB,Jayanagar,"Port code for Jayanagar is INJAYB
+"
+port_code_inbtmb,base.state_in_br,90,INBTMB,Bhithamore(Sursnad) ,"Port code for Bhithamore(Sursnad) is INBTMB
+"
+port_code_inbgub,base.state_in_br,91,INBGUB,Bairgania,"Port code for Bairgania is INBGUB
+"
+port_code_inbnrb,base.state_in_br,92,INBNRB,Bhimnagar,"Port code for Bhimnagar is INBNRB
+"
+port_code_ingay4,base.state_in_br,93,INGAY4,Gaya,"Port code for Gaya is INGAY4
+"
+port_code_inpat4,base.state_in_br,94,INPAT4,Patna,"Port code for Patna is INPAT4
+"
+port_code_inrai6,base.state_in_cg,95,INRAI6,Raipur,"Port code for Raipur is INRAI6
+"
+port_code_inrjn6,base.state_in_cg,96,INRJN6,M/s LANCO SOLAR PRIVATE LTD. ,"Port code for M/s LANCO SOLAR PRIVATE LTD. is INRJN6
+"
+port_code_indam1,base.state_in_dd,97,INDAM1,Daman & Diu ,"Port code for Daman & Diu is INDAM1
+"
+port_code_inshp1,base.state_in_dd,98,INSHP1,Sinbhour Port ,"Port code for Sinbhour Port is INSHP1
+"
+port_code_indel4,base.state_in_dl,99,INDEL4,Delhi Air Cargo ,"Port code for Delhi Air Cargo is INDEL4
+"
+port_code_indli2,base.state_in_dl,100,INDLI2,Delhi Railway Station ,"Port code for Delhi Railway Station is INDLI2
+"
+port_code_intkd6,base.state_in_dl,101,INTKD6,Tughlakabad ,"Port code for Tughlakabad is INTKD6
+"
+port_code_inppg6,base.state_in_dl,102,INPPG6,Patparganj,"Port code for Patparganj is INPPG6
+"
+port_code_inmrm1,base.state_in_ga,103,INMRM1,Goa Sea ,"Port code for Goa Sea is INMRM1
+"
+port_code_intpn1,base.state_in_ga,104,INTPN1,Talpona,"Port code for Talpona is INTPN1
+"
+port_code_inppj1,base.state_in_ga,105,INPPJ1,Pellet Plant Jetty at Shiroda ,"Port code for Pellet Plant Jetty at Shiroda is INPPJ1
+"
+port_code_inpnj1,base.state_in_ga,106,INPNJ1,Panjim,"Port code for Panjim is INPNJ1
+"
+port_code_inchr1,base.state_in_ga,107,INCHR1,Chapora,"Port code for Chapora is INCHR1
+"
+port_code_inbet1,base.state_in_ga,108,INBET1 ,Betul,"Port code for Betul is INBET1
+"
+port_code_inmdg6,base.state_in_ga,109,INMDG6,Margao,"Port code for Margao is INMDG6
+"
+port_code_ingoi4,base.state_in_ga,110,INGOI4,Dabolim,"Port code for Dabolim is INGOI4
+"
+port_code_inpan1,base.state_in_ga,111,INPAN1,Panaji Port ,"Port code for Panaji Port is INPAN1
+"
+port_code_insbi6,base.state_in_gj,112,INSBI6,Sabarmati ICD ,"Port code for Sabarmati ICD is INSBI6
+"
+port_code_inpav1,base.state_in_gj,113,INPAV1 ,Pipavav(Victor) Port ,"Port code for Pipavav(Victor) Port is INPAV1
+"
+port_code_inbed1,base.state_in_gj,114,INBED1 ,Bedi(Including Rozi-Jamnagar) ,"Port code for Bedi(Including Rozi-Jamnagar) is INBED1
+"
+port_code_inbgw1,base.state_in_gj,115,INBGW1,Bhagwa,"Port code for Bhagwa is INBGW1
+"
+port_code_inkdn1,base.state_in_gj,116,INKDN1,Kodinar(Muldwarka) ,"Port code for Kodinar(Muldwarka) is INKDN1
+"
+port_code_inakvi1,base.state_in_gj,117,INKVI1,Kavi ,"Port code for Kavi is INKVI1
+"
+port_code_ingha1,base.state_in_gj,118,INGHA1,Ghogha,"Port code for Ghogha is INGHA1
+"
+port_code_ingin6,base.state_in_gj,119,INGIN6,Gandhidham,"Port code for Gandhidham is INGIN6
+"
+port_code_indrk1,base.state_in_gj,120,INDRK1,Dwarka (Rupen) ,"Port code for Dwarka (Rupen) is INDRK1
+"
+port_code_indhr1,base.state_in_gj,121,INDHR1,Dholera,"Port code for Dholera is INDHR1
+"
+port_code_incmb1,base.state_in_gj,122,INCMB1,Cambay,"Port code for Cambay is INCMB1
+"
+port_code_inbsr1,base.state_in_gj,123,INBSR1,Bulsar,"Port code for Bulsar is INBSR1
+"
+port_code_inblm1,base.state_in_gj,124,INBLM1,Bilimora,"Port code for Bilimora is INBLM1
+"
+port_code_inhza6,base.state_in_gj,125,INHZA6,Hazira SEZ / Surat ,"Port code for Hazira SEZ / Surat is INHZA6
+"
+port_code_inbhd6,base.state_in_gj,126,INBHD6,Dahez SEZ ,"Port code for Dahez SEZ is INBHD6
+"
+port_code_inlpj6,base.state_in_gj,127,INLPJ6,Reliance SEZ/ Jamnagar ,"Port code for Reliance SEZ/ Jamnagar is INLPJ6
+"
+port_code_inbco6,base.state_in_gj,128,INBCO6,Euro Multivision Bhachau SEZ / Kutch ,"Port code for Euro Multivision Bhachau SEZ / Kutch is INBCO6
+"
+port_code_inaje6,base.state_in_gj,129,INAJE6,Welspun Anjar SEZ / Anjar ,"Port code for Welspun Anjar SEZ / Anjar is INAJE6
+"
+port_code_injbl6,base.state_in_gj,130,INJBL6,E-Complex SEZ / Amreli ,"Port code for E-Complex SEZ / Amreli is INJBL6
+"
+port_code_inkdl6,base.state_in_gj,131,INKDL6 ,Kandla SEZ / Gandhidham ,"Port code for Kandla SEZ / Gandhidham is INKDL6
+"
+port_code_inval6,base.state_in_gj,132,INVAL6,Valvada ICD ,"Port code for Valvada ICD is INVAL6
+"
+port_code_insbh1,base.state_in_gj,133,INSBH1,Sinbhour,"Port code for Sinbhour is INSBH1
+"
+port_code_insmr1,base.state_in_gj,134,INSMR1,Simor,"Port code for Simor is INSMR1
+"
+port_code_inrjp1,base.state_in_gj,135,INRJP1,Rajpara,"Port code for Rajpara is INRJP1
+"
+port_code_inonj1,base.state_in_gj,136,INONJ1,Onjal,"Port code for Onjal is INONJ1
+"
+port_code_inomu1,base.state_in_gj,137,INOMU1,Old Mundra ,"Port code for Old Mundra is INOMU1
+"
+port_code_innvb1,base.state_in_gj,138,INNVB1,Navabunder,"Port code for Navabunder is INNVB1
+"
+port_code_inmtw1,base.state_in_gj,139,INMTW1,Metwad,"Port code for Metwad is INMTW1
+"
+port_code_inktw1,base.state_in_gj,140,INKTW1,Koteshwar,"Port code for Koteshwar is INKTW1
+"
+port_code_inktd1,base.state_in_gj,141,INKTD1 ,Kotda,"Port code for Kotda is INKTD1
+"
+port_code_inumr1,base.state_in_gj,142,INUMR1,Umarsadi ,"Port code for Umarsadi is INUMR1
+"
+port_code_intnk1,base.state_in_gj,143,INTNK1,T ankari ,"Port code for T ankari is INTNK1
+"
+port_code_inbyt1,base.state_in_gj,144,INBYT1 ,Beyt ,"Port code for Beyt is INBYT1
+"
+port_code_inada6,base.state_in_gj,145,INADA6,Adalaj,"Port code for Adalaj is INADA6
+"
+port_code_inbhu1,base.state_in_gj,146,INBHU1,Bhavanagar,"Port code for Bhavanagar is INBHU1
+"
+port_code_indiv1,base.state_in_gj,147,INDIV1,Div,"Port code for Div is INDIV1
+"
+port_code_inixy1,base.state_in_gj,148,INIXY1,Kandla,"Port code for Kandla is INIXY1
+"
+port_code_injbd1,base.state_in_gj,149,INJBD1,Jafrabad,"Port code for Jafrabad is INJBD1
+"
+port_code_inumb1,base.state_in_gj,150,INUMB1,Umbergoan,"Port code for Umbergoan is INUMB1
+"
+port_code_intun1,base.state_in_gj,151,INTUN1,Tuna,"Port code for Tuna is INTUN1
+"
+port_code_intja1,base.state_in_gj,152,INTJA1,Talaja,"Port code for Talaja is INTJA1
+"
+port_code_insik1,base.state_in_gj,153,INSIK1,Sikka,"Port code for Sikka is INSIK1
+"
+port_code_insal1,base.state_in_gj,154,INSAL1,Salaya ,"Port code for Salaya is INSAL1
+"
+port_code_inpin1,base.state_in_gj,155,INPIN1,Pindhara ,"Port code for Pindhara is INPIN1
+"
+port_code_inpbd1,base.state_in_gj,156,INPBD1,Porbandar ,"Port code for Porbandar is INPBD1
+"
+port_code_inokh1,base.state_in_gj,157,INOKH1,Okha,"Port code for Okha is INOKH1
+"
+port_code_innav1,base.state_in_gj,158,INNAV1,Navlakhi,"Port code for Navlakhi is INNAV1
+"
+port_code_inraj6,base.state_in_gj,159,INRAJ6,Rajkot,"Port code for Rajkot is INRAJ6
+"
+port_code_invpi6,base.state_in_gj,160,INVPI6,Vapi,"Port code for Vapi is INVPI6
+"
+port_code_instv6,base.state_in_gj,161,INSTV6,Surat (EPZ/SEZ) ,"Port code for Surat (EPZ/SEZ) is INSTV6
+"
+port_code_inixy6,base.state_in_gj,162,INIXY6,Kandla (EPZ/SEZ) ,"Port code for Kandla (EPZ/SEZ) is INIXY6
+"
+port_code_insac6,base.state_in_gj,163,INSAC6,Sachin(Surat) ,"Port code for Sachin(Surat) is INSAC6
+"
+port_code_inkap6,base.state_in_gj,164,INKAP6,Kapadra(Surat) ,"Port code for Kapadra(Surat) is INKAP6
+"
+port_code_inbrc6,base.state_in_gj,165,INBRC6,Baroda ,"Port code for Baroda is INBRC6
+"
+port_code_inamd5,base.state_in_gj,166,INAMD5,Amhedabad,"Port code for Amhedabad is INAMD5
+"
+port_code_inamd4,base.state_in_gj,167,INAMD4,Ahmedabad,"Port code for Ahmedabad is INAMD4
+"
+port_code_inala1,base.state_in_gj,168,INALA1,ALANG SBY ,"Port code for ALANG SBY is INALA1
+"
+port_code_inmdv1,base.state_in_gj,169,INMDV1,Mandvi,"Port code for Mandvi is INMDV1
+"
+port_code_invva1,base.state_in_gj,170,INVVA1,Veraval,"Port code for Veraval is INVVA1
+"
+port_code_invsi1,base.state_in_gj,171,INVSI1,Vansi-Borsi ,"Port code for Vansi-Borsi is INVSI1
+"
+port_code_invad1,base.state_in_gj,172,INVAD1,Vadinar ,"Port code for Vadinar is INVAD1
+"
+port_code_inmun1,base.state_in_gj,173,INMUN1,Mundra,"Port code for Mundra is INMUN1
+"
+port_code_inmli1,base.state_in_gj,174,INMLI1,Maroli,"Port code for Maroli is INMLI1
+"
+port_code_inmha1,base.state_in_gj,175,INMHA1,Mahuva ,"Port code for Mahuva is INMHA1
+"
+port_code_inmgr1,base.state_in_gj,176,INMGR1,Mangrol,"Port code for Mangrol is INMGR1
+"
+port_code_inmdk1,base.state_in_gj,177,INMDK1,Muldwarka,"Port code for Muldwarka is INMDK1
+"
+port_code_inmda1,base.state_in_gj,178,INMDA1,Magdalla,"Port code for Magdalla is INMDA1
+"
+port_code_inkok1,base.state_in_gj,179,INKOK1,Koka,"Port code for Koka is INKOK1
+"
+port_code_injda1,base.state_in_gj,180,INJDA1,Jodia ,"Port code for Jodia is INJDA1
+"
+port_code_injak1,base.state_in_gj,181,INJAK1,Jakhau,"Port code for Jakhau is INJAK1
+"
+port_code_ingga1,base.state_in_gj,182,INGGA1,Gogha,"Port code for Gogha is INGGA1
+"
+port_code_indah1,base.state_in_gj,183,INDAH1,Dahej,"Port code for Dahej is INDAH1
+"
+port_code_inbrh1,base.state_in_gj,184,INBRH1,Broach,"Port code for Broach is INBRH1
+"
+port_code_inakv6,base.state_in_gj,185,INAKV6,Ankleshwar,"Port code for Ankleshwar is INAKV6
+"
+port_code_inchn6,base.state_in_gj,186,INCHN6,Vadodara – Chhani ,"Port code for Vadodara – Chhani is INCHN6
+"
+port_code_insau6,base.state_in_gj,187,INSAU6,Thar Dry Port – Ahemdabad ICD ,"Port code for Thar Dry Port – Ahemdabad ICD is INSAU6
+"
+port_code_inudn6,base.state_in_gj,188,INUDN6,GHB-SEZ/SURAT ,"Port code for GHB-SEZ/SURAT is INUDN6
+"
+port_code_inajm6,base.state_in_gj,189,INAJM6,Mundra Port SEZ ,"Port code for Mundra Port SEZ is INAJM6
+"
+port_code_insch6,base.state_in_gj,190,INSCH6,SAP-SEZ/SURAT ,"Port code for SAP-SEZ/SURAT is INSCH6
+"
+port_code_inapi6,base.state_in_gj,191,INAPI6 ,AAP-SEZ/AHMEDABAD ,"Port code for AAP-SEZ/AHMEDABAD is INAPI6
+"
+port_code_ingng6,base.state_in_gj,192,INGNG6,GIDC-SEZ/GANDHINAGAR ,"Port code for GIDC-SEZ/GANDHINAGAR is INGNG6
+"
+port_code_inadg6,base.state_in_gj,193,INADG6,GIPL-SEZ/AHMEDABAD ,"Port code for GIPL-SEZ/AHMEDABAD is INADG6
+"
+port_code_inadc6,base.state_in_gj,194,INADC6,CCIPL-SEZ/AHMEDABAD ,"Port code for GIPL-SEZ/AHMEDABAD is INADG6
+"
+port_code_inzip6,base.state_in_gj,195,INZIP6,ZIPL-SEZ/AHMEDABAD ,"Port code for ZIPL-SEZ/AHMEDABAD is INZIP6
+"
+port_code_ingns6,base.state_in_gj,196,INGNS6,SREHPL-SEZ/GANDHINAGAR ,"Port code for SREHPL-SEZ/GANDHINAGAR is INGNS6
+"
+port_code_inadm6,base.state_in_gj,197,INADM6,MRPL-SEZ/AHMEDABAD ,"Port code for MRPL-SEZ/AHMEDABAD is INADM6
+"
+port_code_inadr6,base.state_in_gj,198,INADR6,CGRPL-SEZ/AHMEDABAD ,"Port code for CGRPL-SEZ/AHMEDABAD is INADR6
+"
+port_code_ingnt6,base.state_in_gj,199,INGNT6,TCS-SEZ/GANDHINAGAR ,"Port code for TCS-SEZ/GANDHINAGAR is INGNT6
+"
+port_code_inbhs6,base.state_in_gj,200,INBHS6,Sterling – SEZ / Bharuch ,"Port code for Sterling – SEZ / Bharuch is INBHS6
+"
+port_code_invln6,base.state_in_gj,201,IN VLN 6 ,NG REALTY- SEZ/Taluka Bavla Distt. ,"Port code for NG REALTY- SEZ/Taluka Bavla Distt. is IN VLN 6
+"
+port_code_inbrs6,base.state_in_gj,202,INBRS6 ,SAhE m&e Cd aLbTaD.d- SEZ /WAGHODIA ,"Port code for SAhE m&e Cd aLbTaD.d- SEZ /WAGHODIA is INBRS6
+"
+port_code_inbhc6,base.state_in_gj,203,IN BHC 6 ,Jubilant-Chemical-SEZ/Vilayat ,"Port code for Jubilant-Chemical-SEZ/Vilayat is IN BHC 6
+"
+port_code_invld6,base.state_in_gj,204,IN VLD 6 ,Dishman-Pharmaceutical- ,"Port code for Dishman-Pharmaceutical- is IN VLD 6
+"
+port_code_inhzr6,base.state_in_gj,205,IN HZR 6 ,Surat ICD ,"Port code for Surat ICD is IN HZR 6
+"
+port_code_inbrl6,base.state_in_gj,206,IN BRL 6 ,L and T ltd./SEZ/Vadodara ,"Port code for L and T ltd./SEZ/Vadodara is IN BRL 6
+"
+port_code_inkbc6,base.state_in_gj,207,IN KBC6 ,M/s Kribhco Infrastructure Ltd. ,"Port code for M/s Kribhco Infrastructure Ltd. is IN KBC6
+"
+port_code_inhza1,base.state_in_gj,208,IN HZA1 ,HAZIRA PORT/SURAT ,"Port code for HAZIRA PORT/SURAT is IN HZA1
+"
+port_code_ingna6,base.state_in_gj,209,INGNA6,APPL SEZ/Gandhinagar ,"Port code for APPL SEZ/Gandhinagar is INGNA6
+"
+port_code_ingnc6,base.state_in_gj,210,INGNC6,GIFT SEZ/Gandhinagar ,"Port code for GIFT SEZ/Gandhinagar is INGNC6
+"
+port_code_inkbc6,base.state_in_gj,211,INKBC6,KRIL ICD / HAZIRA ,"Port code for KRIL ICD / HAZIRA is INKBC6
+"
+port_code_ingao6,base.state_in_gj,212,INGAO6,OPGS SEZ / Gandhidham ,"Port code for OPGS SEZ / Gandhidham is INGAO6
+"
+port_code_inbdm6,base.state_in_hr,213,INBDM6,"PANCHI GUJARAN, Sonepat ICD ","Port code for PANCHI GUJARAN, Sonepat ICD is INBDM6
+"
+port_code_inghr6,base.state_in_hr,214,INGHR6,Garhi Harsaru – Gurgaon ICD ,"Port code for Garhi Harsaru – Gurgaon ICD is INGHR6
+"
+port_code_inrea6,base.state_in_hr,215,INREA6,Rewari,"Port code for Rewari is INREA6
+"
+port_code_inptl6,base.state_in_hr,216,INPTL6,Patli ICD ,"Port code for Patli ICD is INPTL6
+"
+port_code_innur6,base.state_in_hr,217,INNUR6,Kundli,"Port code for Kundli is INNUR6
+"
+port_code_inpnp6,base.state_in_hr,218,INPNP6,Babarpur,"Port code for Babarpur is INPNP6
+"
+port_code_infbd6,base.state_in_hr,219,INFBD6,Faridabad ,"Port code for Faridabad is INFBD6
+"
+port_code_inbvc6,base.state_in_hr,220,INBVC6,CONCOR-ICD/BALLABHGARH ,"Port code for CONCOR-ICD/BALLABHGARH is INBVC6
+"
+port_code_inbfr6,base.state_in_hr,221,IN BFR 6 ,Piyala/Ballabhgarh ICD ,"Port code for Piyala/Ballabhgarh ICD is IN BFR 6
+"
+port_code_incdd6,base.state_in_hr,222,INCDD6,DCA-I SEZ/CHANDIGARH ,"Port code for DCA-I SEZ/CHANDIGARH is INCDD6
+"
+port_code_incdc6,base.state_in_hr,223,INCDC6,DCA-II SEZ/CHANDIGARH ,"Port code for DCA-II SEZ/CHANDIGARH is INCDC6
+"
+port_code_inpkr6,base.state_in_hr,224,INPKR6,KRIL ICD/PALI ,"Port code for KRIL ICD/PALI is INPKR6
+"
+port_code_inngsb,base.state_in_hp,225,INNGSB,Village Namgaya Shipkila ,"Port code for Village Namgaya Shipkila is INNGSB
+"
+port_code_insxr4,base.state_in_jk,226,INSXR4,Srinagar ,"Port code for Srinagar is INSXR4
+"
+port_code_inbbm6,base.state_in_jk,227,INBBM6,Bari Brahma ,"Port code for Bari Brahma is INBBM6
+"
+port_code_inixw6,base.state_in_jh,228,INIXW6,Jamshedpur (ICD) ,"Port code for Jamshedpur (ICD) is INIXW6
+"
+port_code_intat6,base.state_in_jh,229,INTAT6,Jamshedpur (ICD) ,"Port code for Jamshedpur (ICD) is INTAT6
+"
+port_code_inblr4,base.state_in_ka,230,INBLR4,Banglore Air Cargo ,"Port code for Banglore Air Cargo is INBLR4
+"
+port_code_inblr5,base.state_in_ka,231,INBLR5,Bangalore,"Port code for Bangalore is INBLR5
+"
+port_code_indru6,base.state_in_ka,232,INDRU6,Belgaum – Desur ,"Port code for Belgaum – Desur is INDRU6
+"
+port_code_incdp1,base.state_in_ka,233,INCDP1,Coondapur (Ganguly) ,"Port code for Coondapur (Ganguly) is INCDP1
+"
+port_code_inpdd1,base.state_in_ka,234,INPDD1,Padubidri Minor Port ,"Port code for Padubidri Minor Port is INPDD1
+"
+port_code_inkrw1,base.state_in_ka,235,INKRW1,Karwar(including Sardeshivagad) ,"Port code for Karwar(including Sardeshivagad) is INKRW1
+"
+port_code_inhwr1,base.state_in_ka,236,INHWR1,Honawar,"Port code for Honawar is INHWR1
+"
+port_code_inhgt1,base.state_in_ka,237,INHGT1,Hangarkatta,"Port code for Hangarkatta is INHGT1
+"
+port_code_inbtk1,base.state_in_ka,238,INBTK1,Bhatkal,"Port code for Bhatkal is INBTK1
+"
+port_code_inbkr1,base.state_in_ka,239,INBKR1,Belekeri,"Port code for Belekeri is INBKR1
+"
+port_code_inbdr1,base.state_in_ka,240,INBDR1,Baindur ,"Port code for Baindur is INBDR1
+"
+port_code_innml1,base.state_in_ka,241,INNML1,Mangalore Sea ,"Port code for Mangalore Sea is INNML1
+"
+port_code_inbgq6,base.state_in_ka,242,INBGQ6,Quest SEZ Belgaum ,"Port code for Quest SEZ Belgaum is INBGQ6
+"
+port_code_inmaq6,base.state_in_ka,243,INMAQ6,Mangalore SEZ ,"Port code for Mangalore SEZ is INMAQ6
+"
+port_code_inudi6,base.state_in_ka,244,INUDI6,Synefra SEZ / Udipi ,"Port code for Synefra SEZ / Udipi is INUDI6
+"
+port_code_inbnc6,base.state_in_ka,245,INBNC6,KBITS SEZ / Bangalore ,"Port code for KBITS SEZ / Bangalore is INBNC6
+"
+port_code_inhsp6,base.state_in_ka,246,INHSP6,KIADBP SEZ / Hassan ,"Port code for KIADBP SEZ / Hassan is INHSP6
+"
+port_code_inhsf6,base.state_in_ka,247,INHSF6,KIADBFP SEZ / Hassan ,"Port code for KIADBFP SEZ / Hassan is INHSF6
+"
+port_code_inhst6,base.state_in_ka,248,INHST6,KIADBT SEZ / Hassan ,"Port code for KIADBT SEZ / Hassan is INHST6
+"
+port_code_insbc6,base.state_in_ka,249,INSBC6,Biocon SEZ / Bangalore ,"Port code for Biocon SEZ / Bangalore is INSBC6
+"
+port_code_inblk1,base.state_in_ka,250,INBLK1,Belekeri ,"Port code for Belekeri is INBLK1
+"
+port_code_incoo1,base.state_in_ka,251,INCOO1,Coondapur (Ganguly) ,"Port code for Coondapur (Ganguly) is INCOO1
+"
+port_code_inmal1,base.state_in_ka,252,INMAL1,Malpe ,"Port code for Malpe is INMAL1
+"
+port_code_inhas6,base.state_in_ka,253,INHAS6 ,Hassan (EPZ/SEZ) ,"Port code for Hassan (EPZ/SEZ) is INHAS6
+"
+port_code_inwfd6,base.state_in_ka,254,INWFD6,Bangalore ,"Port code for Bangalore is INWFD6
+"
+port_code_intri1,base.state_in_ka,255,INTRI1,Tadri,"Port code for Tadri is INTRI1
+"
+port_code_inixe1,base.state_in_ka,256,INIXE1,Mangalore ,"Port code for Mangalore is INIXE1
+"
+port_code_intrv4,base.state_in_kl,257,INTRV4,Trivendrun Air Cargo ,"Port code for Trivendrun Air Cargo is INTRV4
+"
+port_code_inang1,base.state_in_kl,258,INANG1 ,Anijengo ,"Port code for Anijengo is INANG1
+"
+port_code_inbdg1,base.state_in_kl,259,INBDG1,Badagara,"Port code for Badagara is INBDG1
+"
+port_code_inkal1,base.state_in_kl,260,INKAL1,Kallai,"Port code for Kallai is INKAL1
+"
+port_code_inksg1,base.state_in_kl,261,INKSG1,Kasargod ,"Port code for Kasargod is INKSG1
+"
+port_code_inkvl1,base.state_in_kl,262,INKVL1,Kovalam,"Port code for Kovalam is INKVL1
+"
+port_code_inmhe1,base.state_in_kl,263,INMHE1 ,Mahe,"Port code for Mahe is INMHE1
+"
+port_code_inpnn1,base.state_in_kl,264,INPNN1,Ponnani,"Port code for Ponnani is INPNN1
+"
+port_code_incct6,base.state_in_kl,265,INCCT6,KINFRAFP SEZ / Kozhikkode ,"Port code for KINFRAFP SEZ / Kozhikkode is INCCT6
+"
+port_code_intvc6,base.state_in_kl,266,INTVC6,KINFRAA SEZ / Thiruvananthapuram ,"Port code for KINFRAA SEZ / Thiruvananthapuram is INTVC6
+"
+port_code_inerv6,base.state_in_kl,267,INERV6,Vallarpadom SEZ / Ernakulam ,"Port code for Vallarpadom SEZ / Ernakulam is INERV6
+"
+port_code_inerp6,base.state_in_kl,268,INERP6,Puthuvypeen SEZ / Ernakulam ,"Port code for Puthuvypeen SEZ / Ernakulam is INERP6
+"
+port_code_inrkg1,base.state_in_kl,269,INRKG1,Rajakkamangalam ,"Port code for Rajakkamangalam is INRKG1
+"
+port_code_inmlp1,base.state_in_kl,270,INMLP1,Mallipuram,"Port code for Mallipuram is INMLP1
+"
+port_code_inlpr1,base.state_in_kl,271,INLPR1,Leapuram,"Port code for Leapuram is INLPR1
+"
+port_code_inkdp1,base.state_in_kl,272,INKDP1,Kondiapetnam ,"Port code for Kondiapetnam is INKDP1
+"
+port_code_inknd1,base.state_in_kl,273,INKND1,Kankudy,"Port code for Kankudy is INKND1
+"
+port_code_incnn1,base.state_in_kl,274,INCNN1,Cannanore,"Port code for Cannanore is INCNN1
+"
+port_code_incok1,base.state_in_kl,275,INCOK1,Cochin Sea ,"Port code for Cochin Sea is INCOK1
+"
+port_code_inalf1,base.state_in_kl,276,INALF1,Allepey,"Port code for Allepey is INALF1
+"
+port_code_incok6,base.state_in_kl,277,INCOK6,Cochin (EPZ/SEZ) ,"Port code for Cochin (EPZ/SEZ) is INCOK6
+"
+port_code_inarr6,base.state_in_kl,278,INARR6,Aroor,"Port code for Aroor is INARR6
+"
+port_code_inccj4,base.state_in_kl,279,INCCJ4,Karipur(Calicut) ,"Port code for Karipur(Calicut) is INCCJ4
+"
+port_code_inmci1,base.state_in_kl,280,INMCI1,Minicoy Island ,"Port code for Minicoy Island is INMCI1
+"
+port_code_intel1,base.state_in_kl,281,INTEL1,Tellichery,"Port code for Tellichery is INTEL1
+"
+port_code_invzj1,base.state_in_kl,282,INVZJ1,Vazhinjam,"Port code for Vazhinjam is INVZJ1
+"
+port_code_incok4,base.state_in_kl,283,INCOK4,Cochin,"Port code for Cochin is INCOK4
+"
+port_code_innee1,base.state_in_kl,284,INNEE1,Neendakara,"Port code for Neendakara is INNEE1
+"
+port_code_inccj1,base.state_in_kl,285,INCCJ1,C.H. Kozikode ,"Port code for C.H. Kozikode is INCCJ1
+"
+port_code_inazk1,base.state_in_kl,286,INAZK1,Azhikkal ,"Port code for Azhikkal is INAZK1
+"
+port_code_inkym6,base.state_in_kl,287,INKYM6,Kottayam (10.11.09) ,"Port code for Kottayam (10.11.09) is INKYM6
+"
+port_code_intcr6,base.state_in_kl,288,IN TCR 6 ,Thrissur ICD ,"Port code for Kottayam (10.11.09) is INKYM6
+"
+port_code_inagi1,base.state_in_ld,289,INAGI1,Agatti Island ,"Port code for Agatti Island is INAGI1
+"
+port_code_inkti1,base.state_in_ld,290,INKTI1,Kiltan Island ,"Port code for Kiltan Island is INKTI1
+"
+port_code_inadi1,base.state_in_ld,291,INADI1,Androth Island ,"Port code for Androth Island is INADI1
+"
+port_code_inbtr1,base.state_in_ld,292,INBTR1,Bitra Island ,"Port code for Bitra Island is INBTR1
+"
+port_code_incti1,base.state_in_ld,293,INCTI1,Chettat Island ,"Port code for Chettat Island is INCTI1
+"
+port_code_inkvt1,base.state_in_ld,294,INKVT1 ,Kavaratti Island ,"Port code for Kavaratti Island is INKVT1
+"
+port_code_inkdi1,base.state_in_ld,295,INKDI1 ,Kadmat lsland ,"Port code for Kadmat lsland is INKDI1
+"
+port_code_inami1,base.state_in_ld,296,INAMI1,Amini IsTand ,"Port code for Amini IsTand is INAMI1
+"
+port_code_inmpr6,base.state_in_mp,297,INMPR6,Malanpur ICD ,"Port code for Malanpur ICD is INMPR6
+"
+port_code_inkhd6,base.state_in_mp,298,INKHD6,Kheda -Dhar ICD ,"Port code for Kheda -Dhar ICD is INKHD6
+"
+port_code_indha6,base.state_in_mp,299,INDHA6,Indore-Dhannad ,"Port code for Indore-Dhannad is INDHA6
+"
+port_code_inmdd6,base.state_in_mp,300,INMDD6,Mandideep ,"Port code for Mandideep is INMDD6
+"
+port_code_inidr4,base.state_in_mp,301,INIDR4,Indore,"Port code for Indore is INIDR4
+"
+port_code_ingwl6,base.state_in_mp,302,INGWL6,Malanpur(Gwalior) ,"Port code for Malanpur(Gwalior) is INGWL6
+"
+port_code_inind6,base.state_in_mp,303,ININD6,Pithampur ,"Port code for Pithampur is ININD6
+"
+port_code_inidr6,base.state_in_mp,304,INIDR6,Indore (EPZ/SEZ) ,"Port code for Indore (EPZ/SEZ) is INIDR6
+"
+port_code_inrtm6,base.state_in_mp,305,INRTM6,RATLAM(CONCOR)  ,"Port code for RATLAM(CONCOR) is INRTM6
+"
+port_code_ininb6,base.state_in_mp,306,ININB6,MPAKVN SEZ/Indore ,"Port code for MPAKVN SEZ/Indore is ININB6
+"
+port_code_inini6,base.state_in_mp,307,ININI6,IIPL SEZ / Indore ,"Port code for IIPL SEZ / Indore is ININI6
+"
+port_code_ininn6,base.state_in_mp,308,ININN6,Infosys SEZ / Indore ,"Port code for Infosys SEZ / Indore is ININN6
+"
+port_code_inint6,base.state_in_mp,309,ININT6 ,TCS SEZ / Indore ,"Port code for TCS SEZ / Indore is ININT6
+"
+port_code_inach1,base.state_in_mh,310,INACH1,Achra,"Port code for Achra is INACH1
+"
+port_code_inbom4,base.state_in_mh,311,INBOM4 ,Bombay Air Cargo ,"Port code for Bombay Air Cargo is INBOM4
+"
+port_code_innsa1,base.state_in_mh,312,INNSA1,Nhava Sheva Sea ,"Port code for Nhava Sheva Sea is INNSA1
+"
+port_code_invyd1,base.state_in_mh,313,INVYD1,Vijaydurg,"Port code for Vijaydurg is INVYD1
+"
+port_code_invng1,base.state_in_mh,314,INVNG1,Vengurla,"Port code for Vengurla is INVNG1
+"
+port_code_invsv1,base.state_in_mh,315,INVSV1,Varsava,"Port code for Varsava is INVSV1
+"
+port_code_invrd1,base.state_in_mh,316,INVRD1 ,Varavda,"Port code for Varavda is INVRD1
+"
+port_code_inutn1,base.state_in_mh,317,INUTN1,Uttan,"Port code for Uttan is INUTN1
+"
+port_code_inulw1,base.state_in_mh,318,INULW1,Ulwa,"Port code for Ulwa is INULW1
+"
+port_code_intmp1,base.state_in_mh,319,INTMP1 ,Trombay,"Port code for Trombay is INTMP1
+"
+port_code_intna1,base.state_in_mh,320,INTNA1,Thana,"Port code for Thana is INTNA1
+"
+port_code_inthl1,base.state_in_mh,321,INTHL1,Thal,"Port code for Thal is INTHL1
+"
+port_code_intrp1,base.state_in_mh,322,INTRP1,Tarapur,"Port code for Tarapur is INTRP1
+"
+port_code_indeg1,base.state_in_mh,323,INDEG1,Deogad,"Port code for Deogad is INDEG1
+"
+port_code_indlb6,base.state_in_mh,324,INDLB6,Daulatabad ICD ,"Port code for Daulatabad ICD is INDLB6
+"
+port_code_indtw1,base.state_in_mh,325,INDTW1,Dantiwara,"Port code for Dantiwara is INDTW1
+"
+port_code_indhn1,base.state_in_mh,326,INDHN1,Dahanu,"Port code for Dahanu is INDHN1
+"
+port_code_inbry1,base.state_in_mh,327,INBRY1,Borya,"Port code for Borya is INBRY1
+"
+port_code_inbrm1,base.state_in_mh,328,INBRM1 ,Borlai – Mandla ,"Port code for Borlai – Mandla is INBRM1
+"
+port_code_inbsl6,base.state_in_mh,329,INBSL6 ,Bhusaval ICD ,"Port code for Bhusaval ICD is INBSL6
+"
+port_code_inbwn1,base.state_in_mh,330,INBWN1,Bhiwandi,"Port code for Bhiwandi is INBWN1
+"
+port_code_inblp1,base.state_in_mh,331,INBLP1,Belapur,"Port code for Belapur is INBLP1
+"
+port_code_inkrp1,base.state_in_mh,332,INKRP1,Kiranpani,"Port code for Kiranpani is INKRP1
+"
+port_code_inkiw1,base.state_in_mh,333,INKIW1,Kelwa,"Port code for Kelwa is INKIW1
+"
+port_code_inksh1,base.state_in_mh,334,INKSH1,Kelshi,"Port code for Kelshi is INKSH1
+"
+port_code_inkrn1,base.state_in_mh,335,INKRN1,Karanja,"Port code for Karanja is INKRN1
+"
+port_code_inkly1,base.state_in_mh,336,INKLY1,Kalyan,"Port code for Kalyan is INKLY1
+"
+port_code_injtp1,base.state_in_mh,337,INJTP1,Jaitapur,"Port code for Jaitapur is INJTP1
+"
+port_code_injgd1,base.state_in_mh,338,INJGD1,Jaigad,"Port code for Jaigad is INJGD1
+"
+port_code_inhrn1,base.state_in_mh,339,INHRN1,Harnai,"Port code for Harnai is INHRN1
+"
+port_code_indig1,base.state_in_mh,340,INDIG1,Dighi Port ,"Port code for Dighi Port is INDIG1
+"
+port_code_injnr4,base.state_in_mh,341,INJNR4,Nashik-Janori ACC ,"Port code for Nashik-Janori ACC is INJNR4
+"
+port_code_injnr6,base.state_in_mh,342,INJNR6,Nashik-Janori ICD ,"Port code for Nashik-Janori ICD is INJNR6
+"
+port_code_intlg6,base.state_in_mh,343,INTLG6,Pune-Talegoan ICD ,"Port code for Pune-Talegoan ICD is INTLG6
+"
+port_code_inmwa6,base.state_in_mh,344,INMWA6,ICD Maliwada  ,"Port code for ICD Maliwada is INMWA6
+"
+port_code_inpvl6,base.state_in_mh,345,INPVL6,Panvel ,"Port code for Panvel is INPVL6
+"
+port_code_inswd1,base.state_in_mh,346,INSWD1,Shriwardhan,"Port code for Shriwardhan is INSWD1
+"
+port_code_instp1,base.state_in_mh,347,INSTP1 ,Satpati ,"Port code for Satpati is INSTP1
+"
+port_code_inrjr1,base.state_in_mh,348,INRJR1,Rajpuri ,"Port code for Rajpuri is INRJR1
+"
+port_code_inprg1,base.state_in_mh,349,INPRG1,Purangad ,"Port code for Purangad is INPRG1
+"
+port_code_inpsh1,base.state_in_mh,350,INPSH1,Palshet,"Port code for Palshet is INPSH1
+"
+port_code_innvt1,base.state_in_mh,351,INNVT1 ,Nivti,"Port code for Nivti is INNVT1
+"
+port_code_innwp1,base.state_in_mh,352,INNWP1,Newapur,"Port code for Newapur is INNWP1
+"
+port_code_inndg1,base.state_in_mh,353,INNDG1,Nandgaon ,"Port code for Nandgaon is INNDG1
+"
+port_code_inmrd1,base.state_in_mh,354,INMRD1,Murad,"Port code for Murad is INMRD1
+"
+port_code_ingrd6,base.state_in_mh,355,INGRD6,Mumbai DP-II ,"Port code for Mumbai DP-II is INGRD6
+"
+port_code_ingrr6,base.state_in_mh,356,INGRR6,Mumbai -DP-I ,"Port code for Mumbai -DP-I is INGRR6
+"
+port_code_inmra1,base.state_in_mh,357,INMRA1,Mora,"Port code for Mora is INMRA1
+"
+port_code_inmrj6,base.state_in_mh,358,INMRJ6 ,Miraj,"Port code for Miraj is INMRJ6
+"
+port_code_inmnr1,base.state_in_mh,359,INMNR1,Manori,"Port code for Manori is INMNR1
+"
+port_code_inmnw1,base.state_in_mh,360,INMNW1,Mandwa,"Port code for Mandwa is INMNW1
+"
+port_code_inmlw1,base.state_in_mh,361,INMLW1,Malwan,"Port code for Malwan is INMLW1
+"
+port_code_inkmb1,base.state_in_mh,362,INKMB1,Kumbharu,"Port code for Kumbharu is INKMB1
+"
+port_code_inbsn1,base.state_in_mh,363,INBSN1,Bassein,"Port code for Bassein is INBSN1
+"
+port_code_inbkt1,base.state_in_mh,364,INBKT1,Bankot,"Port code for Bankot is INBKT1
+"
+port_code_inbnd1,base.state_in_mh,365,INBND1,Bandra,"Port code for Bandra is INBND1
+"
+port_code_inanl1,base.state_in_mh,366,INANL1 ,Arnala,"Port code for Arnala is INANL1
+"
+port_code_inabg1,base.state_in_mh,367,INABG1,Alibag,"Port code for Alibag is INABG1
+"
+port_code_inbom1,base.state_in_mh,368,INBOM1,Bombay Sea ,"Port code for Bombay Sea is INBOM1
+"
+port_code_indhp1,base.state_in_mh,369,INDHP1,Dabhol Port ,"Port code for Dabhol Port is INDHP1
+"
+port_code_inred1,base.state_in_mh,370,INRED1,Redi,"Port code for Redi is INRED1
+"
+port_code_inkhp6,base.state_in_mh,371,INKHP6,Khopta (EPZ/SEZ) ,"Port code for Khopta (EPZ/SEZ) is INKHP6
+"
+port_code_inbom6,base.state_in_mh,372,INBOM6,Mumbai (EPZ/SEZ) ,"Port code for Mumbai (EPZ/SEZ) is INBOM6
+"
+port_code_incch6,base.state_in_mh,373,INCCH6,Chinchwad ( ICD) ,"Port code for Chinchwad ( ICD) is INCCH6
+"
+port_code_inwal6,base.state_in_mh,374,INWAL6,Waluj(Aurangabad) ,"Port code for Waluj(Aurangabad) is INWAL6
+"
+port_code_inpmp6,base.state_in_mh,375,INPMP6,Pimpri,"Port code for Pimpri is INPMP6
+"
+port_code_innsk6,base.state_in_mh,376,INNSK6,Nasik,"Port code for Nasik is INNSK6
+"
+port_code_inngp6,base.state_in_mh,377,INNGP6,Nagpur,"Port code for Nagpur is INNGP6
+"
+port_code_inmul6,base.state_in_mh,378,INMUL6,Mulund,"Port code for Mulund is INMUL6
+"
+port_code_injal6,base.state_in_mh,379,INJAL6,Jalgaon,"Port code for Jalgaon is INJAL6
+"
+port_code_indig6,base.state_in_mh,380,INDIG6,Dighi(Pune) ,"Port code for Dighi(Pune) is INDIG6
+"
+port_code_innag4,base.state_in_mh,381,INNAG4,Nagpur,"Port code for Nagpur is INNAG4
+"
+port_code_inpnq4,base.state_in_mh,382,INPNQ4,Pune,"Port code for Pune is INPNQ4
+"
+port_code_indhu1,base.state_in_mh,383,INDHU1,Dahanu,"Port code for Dahanu is INDHU1
+"
+port_code_inrvd1,base.state_in_mh,384,INRVD1 ,Revdanda,"Port code for Revdanda is INRVD1
+"
+port_code_inrtc1,base.state_in_mh,385,INRTC1,Ratnagiri,"Port code for Ratnagiri is INRTC1
+"
+port_code_inrnr1,base.state_in_mh,386,INRNR1,Ranpar,"Port code for Ranpar is INRNR1
+"
+port_code_inpnv6,base.state_in_mh,387,INPNV6,ARSHIYA-SEZ/PANVEL ,"Port code for ARSHIYA-SEZ/PANVEL is INPNV6
+"
+port_code_indmt1,base.state_in_mh,388,INDMT1,Dharamtar,"Port code for Dharamtar is INDMT1
+"
+port_code_inbap6,base.state_in_mh,389,INBAP6,MultiService-SEZ ,"Port code for MultiService-SEZ is INBAP6
+"
+port_code_inklm6,base.state_in_mh,390,INKLM6,Multi Service-SEZ Kalambolli ,"Port code for Multi Service-SEZ Kalambolli is INKLM6
+"
+port_code_inbau6,base.state_in_mh,391,INBAU6 ,IT/ITES-A-SEZ/Ulwe ,"Port code for IT/ITES-A-SEZ/Ulwe is INBAU6
+"
+port_code_inbai6,base.state_in_mh,392,INBAI6,IT/ITES-B-SEZ/Ulwe ,"Port code for IT/ITES-B-SEZ/Ulwe is INBAI6
+"
+port_code_inbag6,base.state_in_mh,393,INBAG6,Gem & Jewellery-SEZ/Ulwe(Distt. ,"Port code for Gem & Jewellery-SEZ/Ulwe(Distt. is INBAG6
+"
+port_code_inbam6,base.state_in_mh,394,INBAM6,Multi Service-SEZ/Ulwe(Distt. Raigad) ,"Port code for Multi Service-SEZ/Ulwe(Distt. Raigad) is INBAM6
+"
+port_code_inbat6,base.state_in_mh,395,IN BAT 6 ,IT/ITES-C SEZ/Ulwe ,"Port code for IT/ITES-C SEZ/Ulwe is IN BAT 6
+"
+port_code_ainpnq6,base.state_in_mh,396,AIN PNQ 6 ,"Hadapsar, SEZ, Pune ","Port code for Hadapsar, SEZ, Pune is AIN PNQ 6
+"
+port_code_inmuc6,base.state_in_mh,397,INMUC6,SUNSTREAM CITY PVT. ,"Port code for SUNSTREAM CITY PVT. is INMUC6
+"
+port_code_inpsi6,base.state_in_mh,398,INPSI6,SYNTEL INTERNATIONAL ,"Port code for SYNTEL INTERNATIONAL is INPSI6
+"
+port_code_inpmt6,base.state_in_mh,399,INPMT6,MAGARPATTA TOWNSHIP ,"Port code for MAGARPATTA TOWNSHIP is INPMT6
+"
+port_code_inpit6,base.state_in_mh,400,INPIT6 ,INFOSYS TECHNOLOGIES ,"Port code for INFOSYS TECHNOLOGIES is INPIT6
+"
+port_code_inpek6,base.state_in_mh,401,INPEK6 ,EON KHARADI INFRASTRUCTURE ,"Port code for EON KHARADI INFRASTRUCTURE is INPEK6
+"
+port_code_inkrm6,base.state_in_mh,402,INKRM6,Maharashtra Airport ,"Port code for Maharashtra Airport is INKRM6
+"
+port_code_inair6,base.state_in_mh,403,INAIR6,Serene Properties Private Limited ,"Port code for Serene Properties Private Limited is INAIR6
+"
+port_code_invkh6,base.state_in_mh,404,INVKH6,HNB SEZ/ MUMBAI ,"Port code for HNB SEZ/ MUMBAI is INVKH6
+"
+port_code_inchj6,base.state_in_mh,405,INCHJ6,WWIL ICD/ WARDHA ,"Port code for WWIL ICD/ WARDHA is INCHJ6
+"
+port_code_indpc4,base.state_in_mh,406,INDPC4,"PCCCC, Bandra- Kurla Complex, ","Port code for PCCCC, Bandra- Kurla Complex, is INDPC4
+"
+port_code_inbng6,base.state_in_mh,407,INBNG6,MMAuHmAbGaAiONICD/THAN ,"Port code for MMAuHmAbGaAiONICD/THAN is INBNG6
+"
+port_code_inaig6,base.state_in_mh,408,INAIG6,GEPL SEZ/Thane ,"Port code for GEPL SEZ/Thane is INAIG6
+"
+port_code_inawm6,base.state_in_mh,409,INAWM6,MIDC SEZ/AURANGABAD (Maharashtra ,"Port code for MIDC SEZ/AURANGABAD (Maharashtra is INAWM6
+"
+port_code_indid6,base.state_in_mh,410,INDID6,MIDC SEZ/NANDED ,"Port code for MIDC SEZ/NANDED is INDID6
+"
+port_code_inpum6,base.state_in_mh,411,INPUM6,MIDC SEZ/PUNE ,"Port code for MIDC SEZ/PUNE is INPUM6
+"
+port_code_inkle6,base.state_in_mh,412,INKLE6,MIDC SEZ / RAIGAD ,"Port code for MIDC SEZ / RAIGAD is INKLE6
+"
+port_code_instu6,base.state_in_mh,413,INSTU6,MIDC SEZ / KESURDE ,"Port code for MIDC SEZ / KESURDE is INSTU6
+"
+port_code_innki6,base.state_in_mh,414,INNKI6,IIIL SEZ / SINNAR ,"Port code for IIIL SEZ / SINNAR is INNKI6
+"
+port_code_instm6,base.state_in_mh,415,INSTM6,MIDC PHALTAN SEZ / SATARA ,"Port code for MIDC PHALTAN SEZ / SATARA is INSTM6
+"
+port_code_inpnu6,base.state_in_mh,416,INPNU6,MSFPL SEZ / PUNE ,"Port code for MSFPL SEZ / PUNE is INPNU6
+"
+port_code_inaww6,base.state_in_mh,417,INAWW6,WIDL SEZ / AURANGABAD ,"Port code for WIDL SEZ / AURANGABAD is INAWW6
+"
+port_code_inwrr6,base.state_in_mh,418,INWRR6,WPCL CHANDRAPUR ,"Port code for WPCL CHANDRAPUR is INWRR6
+"
+port_code_inccw6,base.state_in_mh,419,INCCW6,WIPRO / PUNE ,"Port code for WIPRO / PUNE is INCCW6
+"
+port_code_intgn6,base.state_in_mh,420,INTGN6,KEIPL / PUNE ,"Port code for KEIPL / PUNE is INTGN6
+"
+port_code_inpun6,base.state_in_mh,421,INPUN6,KBTV / PUNE ,"Port code for KBTV / PUNE is INPUN6
+"
+port_code_inpne6,base.state_in_mh,422,INPNE6,NTPL / PUNE ,"Port code for NTPL / PUNE is INPNE6
+"
+port_code_inccq6,base.state_in_mh,423,INCCQ6,QBP / PUNE ,"Port code for QBP / PUNE is INCCQ6
+"
+port_code_inmreb,base.state_in_mn,424,INMREB,Moreh,"Port code for Moreh is INMREB
+"
+port_code_inimf4,base.state_in_mn,425,INIMF4,Imphal,"Port code for Imphal is INIMF4
+"
+port_code_inbgmb,base.state_in_ml,426,INBGMB,Baghmara,"Port code for Baghmara is INBGMB
+"
+port_code_inbrab,base.state_in_ml,427,INBRAB ,Barsora,"Port code for Barsora is INBRAB
+"
+port_code_insbzb,base.state_in_ml,428,INSBZB,Shella Bazar ,"Port code for Shella Bazar is INSBZB
+"
+port_code_inrgub,base.state_in_ml,429,INRGUB,Ryngku,"Port code for Ryngku is INRGUB
+"
+port_code_inmghb,base.state_in_ml,430,INMGHB,Mahendraganj ,"Port code for Mahendraganj is INMGHB
+"
+port_code_inghpb,base.state_in_ml,431,INGHPB,Ghasuapara,"Port code for Ghasuapara is INGHPB
+"
+port_code_indwkb,base.state_in_ml,432,INDWKB,Dawki,"Port code for Dawki is INDWKB
+"
+port_code_indlub,base.state_in_ml,433,INDLUB,Dalu,"Port code for Dalu is INDLUB
+"
+port_code_inbolb,base.state_in_ml,434,INBOLB,Bolanganj,"Port code for Bolanganj is INBOLB
+"
+port_code_inbltb,base.state_in_ml,435,INBLTB,Balet ,"Port code for Balet is INBLTB
+"
+port_code_inchpb,base.state_in_mz,436,INCHPB,Champai,"Port code for Champai is INCHPB
+"
+port_code_indmrb,base.state_in_nl,437,INDMRB,Demagir,"Port code for Demagir is INDMRB
+"
+port_code_inbbp1,base.state_in_or,438,INBBP1,Bahabal Pur ,"Port code for Bahabal Pur is INBBP1
+"
+port_code_inprt1,base.state_in_or,439,INPRT1,Paradeep ,"Port code for Paradeep is INPRT1
+"
+port_code_inbbi4,base.state_in_or,440,INBBI4,Bhubaneswar ,"Port code for Bhubaneswar is INBBI4
+"
+port_code_ingpr1,base.state_in_or,441,INGPR1,Gopalpur,"Port code for Gopalpur is INGPR1
+"
+port_code_inskd6,base.state_in_or,442,INSKD6,Kalinganagar,"Port code for Kalinganagar is INSKD6
+"
+port_code_inbbs6,base.state_in_or,443,INBBS6,OIIDC SEZ/Bhubneshwar ,"Port code for OIIDC SEZ/Bhubneshwar is INBBS6
+"
+port_code_incas6,base.state_in_or,444,INCAS6,SAPL SEZ / Ganjam ,"Port code for SAPL SEZ / Ganjam is INCAS6
+"
+port_code_inkrk1,base.state_in_py,445,INKRK1,Karaikal,"Port code for Karaikal is INKRK1
+"
+port_code_inpny1,base.state_in_py,446,INPNY1,Pondicherry,"Port code for Pondicherry is INPNY1
+"
+port_code_inpny6,base.state_in_py,447,INPNY6,Pondicherry ICD ,"Port code for Pondicherry ICD is INPNY6
+"
+port_code_inlud6,base.state_in_pb,448,INLUD6,Ludhiana,"Port code for Ludhiana is INLUD6
+"
+port_code_inasr2,base.state_in_pb,449,INASR2,Amritsar Railway Station ,"Port code for Amritsar Railway Station is INASR2
+"
+port_code_inatt2,base.state_in_pb,450,INATT2 ,Attari Railway Station ,"Port code for Attari Railway Station is INATT2
+"
+port_code_inatrb,base.state_in_pb,451,INATRB,Attari Road ,"Port code for Attari Road is INATRB
+"
+port_code_indpr6,base.state_in_pb,452,INDPR6,DAPPER,"Port code for DAPPER is INDPR6
+"
+port_code_inatq4,base.state_in_pb,453,INATQ4,Rajasansi(Amritsar) ,"Port code for Rajasansi(Amritsar) is INATQ4
+"
+port_code_injuuc6,base.state_in_pb,454,INJUC6,Jalandhar,"Port code for Jalandhar is INJUC6
+"
+port_code_inldh6,base.state_in_pb,455,INLDH6,Ludhiana,"Port code for Ludhiana is INLDH6
+"
+port_code_inasr6,base.state_in_pb,456,INASR6,Amritsar,"Port code for Amritsar is INASR6
+"
+port_code_inbti6,base.state_in_pb,457,INBTI6,Bhatinda,"Port code for Bhatinda is INBTI6
+"
+port_code_injai6,base.state_in_rj,458,INJAI6,Jaipur ICD ,"Port code for Jaipur ICD is INJAI6
+"
+port_code_intha6,base.state_in_rj,459,INTHA6,Thar Dry Port – Jodhpur ICD ,"Port code for Thar Dry Port – Jodhpur ICD is INTHA6
+"
+port_code_inmnb2,base.state_in_rj,460,INMNB2,Munabao Railway Station ,"Port code for Munabao Railway Station is INMNB2
+"
+port_code_inkku6,base.state_in_rj,461,INKKU6,Kanakpura – Jaipur ICD ,"Port code for Kanakpura – Jaipur ICD is INKKU6
+"
+port_code_inbrn6,base.state_in_rj,462,INBRN6,Jodhpur- Boranda (EPZ/SEZ) ,"Port code for Jodhpur- Boranda (EPZ/SEZ) is INBRN6
+"
+port_code_injai5,base.state_in_rj,463,INJAI5,Jaipur ,"Port code for Jaipur is INJAI5
+"
+port_code_injsz6,base.state_in_rj,464,INJSZ6,Jaipur – Sitapur (EPZ/SEZ) ,"Port code for Jaipur – Sitapur (EPZ/SEZ) is INJSZ6
+"
+port_code_inbgk6,base.state_in_rj,465,INBGK6,Bhagat ki Kothi – Jodhpur ICD ,"Port code for Bhagat ki Kothi – Jodhpur ICD is INBGK6
+"
+port_code_inbmr2,base.state_in_rj,466,INBMR2,Barmer Railway Station ,"Port code for Barmer Railway Station is INBMR2
+"
+port_code_injai4,base.state_in_rj,467,INJAI4,Jaipur ,"Port code for Jaipur is INJAI4
+"
+port_code_inbhl6,base.state_in_rj,468,INBHL6,Bhilwara,"Port code for Bhilwara is INBHL6
+"
+port_code_injux6,base.state_in_rj,469,INJUX6,Jodhpur,"Port code for Jodhpur is INJUX6
+"
+port_code_inudz6,base.state_in_rj,470,INUDZ6,Udaipur ,"Port code for Udaipur is INUDZ6
+"
+port_code_inktt6,base.state_in_rj,471,INKTT6,Kota,"Port code for Kota is INKTT6
+"
+port_code_inbwd6,base.state_in_rj,472,INBWD6,Bhiwadi,"Port code for Bhiwadi is INBWD6
+"
+port_code_inchmb,base.state_in_sk,473,INCHMB,Chamurchi,"Port code for Chamurchi is INCHMB
+"
+port_code_inajj6,base.state_in_tn,474,INAJJ6,Arakkonam – Melpakkam – Chennai ,"Port code for Arakkonam – Melpakkam – Chennai is INAJJ6
+"
+port_code_inixm6,base.state_in_tn,475,INIXM6,Madurai ICD ,"Port code for Madurai ICD is INIXM6
+"
+port_code_inche6,base.state_in_tn,476,INCHE6,Tiruppur – Chettipalayam CFS ,"Port code for Tiruppur – Chettipalayam CFS is INCHE6
+"
+port_code_inkar6,base.state_in_tn,477,INKAR6,KARUR,"Port code for KARUR is INKAR6
+"
+port_code_inigu6,base.state_in_tn,478,INIGU6,Coimbatore – Irugur ICD ,"Port code for Coimbatore – Irugur ICD is INIGU6
+"
+port_code_inmaa6,base.state_in_tn,479,INMAA6,Chennai (EPZ/SEZ) ,"Port code for Chennai (EPZ/SEZ) is INMAA6
+"
+port_code_inmaa4,base.state_in_tn,480,INMAA4,Chennai Air Cargo ,"Port code for Chennai Air Cargo is INMAA4
+"
+port_code_intut1,base.state_in_tn,481,INTUT1 ,Tuticorin Sea ,"Port code for Tuticorin Sea is INTUT1
+"
+port_code_intut6,base.state_in_tn,482,INTUT6,Tuticorin ICD ,"Port code for Tuticorin ICD is INTUT6
+"
+port_code_inmaa1,base.state_in_tn,483,INMAA1,Chennai Sea ,"Port code for Chennai Sea is INMAA1
+"
+port_code_indsk1,base.state_in_tn,484,INDSK1,Dhanu – Shkodi ,"Port code for Dhanu – Shkodi is INDSK1
+"
+port_code_inksp1,base.state_in_tn,485,INKSP1,Kulasekarapatnam ,"Port code for Kulasekarapatnam is INKSP1
+"
+port_code_inptn1,base.state_in_tn,486,INPTN1,Portonovo ,"Port code for Portonovo is INPTN1
+"
+port_code_intph1,base.state_in_tn,487,INTPH1,Thopputhurai,"Port code for Thopputhurai is INTPH1
+"
+port_code_intde6,base.state_in_tn,488,INTDE6,Tudiyalur – Coimbatore ICD ,"Port code for Tudiyalur – Coimbatore ICD is INTDE6
+"
+port_code_intnd1,base.state_in_tn,489,INTND1,Tondi,"Port code for Tondi is INTND1
+"
+port_code_intho6,base.state_in_tn,490,INTHO6,Tiruppur – Thottiplayam ICD ,"Port code for Tiruppur – Thottiplayam ICD is INTHO6
+"
+port_code_inrwr1,base.state_in_tn,491,INRWR1,Rameshwaram ,"Port code for Rameshwaram is INRWR1
+"
+port_code_inpmb1,base.state_in_tn,492,INPMB1,Pamban,"Port code for Pamban is INPMB1
+"
+port_code_inkkr1,base.state_in_tn,493,INKKR1,Kilakari,"Port code for Kilakari is INKKR1
+"
+port_code_inchl1,base.state_in_tn,494,INCHL1,Colachel,"Port code for Colachel is INCHL1
+"
+port_code_intrl6,base.state_in_tn,495,INTRL6,Tiruvallur ICD ,"Port code for Tiruvallur ICD is INTRL6
+"
+port_code_inilp6,base.state_in_tn,496,INILP6,Irungattukottai-ILP ICD ,"Port code for Irungattukottai-ILP ICD is INILP6
+"
+port_code_incdl1,base.state_in_tn,497,INCDL1,Cuddalore,"Port code for Cuddalore is INCDL1
+"
+port_code_innpt1,base.state_in_tn,498,INNPT1,Nagapattinam,"Port code for Nagapattinam is INNPT1
+"
+port_code_intyr1,base.state_in_tn,499,INTYR1,Tirukkadayyur,"Port code for Tirukkadayyur is INTYR1
+"
+port_code_invkm1,base.state_in_tn,500,INVKM1,Valinokkam,"Port code for Valinokkam is INVKM1
+"
+port_code_insll6,base.state_in_tn,501,INSLL6,Singnallur,"Port code for Singnallur is INSLL6
+"
+port_code_intup6,base.state_in_tn,502,INTUP6,Tirupur,"Port code for Tirupur is INTUP6
+"
+port_code_insxt6,base.state_in_tn,503,INSXT6,Salem,"Port code for Salem is INSXT6
+"
+port_code_incbe6,base.state_in_tn,504,INCBE6,Coimbatore,"Port code for Coimbatore is INCBE6
+"
+port_code_intrz4,base.state_in_tn,505,INTRZ4,Tiruchirapalli,"Port code for Tiruchirapalli is INTRZ4
+"
+port_code_incjb4,base.state_in_tn,506,INCJB4,Coimbatore,"Port code for Coimbatore is INCJB4
+"
+port_code_invep1,base.state_in_tn,507,INVEP1,Veppalodai ,"Port code for Veppalodai is INVEP1
+"
+port_code_inram1,base.state_in_tn,508,INRAM1,Rameshwaram ,"Port code for Rameshwaram is INRAM1
+"
+port_code_inmdp1,base.state_in_tn,509,INMDP1,Mandapam,"Port code for Mandapam is INMDP1
+"
+port_code_incgi6,base.state_in_tn,510,INCGI6,MWCDL-IT SEZ/Chengalpattu ,"Port code for MWCDL-IT SEZ/Chengalpattu is INCGI6
+"
+port_code_incga6,base.state_in_tn,511,INCGA6,MWCDL-Apparel-sez/Chengalpattu ,"Port code for MWCDL-Apparel-sez/Chengalpattu is INCGA6
+"
+port_code_incgl6,base.state_in_tn,512,INCGL6,MWCDL-Auto ANCILLARIES- ,"Port code for MWCDL-Auto ANCILLARIES- is INCGL6
+"
+port_code_incjn6,base.state_in_tn,513,INCJN6,NIPL-SEZ Sriperumbudur ,"Port code for NIPL-SEZ Sriperumbudur is INCJN6
+"
+port_code_incjs6,base.state_in_tn,514,INCJS6,SIPCOT Hi-Tech-SEZ Sriperumbudur ,"Port code for SIPCOT Hi-Tech-SEZ Sriperumbudur is INCJS6
+"
+port_code_incjo6,base.state_in_tn,515,INCJO6,SIPCOT,"Port code for SIPCOT is INCJO6
+"
+port_code_incjf6,base.state_in_tn,516,INCJF6,FTIL-SEZ Sriperumbudur ,"Port code for FTIL-SEZ Sriperumbudur is INCJF6
+"
+port_code_incbs6,base.state_in_tn,517,INCBS6,SE&C Ltd-SEZ/Coimbatore ,"Port code for SE&C Ltd-SEZ/Coimbatore is INCBS6
+"
+port_code_invtc6,base.state_in_tn,518,INVTC6,CHEYYAR-SEZ/Vellore ,"Port code for CHEYYAR-SEZ/Vellore is INVTC6
+"
+port_code_inten6,base.state_in_tn,519,INTEN6,SIPCOT-Gangaikondan-SEZ/Tirunelveli ,"Port code for SIPCOT-Gangaikondan-SEZ/Tirunelveli is INTEN6
+"
+port_code_intnc6,base.state_in_tn,520,INTNC6,CCCL Infrastructure Ltd. – ,"Port code for CCCL Infrastructure Ltd. – is INTNC6
+"
+port_code_innnn6,base.state_in_tn,521,INNNN6 ,AMRL International Tech City Ltd.- ,"Port code for AMRL International Tech City Ltd.- is INNNN6
+"
+port_code_intbm6,base.state_in_tn,522,INTBM6,SPEHZP/L -NSaEnZg/Kuannerciheepuram ,"Port code for SPEHZP/L -NSaEnZg/Kuannerciheepuram is INTBM6
+"
+port_code_inukl6,base.state_in_tn,523,INUKL6,ETLISL-SEZ/Erode ,"Port code for ETLISL-SEZ/Erode is INUKL6
+"
+port_code_inpys6,base.state_in_tn,524,INPYS6,SIPCOT-SEZ/Erode ,"Port code for SIPCOT-SEZ/Erode is INPYS6
+"
+port_code_ingdp6,base.state_in_tn,525,INGDP6,FLLPL-SEZ/Thirruvallur ,"Port code for FLLPL-SEZ/Thirruvallur is INGDP6
+"
+port_code_inenr1,base.state_in_tn,526,INENR1,Ennore,"Port code for Ennore is INENR1
+"
+port_code_intvt6,base.state_in_tn,527,INTVT6,ICD/Tondiarpet Chennai ,"Port code for ICD/Tondiarpet Chennai is INTVT6
+"
+port_code_inkat1,base.state_in_tn,528,INKAT1,KATTUPALLI,"Port code for KATTUPALLI is INKAT1
+"
+port_code_intbt6,base.state_in_tn,529,INTBT6,TCSL SEZ / SIRUSERI ,"Port code for TCSL SEZ / SIRUSERI is INTBT6
+"
+port_code_incsp6,base.state_in_tn,530,INCSP6,SIPL SEZ / KANCHEEPURAM ,"Port code for SIPL SEZ / KANCHEEPURAM is INCSP6
+"
+port_code_incji6,base.state_in_tn,531,INCJI6,IG3I SEZ / KANCHEEPURAM ,"Port code for IG3I SEZ / KANCHEEPURAM is INCJI6
+"
+port_code_incjd6,base.state_in_tn,532,INCJD6,DLFC SEZ / KANCHEEPURAM ,"Port code for DLFC SEZ / KANCHEEPURAM is INCJD6
+"
+port_code_incec6,base.state_in_tn,533,INCEC6,ECTN SEZ / COIMBATORE ,"Port code for ECTN SEZ / COIMBATORE is INCEC6
+"
+port_code_incje6,base.state_in_tn,534,INCJE6,ECTN SEZ / KANCHEEPURAM ,"Port code for ECTN SEZ / KANCHEEPURAM is INCJE6
+"
+port_code_incja6,base.state_in_tn,535,INCJA6,AEIP SEZ / KANCHEEPURAM ,"Port code for AEIP SEZ / KANCHEEPURAM is INCJA6
+"
+port_code_incsv6,base.state_in_tn,536,INCSV6,SVPL SEZ / COIMBATORE ,"Port code for SVPL SEZ / COIMBATORE is INCSV6
+"
+port_code_incge6,base.state_in_tn,537,INCGE6,ETA SEZ / KANCHEEPURAM ,"Port code for ETA SEZ / KANCHEEPURAM is INCGE6
+"
+port_code_incnc6,base.state_in_tn,538,INCNC6,NCTL SEZ / KANCHEEPURAM ,"Port code for NCTL SEZ / KANCHEEPURAM is INCNC6
+"
+port_code_intbc6,base.state_in_tn,539,INTBC6,CTSI SEZ / SIRUSERI ,"Port code for CTSI SEZ / SIRUSERI is INTBC6
+"
+port_code_inmas6,base.state_in_tn,540,INMAS6,TIPL SEZ / CHENNAI ,"Port code for TIPL SEZ / CHENNAI is INMAS6
+"
+port_code_intlt6,base.state_in_tn,541,INTLT6,LTSL SEZ / TIRUVALLUR ,"Port code for LTSL SEZ / TIRUVALLUR is INTLT6
+"
+port_code_intbh6,base.state_in_tn,542,INTBH6,HIRL SEZ / KANCHEEPURAM ,"Port code for HIRL SEZ / KANCHEEPURAM is INTBH6
+"
+port_code_incbt6,base.state_in_tn,543,INCBT6 ,TDPL SEZ / COIMBATORE ,"Port code for TDPL SEZ / COIMBATORE is INCBT6
+"
+port_code_invlr6,base.state_in_tn,544,INVLR6,SIPC SEZ / VELLORE ,"Port code for SIPC SEZ / VELLORE is INVLR6
+"
+port_code_incjv6,base.state_in_tn,545,INCJV6,VTPL SEZ / KANCHEEPURAM ,"Port code for VTPL SEZ / KANCHEEPURAM is INCJV6
+"
+port_code_inmec6,base.state_in_tn,546,INMEC6,ECTN SEZ / MADURAI – I ,"Port code for ECTN SEZ / MADURAI – I is INMEC6
+"
+port_code_inmdc6,base.state_in_tn,547,INMDC6,ECTN SEZ / MADURAI – II ,"Port code for ECTN SEZ / MADURAI – II is INMDC6
+"
+port_code_insxe6,base.state_in_tn,548,INSXE6,ECTN SEZ / SALEM ,"Port code for ECTN SEZ / SALEM is INSXE6
+"
+port_code_inmdr6,base.state_in_tn,549,INMDR6,RTPL SEZ / MADURAI ,"Port code for RTPL SEZ / MADURAI is INMDR6
+"
+port_code_incfi6,base.state_in_tn,550,INCFI6,FIPL SEZ / KANCHEEPURAM ,"Port code for FIPL SEZ / KANCHEEPURAM is INCFI6
+"
+port_code_inhsi6,base.state_in_tn,551,INHSI6,SIPC SEZ / KRISHNAGIRI ,"Port code for SIPC SEZ / KRISHNAGIRI is INHSI6
+"
+port_code_inmae6,base.state_in_tn,552,INMAE6,ECTNL SEZ / Gangaikondan ,"Port code for ECTNL SEZ / Gangaikondan is INMAE6
+"
+port_code_intbs6,base.state_in_tn,553,INTBS6,HTL SEZ / Sireseri ,"Port code for HTL SEZ / Sireseri is INTBS6
+"
+port_code_inagtb,base.state_in_tr,554,INAGTB,Agartala,"Port code for Agartala is INAGTB
+"
+port_code_inmhgb,base.state_in_tr,555,INMHGB,Mahurighat,"Port code for Mahurighat is INMHGB
+"
+port_code_insabb,base.state_in_tr,556,INSABB,Sabroom,"Port code for Sabroom is INSABB
+"
+port_code_insmpb,base.state_in_tr,557,INSMPB,Srimantapur ,"Port code for Srimantapur is INSMPB
+"
+port_code_inrgbb,base.state_in_tr,558,INRGBB,Old Raghna Bazar ,"Port code for Old Raghna Bazar is INRGBB
+"
+port_code_inkwgb,base.state_in_tr,559,INKWGB,Khowaighat,"Port code for Khowaighat is INKWGB
+"
+port_code_indhlb,base.state_in_tr,560,INDHLB,Dhalaighat,"Port code for Dhalaighat is INDHLB
+"
+port_code_inkelb,base.state_in_tr,561,INKELB,Kel Sahar Subdivision ,"Port code for Kel Sahar Subdivision is INKELB
+"
+port_code_inbsab,base.state_in_up,562,INBSAB,Banbasa,"Port code for Banbasa is INBSAB
+"
+port_code_ingaib,base.state_in_up,563,INGAIB,Gauriphanta,"Port code for Gauriphanta is INGAIB
+"
+port_code_inrdt6,base.state_in_up,564,INRDT6,Kota-Ravtha Road ,"Port code for Kota-Ravtha Road is INRDT6
+"
+port_code_ingjib,base.state_in_up,565,INGJIB,Gunji,"Port code for Gunji is INGJIB
+"
+port_code_injhob,base.state_in_up,566,INJHOB,Jhulaghat (Pithoragarh) ,"Port code for Jhulaghat (Pithoragarh) is INJHOB
+"
+port_code_inktgb,base.state_in_up,567,INKTGB,Katarniyaghat ,"Port code for Katarniyaghat is INKTGB
+"
+port_code_inngrb,base.state_in_up,568,INNGRB,Nepalgunj Road ,"Port code for Nepalgunj Road is INNGRB
+"
+port_code_inmbs6,base.state_in_up,569,INMBS6,Madhosingh ICD ,"Port code for Madhosingh ICD is INMBS6
+"
+port_code_inlon6,base.state_in_up,570,INLON6 ,ICD Loni ,"Port code for ICD Loni is INLON6
+"
+port_code_incpl6,base.state_in_up,571,INCPL6 ,Dadri-CGML ,"Port code for Dadri-CGML is INCPL6
+"
+port_code_inbdh6,base.state_in_up,572,INBDH6,ICD Badohi ,"Port code for ICD Badohi is INBDH6
+"
+port_code_inttp6,base.state_in_up,573,INTTP6,Dadri TTPL ,"Port code for Dadri TTPL is INTTP6
+"
+port_code_inapl6,base.state_in_up,574,INAPL6,Dadri-ACPL CFS ,"Port code for Dadri-ACPL CFS is INAPL6
+"
+port_code_intknb,base.state_in_up,575,INTKNB,Tikonia,"Port code for Tikonia is INTKNB
+"
+port_code_insnlb,base.state_in_up,576,INSNLB,Sonauli,"Port code for Sonauli is INSNLB
+"
+port_code_inkwab,base.state_in_up,577,INKWAB,Khunwa,"Port code for Khunwa is INKWAB
+"
+port_code_inknu6,base.state_in_up,578,INKNU6,Kanpur – JRY (ICD ) ,"Port code for Kanpur – JRY (ICD ) is INKNU6
+"
+port_code_injwab,base.state_in_up,579,INJWAB,Jarwa,"Port code for Jarwa is INJWAB
+"
+port_code_insjr6,base.state_in_up,580,INSJR6,Greater Noida-Surajpur ,"Port code for Greater Noida-Surajpur is INSJR6
+"
+port_code_indlab,base.state_in_up,581,INDLAB,Dharchula,"Port code for Dharchula is INDLAB
+"
+port_code_inbnyb,base.state_in_up,582,INBNYB,Berhni,"Port code for Berhni is INBNYB
+"
+port_code_instt6,base.state_in_up,583,INSTT6,Dadri – STTPL (CFS) ,"Port code for Dadri – STTPL (CFS) is INSTT6
+"
+port_code_inagr4,base.state_in_up,584,INAGR4,Agra,"Port code for Agra is INAGR4
+"
+port_code_inder6,base.state_in_up,585,INDER6 ,Noida-Dadri (ICD) ,"Port code for Noida-Dadri (ICD) is INDER6
+"
+port_code_inmbc6,base.state_in_up,586,INMBC6,Moradabad (EPZ/SEZ) ,"Port code for Moradabad (EPZ/SEZ) is INMBC6
+"
+port_code_innda6,base.state_in_up,587,INNDA6,Noida (EPZ/SEZ) ,"Port code for Noida (EPZ/SEZ) is INNDA6
+"
+port_code_insre6,base.state_in_up,588,INSRE6,Saharanpur,"Port code for Saharanpur is INSRE6
+"
+port_code_inmtc6,base.state_in_up,589,INMTC6 ,Meerut,"Port code for Meerut is INMTC6
+"
+port_code_inmbd6,base.state_in_up,590,INMBD6,Pakwara (Moradabad) ,"Port code for Pakwara (Moradabad) is INMBD6
+"
+port_code_incpc6,base.state_in_up,591,INCPC6 ,Kanpur,"Port code for Kanpur is INCPC6
+"
+port_code_inbsb6,base.state_in_up,592,INBSB6 ,Varanasi,"Port code for Varanasi is INBSB6
+"
+port_code_inblj6,base.state_in_up,593,INBLJ6,Agra,"Port code for Agra is INBLJ6
+"
+port_code_invns4,base.state_in_up,594,INVNS4,Varanasi,"Port code for Varanasi is INVNS4
+"
+port_code_inpnk6,base.state_in_up,595,INPNK6,KLPPL-ICD/PANKI ,"Port code for KLPPL-ICD/PANKI is INPNK6
+"
+port_code_inbek4,base.state_in_up,596,INBEK4,Bareilly,"Port code for Bareilly is INBEK4
+"
+port_code_inlko4,base.state_in_up,597,INLKO4,Lucknow,"Port code for Lucknow is INLKO4
+"
+port_code_inknu4,base.state_in_up,598,INKNU4,Kanpur,"Port code for Kanpur is INKNU4
+"
+port_code_inbul6,base.state_in_up,599,IN BUL 6 ,AN FTWZ LTD – FTWZ/ BULANDSHAHR ,"Port code for AN FTWZ LTD – FTWZ/ BULANDSHAHR is IN BUL 6
+"
+port_code_inalp6,base.state_in_up,600,IN ALP 6 ,"Dadri, Greater Noida ","Port code for Dadri, Greater Noida is IN ALP 6
+"
+port_code_innoi6,base.state_in_up,601,IN NOI6 ,LONI-1 ICD Ghaziabad ,"Port code for LONI-1 ICD Ghaziabad is IN NOI6
+"
+port_code_inccu4,base.state_in_wb,602,INCCU4,Kolkata Air Cargo ,"Port code for Kolkata Air Cargo is INCCU4
+"
+port_code_ingtzb,base.state_in_wb,603,INGTZB,Getandah,"Port code for Getandah is INGTZB
+"
+port_code_inhlib,base.state_in_wb,604,INHLIB,Hilli,"Port code for Hilli is INHLIB
+"
+port_code_injigb,base.state_in_wb,605,INJIGB,Jaigaon,"Port code for Jaigaon is INJIGB
+"
+port_code_insng2,base.state_in_wb,606,INSNG2,Singabad Railway Station ,"Port code for Singabad Railway Station is INSNG2
+"
+port_code_inrng2,base.state_in_wb,607,INRNG2,Ranaghat Railway Station ,"Port code for Ranaghat Railway Station is INRNG2
+"
+port_code_inrdp2,base.state_in_wb,608,INRDP2,Radhikapur Railway Station ,"Port code for Radhikapur Railway Station is INRDP2
+"
+port_code_inptpb,base.state_in_wb,609,INPTPB,Petrapole Road ,"Port code for Petrapole Road is INPTPB
+"
+port_code_inpntb,base.state_in_wb,610,INPNTB,Pan itanki (Naxabari) ,"Port code for Pan itanki (Naxabari) is INPNTB
+"
+port_code_innknb,base.state_in_wb,611,INNKNB,Namkhana,"Port code for Namkhana is INNKNB
+"
+port_code_inlglb,base.state_in_wb,612,INLGLB,Lalgola Town ,"Port code for Lalgola Town is INLGLB
+"
+port_code_inmhdb,base.state_in_wb,613,INMHDB,Kotawalighat (Mohedipur) ,"Port code for Kotawalighat (Mohedipur) is INMHDB
+"
+port_code_injpgb,base.state_in_wb,614,INJPGB,Jalpaiguri,"Port code for Jalpaiguri is INJPGB
+"
+port_code_indur6,base.state_in_wb,615,INDUR6,ICD Durgapur ,"Port code for ICD Durgapur is INDUR6
+"
+port_code_intngb,base.state_in_wb,616,INTNGB,Tungi,"Port code for Tungi is INTNGB
+"
+port_code_inttsb,base.state_in_wb,617,INTTSB,T.T. Shed (Kidcerpore) ,"Port code for T.T. Shed (Kidcerpore) is INTTSB
+"
+port_code_inskpb,base.state_in_wb,618,INSKPB,Sukhia Pokhari ,"Port code for Sukhia Pokhari is INSKPB
+"
+port_code_instib,base.state_in_wb,619,INSTIB,Sitai,"Port code for Sitai is INSTIB
+"
+port_code_inhglb,base.state_in_wb,620,INHGLB,Hingalganj,"Port code for Hingalganj is INHGLB
+"
+port_code_ingjxb,base.state_in_wb,621,INGJXB,Ghojadanga,"Port code for Ghojadanga is INGJXB
+"
+port_code_inged2,base.state_in_wb,622,INGED2 ,Gede Railway Station ,"Port code for Gede Railway Station is INGED2
+"
+port_code_inptp8,base.state_in_wb,623,INPTP8,Patrapole,"Port code for Patrapole is INPTP8
+"
+port_code_incbdb,base.state_in_wb,624,INCBDB,Changrabandh,"Port code for Changrabandh is INCBDB
+"
+port_code_infbrb,base.state_in_wb,625,INFBRB,Fulbari ,"Port code for Fulbari is INFBRB
+"
+port_code_inccu1,base.state_in_wb,626,INCCU1,Kolkata Sea ,"Port code for Kolkata Sea is INCCU1
+"
+port_code_inhal1,base.state_in_wb,627,INHAL1,Haldia,"Port code for Haldia is INHAL1
+"
+port_code_inslt6,base.state_in_wb,628,INSLT6,Salt Lake (EPZ/SEZ) ,"Port code for Salt Lake (EPZ/SEZ) is INSLT6
+"
+port_code_inflt6,base.state_in_wb,629,INFLT6,Falta (EPZ/SEZ) ,"Port code for Falta (EPZ/SEZ) is INFLT6
+"
+port_code_inixb4,base.state_in_wb,630,INIXB4,Bagdogra,"Port code for Bagdogra is INIXB4
+"
+port_code_inbnt6,base.state_in_wb,631,INBNT6,TCS SEZ/Kolkata ,"Port code for TCS SEZ/Kolkata is INBNT6
+"
+port_code_inbxr6,base.state_in_wb,632,INBXR6,DLF SEZ/Kolkata ,"Port code for DLF SEZ/Kolkata is INBXR6
+"
+port_code_inbnx6,base.state_in_wb,633,INBNX6,UNITECH SEZ/Kolkata ,"Port code for UNITECH SEZ/Kolkata is INBNX6
+"
+port_code_inbnk6,base.state_in_wb,634,INBNK6,Kolkata IT Park/Bantala ,"Port code for Kolkata IT Park/Bantala is INBNK6
+"
+port_code_inbnw6,base.state_in_wb,635,INBNW6,Wipro SEZ/ Kolkata ,"Port code for Wipro SEZ/ Kolkata is INBNW6
+"
