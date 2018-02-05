@@ -5,9 +5,10 @@ import odoo
 from odoo.exceptions import UserError, AccessError
 
 from .test_sale_common import TestCommonSaleNoChart
-from odoo.tests import Form
+from odoo.tests import Form, tagged
 
 
+@tagged('at_install')
 class TestSaleOrder(TestCommonSaleNoChart):
 
     @classmethod
@@ -257,6 +258,8 @@ class TestSaleOrder(TestCommonSaleNoChart):
 
     def test_sale_with_pricelist_formulas(self):
         """ Test sale order with a pricelist which one have compute price formula"""
+        # add group 'Discount on Lines' to the user
+        self.env.user.write({'groups_id': [(4, self.env.ref('sale.group_discount_per_so_line').id)]})
         product_categ = self.env.ref('product.product_category_1')
         # set product category for consumable products and apply also on peicelist.
         with Form(self.product_order) as product:
