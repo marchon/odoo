@@ -2757,7 +2757,7 @@ QUnit.module('Views', {
             View: ListView,
             model: 'foo',
             data: this.data,
-            arch: '<tree editable="top"><field name="foo"/></tree>',
+            arch: '<tree editable="top"><field name="foo" required="1"/></tree>',
         });
 
         list.$buttons.find('.o_list_button_add').click();
