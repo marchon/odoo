@@ -33,33 +33,33 @@ QUnit.module('fields', {
             arch: '<form><sheet><field name="message" widget="sms_widget"/></sheet></form>',
         });
         form.$buttons.find('.o_form_button_edit').click();
-        assert.ok(form.$el.find('.sms_count').length, "Should have a sms counter");
-        assert.strictEqual(form.$el.find('.sms_count').text(), '0 / 0 SMS (GSM7) ', 'Should be "0 / 0 SMS (GSM7) " by default');
+        assert.ok(form.$('.o_sms_count').length, "Should have a sms counter");
+        assert.strictEqual(form.$('.o_sms_count').text(), '0 / 0 SMS (GSM7) ', 'Should be "0 / 0 SMS (GSM7) " by default');
         // GSM-7
-        form.$el.find('.o_input').val("Hello from Odoo").trigger('input');
-        assert.strictEqual(form.$el.find('.sms_count').text(), '15 / 1 SMS (GSM7) ', 'Should be "15 / 1 SMS (GSM7) " for "Hello from Odoo"');
+        form.$('.o_input').val("Hello from Odoo").trigger('input');
+        assert.strictEqual(form.$('.o_sms_count').text(), '15 / 1 SMS (GSM7) ', 'Should be "15 / 1 SMS (GSM7) " for "Hello from Odoo"');
         // GSM-7 with \n => this one count as 2 characters
-        form.$el.find('.o_input').val("Hello from Odoo\n").trigger('input');
-        assert.strictEqual(form.$el.find('.sms_count').text(), '17 / 1 SMS (GSM7) ', 'Should be "17 / 1 SMS (GSM7) " for "Hello from Odoo\\n"');
+        form.$('.o_input').val("Hello from Odoo\n").trigger('input');
+        assert.strictEqual(form.$('.o_sms_count').text(), '17 / 1 SMS (GSM7) ', 'Should be "17 / 1 SMS (GSM7) " for "Hello from Odoo\\n"');
         // Unicode => ê
-        form.$el.find('.o_input').val("Hêllo from Odoo").trigger('input');
-        assert.strictEqual(form.$el.find('.sms_count').text(), '15 / 1 SMS (UNICODE) ', 'Should be "15 / 1 SMS (UNICODE) " for "Hêllo from Odoo"');
+        form.$('.o_input').val("Hêllo from Odoo").trigger('input');
+        assert.strictEqual(form.$('.o_sms_count').text(), '15 / 1 SMS (UNICODE) ', 'Should be "15 / 1 SMS (UNICODE) " for "Hêllo from Odoo"');
         // GSM-7 with 160c
         var text = Array(161).join('a');
-        form.$el.find('.o_input').val(text).trigger('input');
-        assert.strictEqual(form.$el.find('.sms_count').text(), '160 / 1 SMS (GSM7) ', 'Should be "160 / 1 SMS (GSM7) " for 160 x "a"');
+        form.$('.o_input').val(text).trigger('input');
+        assert.strictEqual(form.$('.o_sms_count').text(), '160 / 1 SMS (GSM7) ', 'Should be "160 / 1 SMS (GSM7) " for 160 x "a"');
         // GSM-7 with 161c
         text = Array(162).join('a');
-        form.$el.find('.o_input').val(text).trigger('input');
-        assert.strictEqual(form.$el.find('.sms_count').text(), '161 / 2 SMS (GSM7) ', 'Should be "161 / 2 SMS (GSM7) " for 161 x "a"');
+        form.$('.o_input').val(text).trigger('input');
+        assert.strictEqual(form.$('.o_sms_count').text(), '161 / 2 SMS (GSM7) ', 'Should be "161 / 2 SMS (GSM7) " for 161 x "a"');
         // Unicode with 70c
         text = Array(71).join('ê');
-        form.$el.find('.o_input').val(text).trigger('input');
-        assert.strictEqual(form.$el.find('.sms_count').text(), '70 / 1 SMS (UNICODE) ', 'Should be "70 / 1 SMS (UNICODE) " for 70 x "ê"');
+        form.$('.o_input').val(text).trigger('input');
+        assert.strictEqual(form.$('.o_sms_count').text(), '70 / 1 SMS (UNICODE) ', 'Should be "70 / 1 SMS (UNICODE) " for 70 x "ê"');
         // Unicode with 71c
         text = Array(72).join('ê');
-        form.$el.find('.o_input').val(text).trigger('input');
-        assert.strictEqual(form.$el.find('.sms_count').text(), '71 / 2 SMS (UNICODE) ', 'Should be "71 / 2 SMS (UNICODE) " for 71 x "ê"');
+        form.$('.o_input').val(text).trigger('input');
+        assert.strictEqual(form.$('.o_sms_count').text(), '71 / 2 SMS (UNICODE) ', 'Should be "71 / 2 SMS (UNICODE) " for 71 x "ê"');
         
         form.destroy();
     });

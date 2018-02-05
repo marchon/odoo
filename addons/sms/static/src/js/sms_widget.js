@@ -12,10 +12,9 @@ var QWeb = core.qweb;
 /**
  * SmsWidget is a widget to display a textarea (the body) and a text representing
  * the number of SMS and the number of characters. This text is computed every
- * time the user change the body.
+ * time the user changes the body.
  */
 var SmsWidget = FieldText.extend({
-    tagName: 'div',
     /**
      * @constructor
      */
@@ -24,9 +23,7 @@ var SmsWidget = FieldText.extend({
         this.nbrChar = 0;
         this.nbrSMS = 0;
         this.encoding = "GSM7";
-        if (this.mode === 'edit') {
-            this.tagName = 'div';
-        }
+        this.tagName = 'div';
     },
 
     //--------------------------------------------------------------------------
@@ -35,6 +32,7 @@ var SmsWidget = FieldText.extend({
 
     /**
      * Compute the number of characters and sms
+     * @private
      */
     _compute: function () {
         var content = this._getValue();
@@ -65,6 +63,7 @@ var SmsWidget = FieldText.extend({
         return Math.ceil(this.nbrChar / 153);
     },
     /**
+     * @private
      * @override
      */
     _renderEdit: function () {
@@ -90,7 +89,7 @@ var SmsWidget = FieldText.extend({
      * @private
      */
     _renderSMS: function () {
-        this.$('.sms_count').text(this.nbrChar + ' / ' + this.nbrSMS + ' SMS (' + this.encoding + ') ');
+        this.$('.o_sms_count').text(this.nbrChar + ' / ' + this.nbrSMS + ' SMS (' + this.encoding + ') ');
     },
 
     //--------------------------------------------------------------------------
@@ -99,6 +98,7 @@ var SmsWidget = FieldText.extend({
 
     /**
      * @override
+     * @private
      */
     _onChange: function () {
         this._super.apply(this, arguments);
@@ -106,6 +106,7 @@ var SmsWidget = FieldText.extend({
     },
     /**
      * @override
+     * @private
      */
     _onInput: function () {
         this._super.apply(this, arguments);
