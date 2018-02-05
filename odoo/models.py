@@ -3340,25 +3340,29 @@ class BaseModel(MetaModel('DummyModel', (object,), {'_register': False})):
             # a one2many checking constraints on records
             records.modified(self._fields)
 
-            for record, data in pycompat.izip(records, datas):
-                # set the value of non-column fields
-                if data.other:
-                    # discard default values from context
-                    other = record.with_context({
-                        key: val
-                        for key, val in self._context.items()
-                        if not key.startswith('default_')
-                    })
-
-                    other_fields = [self._fields[name] for name in data.other]
-                    for field in sorted(other_fields, key=attrgetter('_sequence')):
+            # discard default values from context for other fields
+            others = records.with_context({
+                key: val
+                for key, val in self._context.items()
+                if not key.startswith('default_')
+            })
+            other_fields = {
+                self._fields[name]
+                for data in datas
+                for name in data.other
+            }
+            for field in sorted(other_fields, key=attrgetter('_sequence')):
+                other_ids = []
+                for other, data in pycompat.izip(others, datas):
+                    if field.name in data.other:
                         field.write(other, data.other[field.name], create=True)
+                        other_ids.append(other.id)
 
-                    # mark fields to recompute
-                    record.modified(data.other)
+                # mark fields to recompute
+                self.browse(other_ids).modified([field.name])
 
-                    # check Python constraints
-                    record._validate_fields(data.other)
+                # check Python constraints
+                self.browse(other_ids)._validate_fields([field.name])
 
             # check Python constraints
             records._validate_fields(names)
