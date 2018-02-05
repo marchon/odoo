@@ -666,24 +666,19 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_view_sale_advance_payment_inv(self):
-        unbill = 0.0
-        for line in self.order_line:
-            if line.is_downpayment is False:
-                unbill += (((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.product_uom_qty - line.qty_invoiced)) if (line.product_uom_qty - line.qty_invoiced) > 0.0 else 0.0)
+        options = ['percentage', 'fixed']
         invoiceable_vals = self.order_line.filtered(lambda line: line.invoice_status == 'to invoice' and not line.is_downpayment)
         is_downpayment = self.order_line.filtered(lambda line: line.is_downpayment)
 
-        options = ['percentage', 'fixed']
         if invoiceable_vals and not is_downpayment:
             options.append('delivered')
         if invoiceable_vals and is_downpayment:
             options.append('all')
-        if unbill > 0 and (self.order_line.filtered(lambda line: line.invoice_status == 'no')):
+        if self.order_line.filtered(lambda line: line.invoice_status == 'no'):
             options.append('unbilled')
-        visible = ','.join(options)
         ctx = self.env.context.copy()
         ctx.update({
-            'visibility': visible,
+            'visibility': options,
         })
         return {
             'name': _('Create Invoice'),

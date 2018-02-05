@@ -2209,9 +2209,9 @@ var FieldRadio = FieldSelection.extend({
             var pyevalContext = py.dict.fromJSON(this.record.context || {});
             // Fixme, Should work for visibility with static value
             var visibility = pyeval.py_eval(this.attrs.visibility,  {'context': pyevalContext})
-            var restriction = visibility.split(",");
+            // var restriction = visibility.split(",");
             this.values = _.filter(selection, function (val) {
-                return _.contains(restriction, val[0]) || val[0] === self.value;
+                return _.contains(visibility, val[0]) || val[0] === self.value;
             });
         } else if (this.field.type === 'selection') {
             this.values = this.field.selection || [];

@@ -66,12 +66,10 @@ class SaleOrder(models.Model):
     @api.multi
     def action_view_sale_advance_payment_inv(self):
         res = super(SaleOrder, self).action_view_sale_advance_payment_inv()
-        visible = res['context']['visibility']
-        options = visible.split(',')
-        if not (self.order_line.filtered(lambda order: order.invoice_status == 'no' and not order.is_delivery)):
-            options.remove('unbilled') if 'unbilled' in options else options
-        visible = ','.join(options)
-        res['context']['visibility'] = visible
+        visible_options = res['context']['visibility']
+        if 'unbilled' in visible_options and not self.order_line.filtered(lambda line: line.invoice_status == 'no' and not line.is_delivery):
+            visible_options.remove('unbilled')
+            res['context']['visibility'] = visible_options
         return res
 
     @api.multi
