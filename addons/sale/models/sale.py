@@ -1194,9 +1194,8 @@ class SaleOrderLine(models.Model):
 
     @api.multi
     def unlink(self):
-        if self.filtered(lambda x: x.state in ('sale', 'done')):
-            if self.is_downpayment is False:
-                raise UserError(_('You can not remove an order line once the sales order is confirmed.\nYou should rather set the quantity to 0.'))
+        if  not self.env.context.get('downpayment_delete') and self.filtered(lambda x: x.state in ('sale', 'done')):
+            raise UserError(_('You can not remove an order line once the sales order is confirmed.\nYou should rather set the quantity to 0.'))
         return super(SaleOrderLine, self).unlink()
 
     def _get_real_price_currency(self, product, rule_id, qty, uom, pricelist_id):

@@ -40,7 +40,7 @@ class AccountInvoice(models.Model):
         # remove the downpayment line from SO when invoice of downpayment is deleted
         downpayment_line = self.invoice_line_ids.mapped("sale_line_ids").filtered(lambda x: x.is_downpayment)
         if downpayment_line:
-            downpayment_line.unlink()
+            downpayment_line.with_context(downpayment_delete=True).unlink()
         return super(AccountInvoice, self).unlink()
 
     @api.onchange('partner_id', 'company_id')
