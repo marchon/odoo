@@ -24,6 +24,7 @@ var Dialog = require('web.Dialog');
 var KanbanRenderer = require('web.KanbanRenderer');
 var ListRenderer = require('web.ListRenderer');
 var Pager = require('web.Pager');
+var pyeval = require('web.pyeval');
 
 var _t = core._t;
 var qweb = core.qweb;
@@ -2205,8 +2206,9 @@ var FieldRadio = FieldSelection.extend({
     _setValues: function () {
         var selection = this.field.selection;
         if (this.field.type === 'selection' && this.attrs.visibility) {
-            // FixMe, evaluate context based on attrs context value
-            var visibility = this.record.context.visibility || this.attrs.visibility
+            var pyevalContext = py.dict.fromJSON(this.record.context || {});
+            // Fixme, Should work for visibility with static value
+            var visibility = pyeval.py_eval(this.attrs.visibility,  {'context': pyevalContext})
             var restriction = visibility.split(",");
             this.values = _.filter(selection, function (val) {
                 return _.contains(restriction, val[0]) || val[0] === self.value;
