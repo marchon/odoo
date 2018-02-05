@@ -139,6 +139,8 @@ class SaleOrderLine(models.Model):
     @api.depends('state')
     def _compute_invoice_status(self):
         super(SaleOrderLine, self)._compute_invoice_status()
+        result = self.filtered(lambda x: not x.is_delivery)
+        is_order_qty = any([line.product_id.invoice_policy == 'order' for line in result])
         for line in self:
-            if line.state not in ('sale', 'done') or line.is_delivery:
+            if (line.state not in ('sale', 'done') or line.is_delivery) and not is_order_qty:
                 line.invoice_status = 'no'
