@@ -8,7 +8,19 @@ class GstPortCode(models.Model):
     _name = 'gst.port.code'
 
     sequence = fields.Integer(default=1)
-    port_code = fields.Char(string = "Port Code")
-    port_name = fields.Char(string = "Port")
+    code = fields.Char(string = "Port Code", required=True)
+    name = fields.Char(string = "Port", required=True)
     state_id = fields.Many2one('res.country.state', string="State")
     detail = fields.Text(string = "Port Code Details")
+
+    _sql_constraints = [
+        ('code_uniq', 'unique (code)', 'The Port Code must be unique!')
+    ]
+
+    @api.multi
+    def name_get(self):
+        res = []
+        for port_code in self:
+            name = '%s - %s' % (port_code.code, port_code.name)
+            res.append((port_code.id, name))
+        return res

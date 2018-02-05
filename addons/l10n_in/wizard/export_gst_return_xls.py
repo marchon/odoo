@@ -42,5 +42,5 @@ class ExportGstReturnXls(models.TransientModel):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_url',
-            'url': '/xls/download/%s/%s/%s' % (self.month, self.year, self.advance_rate)
+            'url': '/xls/download/%s/%s/%s/%s' % (self.month, self.year, self.export_summary, self.advance_rate)
         }

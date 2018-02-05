@@ -1,4 +1,4 @@
-id,state_id:id,sequence,port_code,port_name,detail
+id,state_id:id,sequence,code,name,detail
 port_code_incnb1,base.state_in_an,1,INCNB1,Car-Nicobar,Port code for Car-Nicobar is INCNB1
 port_code_incrn1,base.state_in_an,2,INCRN1,Cornwallis,Port code for Cornwallis is INCRN1
 port_code_inmyb1,base.state_in_an,3,INMYB1,Mayabandar,Port code for Mayabandar is INMYB1
