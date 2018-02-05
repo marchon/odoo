@@ -139,7 +139,10 @@ var ThreadField = AbstractField.extend({
                 return attachment.mimetype.match('(image|pdf)');
             });
             if (attIndex !== -1) {
-                self.trigger_up('preview_attachment', self.thread.attachments[attIndex]);
+                // With cached chat messages deferred become synchronous
+                setTimeout(function () {
+                    self.trigger_up('preview_attachment', self.thread.attachments[attIndex]);
+                }, 0);
             }
         });
     },
