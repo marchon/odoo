@@ -184,7 +184,9 @@ var Discuss = Widget.extend(ControlPanelMixin, {
             .then(function () {
                 self._startListening();
                 self.thread.$el.on("scroll", null, _.debounce(function () {
-                    if (self.thread.is_at_bottom()) {
+                    if (self.thread.get_scrolltop() === 0 && !self.call('chat_manager', 'isAllHistoryLoaded', self.channel, self.domain)) {
+                        self._loadMoreMessages();
+                    } else if (self.thread.is_at_bottom()) {
                         self.call('chat_manager', 'markChannelAsSeen', self.channel);
                     }
                 }, 100));

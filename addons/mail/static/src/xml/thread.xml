@@ -3,8 +3,6 @@
 
     <t t-name="mail.ChatThread">
         <t t-if="messages.length">
-            <t t-if="options.display_load_more and options.display_order == ORDER.ASC"
-               t-call="mail.ChatThread.LoadMore"/>
             <t t-call="mail.ChatThread.Content"/>
             <t t-if="options.display_load_more and options.display_order == ORDER.DESC"
                t-call="mail.ChatThread.LoadMore"/>
