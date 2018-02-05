@@ -4,6 +4,7 @@ odoo.define('web.calendar_tests', function (require) {
 var CalendarView = require('web.CalendarView');
 var CalendarRenderer = require('web.CalendarRenderer');
 var fieldUtils = require('web.field_utils');
+var mixins = require('web.mixins');
 var testUtils = require('web.test_utils');
 var session = require('web.session');
 
@@ -1598,6 +1599,64 @@ QUnit.module('Views', {
         assert.strictEqual(calendar.$('.fc-day-grid .fc-event-container').length, 1,
             "should be one event in the all day row");
         calendar.destroy();
+    });
+
+    QUnit.test('test if the CalendarView create memory leak', function (assert) {
+        assert.expect(2);
+
+        var activeWidgets = [];
+        var initWidget = mixins.ParentedMixin.init;
+        mixins.ParentedMixin.init = function () {
+            activeWidgets.push(this);
+            return initWidget.apply(this, arguments);
+        };
+
+        var params = {
+            View: CalendarView,
+            model: 'event',
+            data: this.data,
+            arch:
+            '<calendar class="o_calendar_test" '+
+                'event_open_popup="true" '+
+                'date_start="start_date" '+
+                'all_day="allday" '+
+                'mode="week" '+
+                'attendee="partner_ids" '+
+                'color="partner_id">'+
+                    '<field name="name"/>'+
+                    '<filter name="user_id" avatar_field="image"/>'+
+                    '<field name="partner_ids" write_model="filter_partner" write_field="partner_id"/>'+
+            '</calendar>',
+            archs: archs,
+            viewOptions: {
+                initialDate: initialDate,
+            },
+        };
+
+        var calendar = createView(params);
+        calendar.destroy();
+
+        activeWidgets = [];
+        calendar = createView(params);
+
+        // call read destroy method
+        calendar.__destroy();
+
+        activeWidgets = _.filter(activeWidgets, function (widget) {
+            return !widget.isDestroyed();
+        });
+
+        assert.deepEqual(activeWidgets.length, 1, "every widget must be destroyed exept the parent");
+
+        calendar.destroy();
+
+        activeWidgets = _.filter(activeWidgets, function (widget) {
+            return !widget.isDestroyed();
+        });
+
+        assert.deepEqual(activeWidgets.length, 0, "every widget must be destroyed");
+
+        mixins.ParentedMixin.init = initWidget;
     });
 });
 

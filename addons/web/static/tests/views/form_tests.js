@@ -6,6 +6,7 @@ var config = require('web.config');
 var core = require('web.core');
 var fieldRegistry = require('web.field_registry');
 var FormView = require('web.FormView');
+var mixins = require('web.mixins');
 var testUtils = require('web.test_utils');
 
 var _t = core._t;
@@ -370,7 +371,6 @@ QUnit.module('Views', {
         });
         def.resolve();
     });
-
 
     QUnit.test('properly handle modifiers and attributes on notebook tags', function (assert) {
         assert.expect(2);
@@ -6226,6 +6226,90 @@ QUnit.module('Views', {
         assert.ok(height > 80, "textarea should have an height of at least 80px");
 
         form.destroy();
+    });
+
+    QUnit.test('test if the FormView create memory leak', function (assert) {
+        assert.expect(2);
+
+        this.data.partner.records[0].p = [1, 4];
+
+        var activeWidgets = [];
+        var initWidget = mixins.ParentedMixin.init;
+        mixins.ParentedMixin.init = function () {
+            activeWidgets.push(this);
+            return initWidget.apply(this, arguments);
+        };
+
+        var params = {
+            View: FormView,
+            model: 'partner',
+            data: this.data,
+            arch: '<form string="Partners">' +
+                    '<sheet>' +
+                        '<field name="display_name"/>' +
+                        '<field name="foo"/>' +
+                        '<field name="bar"/>' +
+                        '<field name="int_field"/>' +
+                        '<field name="qux"/>' +
+                        '<field name="trululu"/>' +
+                        '<field name="timmy"/>' +
+                        '<field name="product_id"/>' +
+                        '<field name="priority"/>' +
+                        '<field name="state"/>' +
+                        '<field name="date"/>' +
+                        '<field name="datetime"/>' +
+                        '<field name="product_ids"/>' +
+                        '<field name="p">' +
+                            '<tree default_order="foo desc">' +
+                                '<field name="display_name"/>' +
+                                '<field name="foo"/>' +
+                            '</tree>' +
+                        '</field>' +
+                    '</sheet>' +
+                '</form>',
+            archs: {
+                'partner,false,form':
+                    '<form string="Partner">' +
+                        '<sheet>' +
+                            '<group>' +
+                                '<field name="foo"/>' +
+                            '</group>' +
+                        '</sheet>' +
+                    '</form>',
+                "partner_type,false,list": '<tree><field name="name"/></tree>',
+                'product,false,list': '<tree><field name="display_name"/></tree>',
+
+            },
+            res_id: 1,
+        };
+
+        var form = createView(params);
+        form.$('.o_data_cell').first().click();
+        form.destroy();
+
+        activeWidgets = [];
+        form = createView(params);
+        form.$('.o_data_cell').first().click();
+        form.$buttons.find('.o_form_button_edit').click();
+
+        // call read destroy method
+        form.__destroy();
+
+        activeWidgets = _.filter(activeWidgets, function (widget) {
+            return !widget.isDestroyed();
+        });
+
+        assert.deepEqual(activeWidgets.length, 1, "every widget must be destroyed exept the parent");
+
+        form.destroy();
+
+        activeWidgets = _.filter(activeWidgets, function (widget) {
+            return !widget.isDestroyed();
+        });
+
+        assert.deepEqual(activeWidgets.length, 0, "every widget must be destroyed");
+
+        mixins.ParentedMixin.init = initWidget;
     });
 
 });

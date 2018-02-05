@@ -2,6 +2,7 @@ odoo.define('web.kanban_tests', function (require) {
 "use strict";
 
 var KanbanView = require('web.KanbanView');
+var mixins = require('web.mixins');
 var testUtils = require('web.test_utils');
 
 var createView = testUtils.createView;
@@ -1935,6 +1936,62 @@ QUnit.module('Views', {
             assert.strictEqual($quickCreateGroup[0], $groups[0],
                 "quick create should have been added in the first column");
         }
+    });
+
+    QUnit.test('test if the KanbanView create memory leak', function (assert) {
+        assert.expect(2);
+
+        var activeWidgets = [];
+        var initWidget = mixins.ParentedMixin.init;
+        mixins.ParentedMixin.init = function () {
+            activeWidgets.push(this);
+            return initWidget.apply(this, arguments);
+        };
+
+        var params = {
+            View: KanbanView,
+            model: 'partner',
+            data: this.data,
+            arch: '<kanban string="Partners">' +
+                    '<field name="foo"/>' +
+                    '<field name="bar"/>' +
+                    '<field name="int_field"/>' +
+                    '<field name="qux"/>' +
+                    '<field name="product_id"/>' +
+                    '<field name="category_ids"/>' +
+                    '<field name="state"/>' +
+                    '<field name="date"/>' +
+                    '<field name="datetime"/>' +
+                    '<templates><t t-name="kanban-box">' +
+                        '<div><field name="foo"/></div>' +
+                    '</t></templates>' +
+                '</kanban>',
+        };
+
+        var kanban = createView(params);
+        kanban.destroy();
+
+        activeWidgets = [];
+        kanban = createView(params);
+
+        // call read destroy method
+        kanban.__destroy();
+
+        activeWidgets = _.filter(activeWidgets, function (widget) {
+            return !widget.isDestroyed();
+        });
+
+        assert.deepEqual(activeWidgets.length, 1, "every widget must be destroyed exept the parent");
+
+        kanban.destroy();
+
+        activeWidgets = _.filter(activeWidgets, function (widget) {
+            return !widget.isDestroyed();
+        });
+
+        assert.deepEqual(activeWidgets.length, 0, "every widget must be destroyed");
+
+        mixins.ParentedMixin.init = initWidget;
     });
 });
 

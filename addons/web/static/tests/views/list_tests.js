@@ -5,6 +5,7 @@ var config = require('web.config');
 var basicFields = require('web.basic_fields');
 var FormView = require('web.FormView');
 var ListView = require('web.ListView');
+var mixins = require('web.mixins');
 var testUtils = require('web.test_utils');
 
 var createView = testUtils.createView;
@@ -3179,6 +3180,62 @@ QUnit.module('Views', {
         assert.strictEqual(list.$('.o_data_row').length, 2,
             'should display 2 data rows');
         list.destroy();
+    });
+
+    QUnit.test('test if the ListView create memory leak', function (assert) {
+        assert.expect(2);
+
+        var activeWidgets = [];
+        var initWidget = mixins.ParentedMixin.init;
+        mixins.ParentedMixin.init = function () {
+            activeWidgets.push(this);
+            return initWidget.apply(this, arguments);
+        };
+
+        var params = {
+            View: ListView,
+            model: 'foo',
+            data: this.data,
+            arch: '<tree string="Partners">' +
+                    '<field name="foo"/>' +
+                    '<field name="bar"/>' +
+                    '<field name="date"/>' +
+                    '<field name="int_field"/>' +
+                    '<field name="qux"/>' +
+                    '<field name="m2o"/>' +
+                    '<field name="o2m"/>' +
+                    '<field name="m2m"/>' +
+                    '<field name="amount"/>' +
+                    '<field name="currency_id"/>' +
+                    '<field name="datetime"/>' +
+                    '<field name="reference"/>' +
+                '</tree>',
+        };
+
+        var list = createView(params);
+        list.destroy();
+
+        activeWidgets = [];
+        list = createView(params);
+
+        // call read destroy method
+        list.__destroy();
+
+        activeWidgets = _.filter(activeWidgets, function (widget) {
+            return !widget.isDestroyed();
+        });
+
+        assert.deepEqual(activeWidgets.length, 1, "every widget must be destroyed exept the parent");
+
+        list.destroy();
+
+        activeWidgets = _.filter(activeWidgets, function (widget) {
+            return !widget.isDestroyed();
+        });
+
+        assert.deepEqual(activeWidgets.length, 0, "every widget must be destroyed");
+
+        mixins.ParentedMixin.init = initWidget;
     });
 
 });

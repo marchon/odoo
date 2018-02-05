@@ -133,20 +133,19 @@ var AbstractView = Class.extend({
     getController: function (parent) {
         var self = this;
         return $.when(this._loadData(parent), this._loadLibs()).then(function () {
-            var model = self.getModel();
-            var state = model.get(arguments[0]);
+            var state = self.model.get(arguments[0]);
             var renderer = self.getRenderer(parent, state);
             var Controller = self.Controller || self.config.Controller;
             var controllerParams = _.extend({
                 initialState: state,
             }, self.controllerParams);
-            var controller = new Controller(parent, model, renderer, controllerParams);
+            var controller = new Controller(parent, self.model, renderer, controllerParams);
             renderer.setParent(controller);
 
-            if (!self.model) {
+            if (self.model.getParent() === parent) {
                 // if we have a model, it already has a parent. Otherwise, we
                 // set the controller, so the rpcs from the model actually work
-                model.setParent(controller);
+                self.model.setParent(controller);
             }
             return controller;
         });
