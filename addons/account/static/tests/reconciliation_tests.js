@@ -26,9 +26,6 @@ var db = {
             {id: 98, display_name: "partner 98", image: 'YYY', customer: true},
             {id: 99, display_name: "partner 99", image: 'ZZZ', customer: true},
         ],
-        mark_as_reconciled: function () {
-            return $.when();
-        },
     },
     'account.account': {
         fields: {

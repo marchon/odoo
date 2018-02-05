@@ -899,9 +899,6 @@ class AccountMoveLine(models.Model):
             if len(datum['mv_line_ids']) >= 1 or len(datum['mv_line_ids']) + len(datum['new_mv_line_dicts']) >= 2:
                 self.browse(datum['mv_line_ids']).process_reconciliation(datum['new_mv_line_dicts'])
 
-            if datum['type'] == 'partner':
-                partners = self.env['res.partner'].browse(datum['id'])
-                partners.mark_as_reconciled()
             if datum['type'] == 'account':
                 accounts = self.env['account.account'].browse(datum['id'])
                 accounts.mark_as_reconciled()

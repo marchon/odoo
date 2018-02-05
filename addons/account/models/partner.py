@@ -331,7 +331,6 @@ class ResPartner(models.Model):
         self.env.cr.execute(
             """ SELECT 1 FROM(
                     SELECT
-                        p.last_time_entries_checked AS last_time_entries_checked,
                         MAX(l.write_date) AS max_date
                     FROM
                         account_move_line l
@@ -353,16 +352,9 @@ class ResPartner(models.Model):
                             AND l.partner_id = p.id
                             AND l.amount_residual < 0
                         )
-                    GROUP BY p.last_time_entries_checked
                 ) as s
-                WHERE (last_time_entries_checked IS NULL OR max_date > last_time_entries_checked)
             """, (self.id,))
         self.has_unreconciled_entries = self.env.cr.rowcount == 1
-
-    @api.multi
-    def mark_as_reconciled(self):
-        self.env['account.partial.reconcile'].check_access_rights('write')
-        return self.sudo().with_context(company_id=self.env.user.company_id.id).write({'last_time_entries_checked': time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)})
 
     @api.one
     def _get_company_currency(self):
@@ -405,11 +397,6 @@ class ResPartner(models.Model):
         string='Companies that refers to partner', oldname="ref_companies")
     has_unreconciled_entries = fields.Boolean(compute='_compute_has_unreconciled_entries',
         help="The partner has at least one unreconciled debit and credit since last time the invoices & payments matching was performed.")
-    last_time_entries_checked = fields.Datetime(oldname='last_reconciliation_date',
-        string='Latest Invoices & Payments Matching Date', readonly=True, copy=False,
-        help='Last time the invoices & payments matching was performed for this partner. '
-             'It is set either if there\'s not at least an unreconciled debit and an unreconciled credit '
-             'or if you click the "Done" button.')
     invoice_ids = fields.One2many('account.invoice', 'partner_id', string='Invoices', readonly=True, copy=False)
     contract_ids = fields.One2many('account.analytic.account', 'partner_id', string='Contracts', readonly=True)
     bank_account_count = fields.Integer(compute='_compute_bank_count', string="Bank")
@@ -432,7 +419,7 @@ class ResPartner(models.Model):
     def _commercial_fields(self):
         return super(ResPartner, self)._commercial_fields() + \
             ['debit_limit', 'property_account_payable_id', 'property_account_receivable_id', 'property_account_position_id',
-             'property_payment_term_id', 'property_supplier_payment_term_id', 'last_time_entries_checked']
+             'property_payment_term_id', 'property_supplier_payment_term_id']
 
     @api.multi
     def action_view_partner_invoices(self):
