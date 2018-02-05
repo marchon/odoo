@@ -666,26 +666,26 @@ class SaleOrder(models.Model):
 
     @api.multi
     def action_view_sale_advance_payment_inv(self):
-        upsell = downpayment = unbill = undeliver = ready = 0.0
-        invoiced = sum(self.invoice_ids.mapped('amount_total'))
-        for line in self.order_line:
-            if invoiced != self.amount_total:
-                if line.is_downpayment is False:
-                    if line.qty_delivered > line.product_uom_qty:
-                        upsell += ((line.qty_delivered - line.product_uom_qty) * (line.price_unit + (line.price_tax/line.product_uom_qty)))
-                    else:
-                        undeliver += (((line.product_uom_qty - line.qty_delivered) * (line.price_unit + (line.price_tax/line.product_uom_qty))) if line.product_id.invoice_policy == 'delivery' else 0.0)
-                    if line.invoice_status == 'to invoice':
-                        if line.product_id.invoice_policy == 'delivery':
-                            ready = ready + ((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.qty_delivered - line.qty_invoiced))
-                        else:
-                            ready = ready + ((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.product_uom_qty - line.qty_invoiced))
-                    unbill += (((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.product_uom_qty - line.qty_invoiced)) if (line.product_uom_qty - line.qty_invoiced) > 0.0 else 0.0)
-                else:
-                    taxes = line.tax_id.compute_all(line.price_reduce, line.order_id.currency_id, line.qty_to_invoice, product=line.product_id, partner=line.order_id.partner_shipping_id)
-                    downpayment += taxes['total_included']
-        unbilled = (unbill + downpayment) if (unbill + downpayment) > 0.0 else 0.0
-        ready_to_invoice = (ready + downpayment) if (ready + downpayment) > 0.0 else 0.0
+        # upsell = downpayment = unbill = undeliver = ready = 0.0
+        # invoiced = sum(self.invoice_ids.mapped('amount_total'))
+        # for line in self.order_line:
+        #     if invoiced != self.amount_total:
+        #         if line.is_downpayment is False:
+        #             if line.qty_delivered > line.product_uom_qty:
+        #                 upsell += ((line.qty_delivered - line.product_uom_qty) * (line.price_unit + (line.price_tax/line.product_uom_qty)))
+        #             else:
+        #                 undeliver += (((line.product_uom_qty - line.qty_delivered) * (line.price_unit + (line.price_tax/line.product_uom_qty))) if line.product_id.invoice_policy == 'delivery' else 0.0)
+        #             if line.invoice_status == 'to invoice':
+        #                 if line.product_id.invoice_policy == 'delivery':
+        #                     ready = ready + ((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.qty_delivered - line.qty_invoiced))
+        #                 else:
+        #                     ready = ready + ((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.product_uom_qty - line.qty_invoiced))
+        #             unbill += (((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.product_uom_qty - line.qty_invoiced)) if (line.product_uom_qty - line.qty_invoiced) > 0.0 else 0.0)
+        #         else:
+        #             taxes = line.tax_id.compute_all(line.price_reduce, line.order_id.currency_id, line.qty_to_invoice, product=line.product_id, partner=line.order_id.partner_shipping_id)
+        #             downpayment += taxes['total_included']
+        # unbilled = (unbill + downpayment) if (unbill + downpayment) > 0.0 else 0.0
+        # ready_to_invoice = (ready + downpayment) if (ready + downpayment) > 0.0 else 0.0
         invoiceable_vals = self.order_line.filtered(lambda order: order.invoice_status == 'to invoice' and not order.is_downpayment)
         is_downpayment = self.order_line.filtered(lambda order: order.is_downpayment)
 
@@ -694,19 +694,19 @@ class SaleOrder(models.Model):
             options.append('delivered')
         if invoiceable_vals and is_downpayment:
             options.append('all')
-        if unbill > 0 and (self.order_line.filtered(lambda order: order.invoice_status == 'no')):
+        if (self.order_line.filtered(lambda order: order.invoice_status == 'no')):
             options.append('unbilled')
         visible = ','.join(options)
         ctx = self.env.context.copy()
         ctx.update({
-            'default_order_total': self.amount_total,
-            'default_upsell_downsell': upsell,
-            'default_total_to_invoice': self.amount_total + upsell,
-            'default_downpayment_total': downpayment,
-            'default_already_invoiced': invoiced,
-            'default_unbilled_total': unbilled,
-            'default_undelivered_products': undeliver,
-            'default_ready_to_invoice': ready_to_invoice,
+            # 'default_order_total': self.amount_total,
+            # 'default_upsell_downsell': upsell,
+            # 'default_total_to_invoice': self.amount_total + upsell,
+            # 'default_downpayment_total': downpayment,
+            # 'default_already_invoiced': invoiced,
+            # 'default_unbilled_total': unbilled,
+            # 'default_undelivered_products': undeliver,
+            # 'default_ready_to_invoice': ready_to_invoice,
             'visibility': visible,
         })
         return {

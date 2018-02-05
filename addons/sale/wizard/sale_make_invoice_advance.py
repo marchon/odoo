@@ -41,6 +41,42 @@ class SaleAdvancePaymentInv(models.TransientModel):
     def _default_deposit_taxes_id(self):
         return self._default_product_id().taxes_id
 
+    @api.model
+    def _default_sale_order_id(self):
+        sale_obj = self.env['sale.order']
+        order = sale_obj.browse(self._context.get('active_ids'))[0]
+        return order
+
+    @api.multi
+    @api.depends('sale_order_id')
+    def compute_all(self):
+        upsell = downpayment = unbill = undeliver = ready = 0.0
+        invoiced = sum(self.sale_order_id.invoice_ids.mapped('amount_total'))
+        for line in self.sale_order_id.order_line:
+            if invoiced != self.sale_order_id.amount_total:
+                if line.is_downpayment is False:
+                    if line.qty_delivered > line.product_uom_qty:
+                        upsell += ((line.qty_delivered - line.product_uom_qty) * (line.price_unit + (line.price_tax/line.product_uom_qty)))
+                    else:
+                        undeliver += (((line.product_uom_qty - line.qty_delivered) * (line.price_unit + (line.price_tax/line.product_uom_qty))) if line.product_id.invoice_policy == 'delivery' else 0.0)
+                    if line.invoice_status == 'to invoice':
+                        if line.product_id.invoice_policy == 'delivery':
+                            ready = ready + ((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.qty_delivered - line.qty_invoiced))
+                        else:
+                            ready = ready + ((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.product_uom_qty - line.qty_invoiced))
+                    unbill += (((line.price_unit + (line.price_tax/line.product_uom_qty)) * (line.product_uom_qty - line.qty_invoiced)) if (line.product_uom_qty - line.qty_invoiced) > 0.0 else 0.0)
+                else:
+                    taxes = line.tax_id.compute_all(line.price_reduce, line.order_id.currency_id, line.qty_to_invoice, product=line.product_id, partner=line.order_id.partner_shipping_id)
+                    downpayment += taxes['total_included']
+        self.ready_to_invoice = (ready + downpayment) if (ready + downpayment) > 0.0 else 0.0
+        self.order_total = self.sale_order_id.amount_total
+        self.upsell_downsell = upsell
+        self.total_to_invoice = self.sale_order_id.amount_total + upsell
+        self.downpayment_total = downpayment
+        self.already_invoiced = invoiced
+        self.unbilled_total = (unbill + downpayment) if (unbill + downpayment) > 0.0 else 0.0
+        self.undelivered_products = undeliver
+
     advance_payment_method = fields.Selection([
         ('delivered', 'Ready to invoice'),
         ('all', 'Ready to invoice, deduct down payments (only if down payments)'),
@@ -48,6 +84,7 @@ class SaleAdvancePaymentInv(models.TransientModel):
         ('percentage', 'Down payment (percentage)'),
         ('fixed', 'Down payment (fixed amount)')
         ], string='What do you want to invoice?', default=_get_advance_payment_method, required=True)
+    sale_order_id = fields.Many2one('sale.order', string='Sale Order', default=_default_sale_order_id)
     product_id = fields.Many2one('product.product', string='Down Payment Product', domain=[('type', '=', 'service')],
         default=_default_product_id)
     count = fields.Integer(default=_count, string='Order Count')
@@ -55,14 +92,14 @@ class SaleAdvancePaymentInv(models.TransientModel):
     deposit_account_id = fields.Many2one("account.account", string="Income Account", domain=[('deprecated', '=', False)],
         help="Account used for deposits", default=_default_deposit_account_id)
     deposit_taxes_id = fields.Many2many("account.tax", string="Customer Taxes", help="Taxes used for deposits", default=_default_deposit_taxes_id)
-    order_total = fields.Float(string='Order Total', readonly=True)
-    upsell_downsell = fields.Float(string='Upsell/Downsell', readonly=True)
-    total_to_invoice = fields.Float(string='Total to Invoice', readonly=True)
-    downpayment_total = fields.Float(string='Downpayment', readonly=True)
-    already_invoiced = fields.Float(string='Already Invoiced', readonly=True)
-    unbilled_total = fields.Float(string='Unbilled Total', readonly=True)
-    undelivered_products = fields.Float(string='Undelivered Products', readonly=True)
-    ready_to_invoice = fields.Float(string='Ready to Invoice', readonly=True)
+    order_total = fields.Float(string='Order Total', readonly=True, compute='compute_all', store=True)
+    upsell_downsell = fields.Float(string='Upsell/Downsell', readonly=True, compute='compute_all', store=True)
+    total_to_invoice = fields.Float(string='Total to Invoice', readonly=True, compute='compute_all', store=True)
+    downpayment_total = fields.Float(string='Downpayment', readonly=True, compute='compute_all', store=True)
+    already_invoiced = fields.Float(string='Already Invoiced', readonly=True, compute='compute_all', store=True)
+    unbilled_total = fields.Float(string='Unbilled Total', readonly=True, compute='compute_all', store=True)
+    undelivered_products = fields.Float(string='Undelivered Products', readonly=True, compute='compute_all', store=True)
+    ready_to_invoice = fields.Float(string='Ready to Invoice', readonly=True, compute='compute_all', store=True)
 
     @api.onchange('advance_payment_method')
     def onchange_advance_payment_method(self):
