@@ -913,15 +913,19 @@ range.WrappedRange.prototype.deleteContents = function (towrite) {
         return this;
     }
 
-    var prevBP = dom.removeBetween(this.sc, this.so, this.ec, this.eo, towrite);
+    var r;
+    var image = this.isOnImg();
+    if (image) {
+        var p = image.parentNode;
+        var i = _.indexOf(p.childNodes, image);
+        p.removeChild(image);
+        r = new range.WrappedRange(p, i, p, i);
+    } else {
+        r = dom.removeBetween(this.sc, this.so, this.ec, this.eo, towrite);
+    }
 
-    $(dom.node(prevBP.sc)).trigger("click"); // trigger click to disable and reanable editor and image handler
-    return new range.WrappedRange(
-      prevBP.sc,
-      prevBP.so,
-      prevBP.ec,
-      prevBP.eo
-    );
+    $(dom.node(r.sc)).trigger("click"); // trigger click to disable and reanable editor and image handler
+    return new range.WrappedRange(r.sc, r.so, r.ec, r.eo);
 };
 range.WrappedRange.prototype.clean = function (mergeFilter, all) {
     var node = dom.node(this.sc === this.ec ? this.sc : this.commonAncestor());
