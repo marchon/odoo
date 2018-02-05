@@ -175,6 +175,9 @@ class StockPicking(models.Model):
         sale_order = self.sale_id
         if sale_order.invoice_shipping_on_delivery:
             sale_order._create_delivery_line(self.carrier_id, self.carrier_price)
+        if sale_order.mapped('picking_ids').filtered(lambda x: x.state == 'done' and x.carrier_id == sale_order.carrier_id):
+            for line in sale_order.order_line:
+                line.invoice_status = 'to invoice'
 
     @api.multi
     def open_website_url(self):
