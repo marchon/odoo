@@ -295,27 +295,6 @@ class date(datetimelib.date):
         formats = [ # From most used to less.
             DEFAULT_SERVER_DATE_FORMAT,
             DEFAULT_SERVER_DATETIME_FORMAT,
-            DEFAULT_SERVER_DATETIME_FORMAT + '.%f',
-            "%Y%m%d",
-            "%Y-%m-%dT%H:%M:%S.%f",
-            "%Y-%m-%dT%H:%M:%S",
-            "%Y-%m-%dT%H:%M:%S.%fz",
-            "%Y-%m-%dT%H:%M:%Sz",
-            "%Y-%m-%dT%H:%M:%S.%fZ",
-            "%Y-%m-%dT%H:%M:%SZ",
-            "%Y-%m-%dT%H:%M:%S.%f%z",
-            "%Y-%m-%dT%H:%M%z",
-            "%Y-%m-%d_%H-%M-%S",
-            "%Y-%m-%d_%H-%M",
-            "%Y-%m-%d %H:%M%z",
-            "%Y-%m-%d %H:%M:%S%z",
-            "%Y-%m-%d %H:%M:%S.%f%z",
-            "%Y-%m-%dT%H:%M%z",
-            "%Y%m%d%H%M%S",
-            "%Y%m%d%H%M%S%f",
-            "%Y%m%d%H%M%S%z",
-            "%Y%m%dT%H%M%SZ",
-            "%Y%m%dT%H%M%S%z",
         ]
 
         for dtformat in formats:
@@ -324,7 +303,7 @@ class date(datetimelib.date):
             except ValueError:
                 pass
 
-        raise ValueError("No valid date format found for %s." % repr(string))
+        return cls.from_date(du_parser().parse(string))
 
     def get_dateformat(self):
         """ Get date format """
@@ -538,27 +517,7 @@ class datetime(datetimelib.datetime, date):
 
         formats = [ # From most used to less
             DEFAULT_SERVER_DATETIME_FORMAT,
-            DEFAULT_SERVER_DATETIME_FORMAT + '.%f',
             DEFAULT_SERVER_DATE_FORMAT,
-            "%Y-%m-%dT%H:%M:%S.%f",
-            "%Y-%m-%dT%H:%M:%S",
-            "%Y-%m-%dT%H:%M:%S.%fz",
-            "%Y-%m-%dT%H:%M:%Sz",
-            "%Y-%m-%dT%H:%M:%S.%fZ",
-            "%Y-%m-%dT%H:%M:%SZ",
-            "%Y-%m-%dT%H:%M:%S.%f%z",
-            "%Y-%m-%dT%H:%M%z",
-            "%Y-%m-%d_%H-%M-%S",
-            "%Y-%m-%d %H:%M%z",
-            "%Y-%m-%d %H:%M:%S%z",
-            "%Y-%m-%d %H:%M:%S.%f%z",
-            "%Y-%m-%dT%H:%M%z",
-            "%Y%m%d%H%M%S",
-            "%Y%m%d%H%M%S%f",
-            "%Y%m%d%H%M%S%z",
-            "%Y%m%dT%H%M%SZ",
-            "%Y%m%dT%H%M%S%z",
-            "%Y%m%d",
         ]
 
         for dtformat in formats:
@@ -567,7 +526,7 @@ class datetime(datetimelib.datetime, date):
             except ValueError:
                 pass
 
-        raise ValueError("No valid datetime format found for %s." % repr(string))
+        return du_parser().parse(string, default=cls.now())
 
     def get_end_month(self):
         """ Just before the end of month """
